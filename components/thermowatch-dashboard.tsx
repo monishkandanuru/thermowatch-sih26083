@@ -637,7 +637,7 @@ export function ThermoWatchDashboard() {
     [districts, selectedName],
   );
   const hotspots = useMemo(
-    () => [...districts].sort((a, b) => b.htsi - a.htsi).slice(0, 6),
+    () => [...districts].sort((a, b) => b.htsi - a.htsi).slice(0, 5),
     [districts],
   );
   const highCount = districts.filter((item) =>
@@ -976,9 +976,9 @@ export function ThermoWatchDashboard() {
 
           {view === 'overview' && (
             <div className="space-y-5">
-              <div className="grid gap-5 xl:grid-cols-[1.25fr_0.75fr]">
-                <div className="grid gap-5 md:grid-cols-[0.9fr_1.1fr]">
-                  <Card className="border-0 shadow-[0_14px_38px_rgb(37_58_88/7%)]">
+              <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-12">
+                <div className="contents">
+                  <Card className="border-0 shadow-[0_14px_38px_rgb(37_58_88/7%)] xl:col-span-4">
                     <CardHeader className="flex-row items-start justify-between">
                       <div>
                         <p className="font-mono text-[9px] tracking-[0.14em] text-slate-400">
@@ -1059,7 +1059,7 @@ export function ThermoWatchDashboard() {
                       </div>
                     </CardContent>
                   </Card>
-                  <Card className="border-0 shadow-[0_14px_38px_rgb(37_58_88/7%)]">
+                  <Card className="border-0 shadow-[0_14px_38px_rgb(37_58_88/7%)] xl:col-span-8">
                     <CardHeader>
                       <PanelTitle
                         eyebrow="SPATIAL VIEW"
@@ -1084,20 +1084,20 @@ export function ThermoWatchDashboard() {
                     </CardContent>
                   </Card>
                 </div>
-                <div className="grid gap-5">
-                  <Card className="border-0 shadow-[0_14px_38px_rgb(37_58_88/7%)]">
+                <div className="contents">
+                  <Card className="border-0 shadow-[0_14px_38px_rgb(37_58_88/7%)] xl:col-span-5">
                     <CardHeader>
                       <PanelTitle
                         eyebrow="NEXT WARNING WINDOW"
                         title="Risk horizon"
                       />
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="flex flex-1 flex-col justify-between gap-4">
                       {detailLoading && !detail ? (
                         <Loading />
                       ) : (
                         <>
-                          <div className="grid grid-cols-3 gap-2">
+                          <div className="grid grid-cols-3 gap-3">
                             {(
                               detail?.horizons ??
                               [24, 48, 72].map((hours, index) => ({
@@ -1116,7 +1116,7 @@ export function ThermoWatchDashboard() {
                               <button
                                 key={item.horizon_hours}
                                 onClick={() => setView('forecast')}
-                                className="rounded-xl border border-slate-200 p-3 text-center hover:border-blue-200 hover:bg-blue-50/40"
+                                className="min-h-28 cursor-pointer rounded-xl border border-slate-200 p-3 text-center transition-colors duration-200 hover:border-blue-200 hover:bg-blue-50/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
                               >
                                 <span className="font-mono text-[9px] text-slate-400">
                                   {item.horizon_hours}H
@@ -1147,7 +1147,7 @@ export function ThermoWatchDashboard() {
                       )}
                     </CardContent>
                   </Card>
-                  <Card className="border-0 shadow-[0_14px_38px_rgb(37_58_88/7%)]">
+                  <Card className="border-0 shadow-[0_14px_38px_rgb(37_58_88/7%)] xl:col-span-7">
                     <CardHeader>
                       <PanelTitle
                         eyebrow="PRIORITY LOCATIONS"
@@ -1184,8 +1184,8 @@ export function ThermoWatchDashboard() {
                   </Card>
                 </div>
               </div>
-              <div className="grid gap-5 lg:grid-cols-3">
-                <Card className="border-0">
+              <div className="grid gap-5 lg:grid-cols-2">
+                <Card className="border-0 shadow-[0_14px_38px_rgb(37_58_88/7%)] lg:col-span-2">
                   <CardHeader>
                     <PanelTitle
                       eyebrow="EXPOSURE LENS"
@@ -1193,7 +1193,7 @@ export function ThermoWatchDashboard() {
                       note="Human context changes the risk."
                     />
                   </CardHeader>
-                  <CardContent className="space-y-2">
+                  <CardContent className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
                     {detail?.profiles?.slice(0, 6).map((item) => (
                       <div
                         key={item.profile}
@@ -1213,7 +1213,7 @@ export function ThermoWatchDashboard() {
                     )) ?? <Loading />}
                   </CardContent>
                 </Card>
-                <Card className="border-0">
+                <Card className="border-0 shadow-[0_14px_38px_rgb(37_58_88/7%)]">
                   <CardHeader>
                     <PanelTitle
                       eyebrow="PERSONALIZED SCREENING"
@@ -1301,7 +1301,7 @@ export function ThermoWatchDashboard() {
                     )}
                   </CardContent>
                 </Card>
-                <Card className="border-0">
+                <Card className="border-0 shadow-[0_14px_38px_rgb(37_58_88/7%)]">
                   <CardHeader>
                     <PanelTitle
                       eyebrow="RESPONSE GUIDE"
