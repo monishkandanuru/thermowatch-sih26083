@@ -33,6 +33,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import indiaMap from '@svg-maps/india';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -62,6 +63,8 @@ type View =
   | 'alerts';
 type District = {
   district: string;
+  lat: number;
+  lon: number;
   temp: number;
   humidity: number;
   htsi: number;
@@ -182,6 +185,8 @@ type DashboardData = {
 const seedDistricts: District[] = [
   {
     district: 'Delhi',
+    lat: 28.6139,
+    lon: 77.209,
     temp: 42.1,
     humidity: 39,
     htsi: 73.5,
@@ -196,6 +201,8 @@ const seedDistricts: District[] = [
   },
   {
     district: 'Jaipur',
+    lat: 26.9124,
+    lon: 75.7873,
     temp: 43.6,
     humidity: 31,
     htsi: 71.1,
@@ -207,6 +214,8 @@ const seedDistricts: District[] = [
   },
   {
     district: 'Hyderabad',
+    lat: 17.385,
+    lon: 78.4867,
     temp: 39.4,
     humidity: 47,
     htsi: 63.8,
@@ -218,6 +227,8 @@ const seedDistricts: District[] = [
   },
   {
     district: 'Patna',
+    lat: 25.5941,
+    lon: 85.1376,
     temp: 40.2,
     humidity: 58,
     htsi: 69.4,
@@ -229,6 +240,8 @@ const seedDistricts: District[] = [
   },
   {
     district: 'Ahmedabad',
+    lat: 23.0225,
+    lon: 72.5714,
     temp: 41.3,
     humidity: 37,
     htsi: 67.2,
@@ -240,6 +253,8 @@ const seedDistricts: District[] = [
   },
   {
     district: 'Bhopal',
+    lat: 23.2599,
+    lon: 77.4126,
     temp: 38.8,
     humidity: 44,
     htsi: 58.2,
@@ -251,6 +266,8 @@ const seedDistricts: District[] = [
   },
   {
     district: 'Lucknow',
+    lat: 26.8467,
+    lon: 80.9462,
     temp: 38.6,
     humidity: 51,
     htsi: 52.8,
@@ -262,6 +279,8 @@ const seedDistricts: District[] = [
   },
   {
     district: 'Bhubaneswar',
+    lat: 20.2961,
+    lon: 85.8245,
     temp: 37.4,
     humidity: 66,
     htsi: 61.4,
@@ -413,60 +432,149 @@ function IndiaMap({
   districts,
   selected,
   onSelect,
+  expanded = false,
 }: {
   districts: District[];
   selected: District;
   onSelect: (district: District) => void;
+  expanded?: boolean;
 }) {
-  const path =
-    'M142,18 L155,22 L170,20 L185,28 L205,42 L228,58 L240,82 L248,108 L240,135 L228,162 L215,188 L200,212 L178,230 L155,245 L142,258 L125,245 L105,228 L87,205 L75,178 L70,152 L68,138 L70,124 L65,96 L68,82 L82,58 L100,40 L122,24 Z';
+  const indiaLocations = indiaMap.locations as Array<{
+    id: string;
+    path: string;
+  }>;
+  const project = (lat: number, lon: number) => ({
+    x: (lon - 67.7) * 20.35,
+    y: (37.6 - lat) * 22.05,
+  });
+
   return (
-    <div className="relative h-[330px] overflow-hidden rounded-2xl bg-[#f7f9fc]">
+    <div
+      className={`relative overflow-hidden rounded-3xl border border-slate-200/80 bg-[radial-gradient(circle_at_50%_38%,#ffffff_0%,#f4f7fb_58%,#e9eff7_100%)] ${expanded ? 'h-[520px] sm:h-[600px]' : 'h-[380px]'}`}
+    >
+      <div className="pointer-events-none absolute left-4 top-4 z-10 rounded-full border border-white/80 bg-white/85 px-3 py-1.5 shadow-sm backdrop-blur">
+        <span className="flex items-center gap-2 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-slate-600">
+          <i className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_0_4px_rgb(16_185_129/12%)]" />
+          20 live districts
+        </span>
+      </div>
+      <div className="pointer-events-none absolute right-4 top-4 z-10 rounded-2xl border border-white/80 bg-white/90 px-3 py-2 text-right shadow-sm backdrop-blur">
+        <span className="block text-[9px] font-semibold uppercase tracking-wide text-slate-400">
+          Selected
+        </span>
+        <strong className="text-sm text-slate-800">{selected.district}</strong>
+        <span
+          className="ml-2 text-[10px] font-bold uppercase"
+          style={{ color: riskStyle[selected.risk].color }}
+        >
+          {selected.risk}
+        </span>
+      </div>
       <svg
-        viewBox="50 10 220 270"
-        className="h-full w-full"
+        viewBox={indiaMap.viewBox}
+        className="h-full w-full px-8 pb-14 pt-12 drop-shadow-[0_18px_24px_rgb(37_58_88/12%)]"
         role="img"
-        aria-label="District heat-risk map of India"
+        aria-label="Geographic heat-risk map of India showing 20 monitored districts"
+        preserveAspectRatio="xMidYMid meet"
       >
-        <path d={path} fill="#eef3f9" stroke="#cbd7e6" strokeWidth="1.3" />
-        {districts.map((item) => (
-          <g
-            key={item.district}
-            role="button"
-            tabIndex={0}
-            className="cursor-pointer"
-            onClick={() => onSelect(item)}
-            onKeyDown={(event) => event.key === 'Enter' && onSelect(item)}
-          >
-            <circle
-              cx={item.x}
-              cy={item.y}
-              r={selected.district === item.district ? 12 : 8}
-              fill={riskStyle[item.risk].soft}
-              stroke={riskStyle[item.risk].color}
+        <defs>
+          <linearGradient id="india-land" x1="0" y1="0" x2="0.8" y2="1">
+            <stop offset="0%" stopColor="#f8fbff" />
+            <stop offset="52%" stopColor="#e8f0fa" />
+            <stop offset="100%" stopColor="#dce8f5" />
+          </linearGradient>
+          <filter id="marker-glow" x="-80%" y="-80%" width="260%" height="260%">
+            <feGaussianBlur stdDeviation="5" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+
+        <g aria-hidden="true">
+          {indiaLocations.map((location) => (
+            <path
+              key={location.id}
+              d={location.path}
+              fill="url(#india-land)"
+              stroke="#b7c8dc"
+              strokeWidth="1.15"
+              vectorEffect="non-scaling-stroke"
+              className="transition-colors duration-200 hover:fill-blue-50"
             />
-            <circle
-              cx={item.x}
-              cy={item.y}
-              r={selected.district === item.district ? 4.5 : 3.5}
-              fill={riskStyle[item.risk].color}
-            />
-            {selected.district === item.district && (
-              <text
-                x={item.x}
-                y={item.y - 17}
-                textAnchor="middle"
-                fontSize="8"
-                fontWeight="700"
-                fill={riskStyle[item.risk].color}
-              >
-                {item.district}
-              </text>
-            )}
-          </g>
-        ))}
+          ))}
+        </g>
+
+        {districts.map((item) => {
+          const point = project(item.lat, item.lon);
+          const isSelected = selected.district === item.district;
+          const color = riskStyle[item.risk].color;
+          const labelWidth = Math.max(62, item.district.length * 7 + 20);
+
+          return (
+            <g
+              key={item.district}
+              role="button"
+              tabIndex={0}
+              aria-label={`${item.district}: ${item.risk} risk, HTSI ${item.htsi}`}
+              className="group cursor-pointer focus:outline-none"
+              onClick={() => onSelect(item)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  onSelect(item);
+                }
+              }}
+            >
+              <title>{`${item.district} · ${item.risk} risk · HTSI ${item.htsi}`}</title>
+              <circle cx={point.x} cy={point.y} r="19" fill="transparent" />
+              <circle
+                cx={point.x}
+                cy={point.y}
+                r={isSelected ? 15 : 11}
+                fill={riskStyle[item.risk].soft}
+                fillOpacity="0.96"
+                stroke="white"
+                strokeWidth="4"
+                filter={isSelected ? 'url(#marker-glow)' : undefined}
+                className="transition-all duration-200 group-hover:r-[14px] group-focus:stroke-blue-700"
+              />
+              <circle
+                cx={point.x}
+                cy={point.y}
+                r={isSelected ? 7 : 5.5}
+                fill={color}
+                stroke={isSelected ? 'white' : color}
+                strokeWidth="1.5"
+              />
+              {isSelected && (
+                <g transform={`translate(${point.x - labelWidth / 2} ${point.y - 42})`}>
+                  <rect
+                    width={labelWidth}
+                    height="25"
+                    rx="12.5"
+                    fill="#0f172a"
+                    stroke="white"
+                    strokeWidth="2"
+                  />
+                  <text
+                    x={labelWidth / 2}
+                    y="16.5"
+                    textAnchor="middle"
+                    fontSize="10.5"
+                    fontWeight="700"
+                    fill="white"
+                  >
+                    {item.district}
+                  </text>
+                </g>
+              )}
+            </g>
+          );
+        })}
       </svg>
-      <div className="absolute inset-x-4 bottom-3 flex flex-wrap justify-center gap-3 rounded-xl border bg-white/90 px-3 py-2 text-[10px] text-slate-500 backdrop-blur">
+      <div className="absolute inset-x-3 bottom-3 flex flex-wrap justify-center gap-x-3 gap-y-1.5 rounded-2xl border border-white/90 bg-white/92 px-3 py-2.5 text-[10px] text-slate-600 shadow-[0_8px_24px_rgb(37_58_88/10%)] backdrop-blur">
         {(['Low', 'Moderate', 'High', 'Extreme', 'Emergency'] as Risk[]).map(
           (risk) => (
             <span key={risk} className="flex items-center gap-1.5">
@@ -479,6 +587,9 @@ function IndiaMap({
           ),
         )}
       </div>
+      <span className="absolute bottom-1 right-4 text-[7px] text-slate-400">
+        Boundary geometry · CC BY 4.0
+      </span>
     </div>
   );
 }
@@ -1372,6 +1483,7 @@ export function ThermoWatchDashboard() {
                     districts={districts}
                     selected={selected}
                     onSelect={selectDistrict}
+                    expanded
                   />
                 </CardContent>
               </Card>
