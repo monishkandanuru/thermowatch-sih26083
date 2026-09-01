@@ -377,10 +377,12 @@ function PanelTitle({
   return (
     <div className="flex flex-wrap items-start justify-between gap-3">
       <div>
-        <p className="font-mono text-[9px] font-semibold tracking-[0.15em] text-slate-400">
+        <p className="font-mono text-[9px] font-semibold tracking-[0.18em] text-[#9a6d19]">
           {eyebrow}
         </p>
-        <h2 className="mt-1 text-lg font-semibold tracking-tight">{title}</h2>
+        <h2 className="mt-1.5 text-lg font-semibold tracking-[-0.02em] text-[#14213a]">
+          {title}
+        </h2>
         {note && (
           <p className="mt-1 text-xs leading-relaxed text-slate-500">{note}</p>
         )}
@@ -409,7 +411,9 @@ function Stat({
     purple: 'border-purple-100 bg-purple-50 text-purple-800',
   };
   return (
-    <div className={`rounded-2xl border p-4 ${colors[tone]}`}>
+    <div
+      className={`rounded-[1.15rem] border p-4 shadow-[inset_0_1px_rgb(255_255_255/70%)] ${colors[tone]}`}
+    >
       <span className="block text-[10px] font-semibold uppercase tracking-wide opacity-70">
         {label}
       </span>
@@ -450,7 +454,7 @@ function IndiaMap({
 
   return (
     <div
-      className={`relative overflow-hidden rounded-3xl border border-slate-200/80 bg-[radial-gradient(circle_at_50%_38%,#ffffff_0%,#f4f7fb_58%,#e9eff7_100%)] ${expanded ? 'h-[520px] sm:h-[600px]' : 'h-[380px]'}`}
+      className={`relative overflow-hidden rounded-[1.6rem] border border-[#dbe1e8] bg-[radial-gradient(circle_at_50%_34%,#ffffff_0%,#f2f5f7_56%,#e8edf2_100%)] shadow-[inset_0_1px_rgb(255_255_255/90%)] ${expanded ? 'h-[520px] sm:h-[600px]' : 'h-[390px]'}`}
     >
       <div className="pointer-events-none absolute left-4 top-4 z-10 rounded-full border border-white/80 bg-white/85 px-3 py-1.5 shadow-sm backdrop-blur">
         <span className="flex items-center gap-2 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-slate-600">
@@ -479,9 +483,9 @@ function IndiaMap({
       >
         <defs>
           <linearGradient id="india-land" x1="0" y1="0" x2="0.8" y2="1">
-            <stop offset="0%" stopColor="#f8fbff" />
-            <stop offset="52%" stopColor="#e8f0fa" />
-            <stop offset="100%" stopColor="#dce8f5" />
+            <stop offset="0%" stopColor="#fffdf8" />
+            <stop offset="52%" stopColor="#edf2f5" />
+            <stop offset="100%" stopColor="#dfe8ef" />
           </linearGradient>
           <filter id="marker-glow" x="-80%" y="-80%" width="260%" height="260%">
             <feGaussianBlur stdDeviation="5" result="blur" />
@@ -498,7 +502,7 @@ function IndiaMap({
               key={location.id}
               d={location.path}
               fill="url(#india-land)"
-              stroke="#b7c8dc"
+              stroke="#afbfcb"
               strokeWidth="1.15"
               vectorEffect="non-scaling-stroke"
               className="transition-colors duration-200 hover:fill-blue-50"
@@ -554,7 +558,7 @@ function IndiaMap({
                     width={labelWidth}
                     height="25"
                     rx="12.5"
-                    fill="#0f172a"
+                    fill="#10213f"
                     stroke="white"
                     strokeWidth="2"
                   />
@@ -596,7 +600,7 @@ function IndiaMap({
 
 function Empty({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center text-sm text-slate-500">
+    <div className="rounded-[1.2rem] border border-dashed border-[#d6d0c5] bg-[#f8f6f1] p-8 text-center text-sm text-slate-500">
       {children}
     </div>
   );
@@ -826,70 +830,77 @@ export function ThermoWatchDashboard() {
     : 'Resilient demonstration data';
 
   return (
-    <div className="min-h-screen bg-[#f3f6fa] text-slate-900 lg:flex">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_86%_0%,#dfe8f0_0%,transparent_27rem),linear-gradient(135deg,#f7f4ee_0%,#f2f0eb_48%,#eef2f4_100%)] text-[#17233a] lg:flex">
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-[260px] border-r border-slate-200 bg-white px-4 py-6 transition-transform lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 ${mobileNav ? 'translate-x-0' : '-translate-x-full'}`}
+        className={`fixed inset-y-0 left-0 z-50 w-[272px] overflow-hidden border-r border-white/10 bg-[linear-gradient(165deg,#112443_0%,#0c1a31_58%,#091426_100%)] px-4 py-6 text-white shadow-[18px_0_60px_rgb(4_13_28/12%)] transition-transform duration-300 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 ${mobileNav ? 'translate-x-0' : '-translate-x-full'}`}
       >
-        <div className="flex items-center gap-3 px-2 lg:mb-8">
-          <span className="grid h-10 w-10 place-items-center rounded-xl bg-blue-800 text-white shadow-[0_8px_18px_rgb(30_64_175/22%)]">
+        <div className="pointer-events-none absolute -right-20 -top-28 h-64 w-64 rounded-full border border-white/5 bg-blue-400/10 blur-2xl" />
+        <div className="relative flex items-center gap-3 px-2 lg:mb-8">
+          <span className="grid h-11 w-11 place-items-center rounded-[0.9rem] border border-white/15 bg-white/10 text-[#f2c96c] shadow-[0_12px_30px_rgb(0_0_0/20%)] backdrop-blur">
             <Activity className="h-5 w-5" />
           </span>
           <div>
-            <strong className="block text-sm">ThermoWatch</strong>
-            <span className="font-mono text-[9px] tracking-[0.12em] text-slate-400">
+            <strong className="block text-sm tracking-[-0.01em] text-white">
+              ThermoWatch
+            </strong>
+            <span className="font-mono text-[9px] tracking-[0.16em] text-blue-200/55">
               SIH26083 · INDIA
             </span>
           </div>
           <Button
             variant="ghost"
             size="icon"
-            className="ml-auto lg:hidden"
+            className="ml-auto text-white hover:bg-white/10 hover:text-white lg:hidden"
             onClick={() => setMobileNav(false)}
             aria-label="Close navigation"
           >
             <X />
           </Button>
         </div>
-        <nav className="mt-6 space-y-1" aria-label="Main navigation">
-          <p className="px-3 pb-2 font-mono text-[9px] tracking-[0.14em] text-slate-400">
-            WORKSPACE
+        <nav className="relative mt-7 space-y-1.5" aria-label="Main navigation">
+          <p className="px-3 pb-2 font-mono text-[9px] tracking-[0.18em] text-blue-200/45">
+            OPERATIONS
           </p>
           {navigation.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
               onClick={() => changeView(id)}
-              className={`flex min-h-11 w-full items-center gap-3 rounded-xl px-3 text-left text-[13px] font-semibold transition ${view === id ? 'border border-blue-100 bg-blue-50 text-blue-800' : 'text-slate-500 hover:bg-slate-50 hover:text-blue-800'}`}
+              className={`group flex min-h-11 w-full items-center gap-3 rounded-xl px-3 text-left text-[13px] font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f2c96c] ${view === id ? 'bg-white text-[#10213f] shadow-[0_8px_22px_rgb(0_0_0/18%)]' : 'text-blue-100/65 hover:bg-white/8 hover:text-white'}`}
             >
-              <Icon className="h-4 w-4" />
+              <span
+                className={`grid h-7 w-7 place-items-center rounded-lg transition-colors ${view === id ? 'bg-[#e9eef6] text-[#234b8b]' : 'bg-white/5 text-blue-100/70 group-hover:bg-white/10 group-hover:text-[#f2c96c]'}`}
+              >
+                <Icon className="h-4 w-4" />
+              </span>
               {label}
               {id === 'alerts' && (
-                <span className="ml-auto rounded-full bg-orange-50 px-2 py-0.5 text-[10px] text-orange-700">
+                <span className="ml-auto rounded-full bg-[#f2c96c] px-2 py-0.5 text-[10px] text-[#352506]">
                   {highCount}
                 </span>
               )}
             </button>
           ))}
         </nav>
-        <div className="absolute bottom-6 left-4 right-4 rounded-xl border border-slate-200 bg-slate-50 p-3 font-mono text-[10px] text-slate-500">
+        <div className="absolute bottom-6 left-4 right-4 rounded-[1.15rem] border border-white/10 bg-white/[0.06] p-3.5 font-mono text-[10px] text-blue-100/65 backdrop-blur">
           <span
             className={`mr-2 inline-block h-2 w-2 rounded-full ${districts.some((item) => item.source === 'open-meteo') ? 'bg-emerald-500' : 'bg-amber-500'}`}
           />
           {sourceLabel}
-          <span className="mt-2 block text-[9px] text-slate-400">
+          <span className="mt-2 block border-t border-white/8 pt-2 text-[9px] text-blue-200/40">
             Model {dashboard?.model.model_version ?? 'htsi-real-3.0'}
           </span>
         </div>
       </aside>
       {mobileNav && (
         <button
-          className="fixed inset-0 z-40 bg-slate-950/30 lg:hidden"
+          className="fixed inset-0 z-40 bg-[#07101f]/55 backdrop-blur-sm lg:hidden"
           onClick={() => setMobileNav(false)}
           aria-label="Close navigation overlay"
         />
       )}
 
       <section className="min-w-0 flex-1">
-        <header className="sticky top-0 z-30 flex min-h-[72px] flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur-xl lg:px-10">
+        <header className="sticky top-0 z-30 flex min-h-[72px] flex-wrap items-center justify-between gap-3 border-b border-[#d8d3ca]/70 bg-[#f8f6f1]/85 px-4 py-3 backdrop-blur-xl lg:px-10">
           <div className="flex items-center gap-3">
             <Button
               variant="outline"
@@ -900,9 +911,9 @@ export function ThermoWatchDashboard() {
             >
               <Menu />
             </Button>
-            <div className="font-mono text-xs text-slate-400">
-              India <span className="mx-2">/</span>{' '}
-              <b className="text-slate-700">{navLabel}</b>
+            <div className="font-mono text-[11px] uppercase tracking-[0.12em] text-slate-400">
+              India <span className="mx-2 text-[#b58b3b]">/</span>{' '}
+              <b className="text-[#293a54]">{navLabel}</b>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -928,26 +939,29 @@ export function ThermoWatchDashboard() {
             </Button>
           </div>
         </header>
-        <main className="mx-auto max-w-[1500px] p-4 lg:p-10">
-          <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
+        <main className="mx-auto max-w-[1540px] p-4 sm:p-6 lg:p-10 xl:px-12">
+          <div className="mb-8 flex flex-wrap items-end justify-between gap-5 border-b border-[#d8d3ca]/65 pb-7">
             <div>
-              <p className="mb-2 font-mono text-[10px] font-semibold tracking-[0.16em] text-blue-700">
+              <p className="mb-2.5 flex items-center gap-2 font-mono text-[9px] font-semibold tracking-[0.2em] text-[#9a6d19]">
+                <span className="h-px w-7 bg-[#c39a4b]" />
                 DISASTER MANAGEMENT ·{' '}
                 {view === 'overview' ? 'LIVE OVERVIEW' : view.toUpperCase()}
               </p>
-              <h1 className="text-3xl font-bold tracking-tight lg:text-4xl">
+              <h1 className="text-3xl font-bold tracking-[-0.035em] text-[#12203a] lg:text-[2.65rem] lg:leading-tight">
                 {view === 'overview'
                   ? 'Heat conditions, made actionable.'
                   : navLabel}
               </h1>
-              <p className="mt-2 max-w-2xl text-sm text-slate-500">
+              <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-500">
                 {view === 'overview'
                   ? 'See where heat is rising, who is exposed, and what response should come next.'
                   : 'Use transparent signals to make an earlier, more targeted response decision.'}
               </p>
             </div>
-            <div className="flex items-center gap-3 rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3">
-              <ShieldCheck className="h-5 w-5 text-emerald-600" />
+            <div className="flex items-center gap-3 rounded-[1.15rem] border border-[#cfdbd3] bg-[#f4faf5]/90 px-4 py-3 shadow-sm">
+              <span className="grid h-9 w-9 place-items-center rounded-xl bg-emerald-100 text-emerald-700">
+                <ShieldCheck className="h-4 w-4" />
+              </span>
               <div>
                 <b className="block text-xs">System operational</b>
                 <span className="text-[11px] text-emerald-700">
@@ -978,16 +992,17 @@ export function ThermoWatchDashboard() {
             <div className="space-y-5">
               <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-12">
                 <div className="contents">
-                  <Card className="border-0 shadow-[0_14px_38px_rgb(37_58_88/7%)] xl:col-span-4">
+                  <Card className="relative border-[#1f365b] bg-[radial-gradient(circle_at_90%_5%,rgb(70_111_174/35%),transparent_17rem),linear-gradient(155deg,#14294b_0%,#0d1c34_65%,#091629_100%)] text-white shadow-[0_26px_60px_rgb(13_28_52/20%)] ring-white/5 xl:col-span-4">
+                    <div className="pointer-events-none absolute right-6 top-6 h-24 w-24 rounded-full border border-white/5" />
                     <CardHeader className="flex-row items-start justify-between">
                       <div>
-                        <p className="font-mono text-[9px] tracking-[0.14em] text-slate-400">
+                        <p className="font-mono text-[9px] tracking-[0.17em] text-blue-200/55">
                           CURRENT HUMAN THERMAL STRESS
                         </p>
-                        <h2 className="mt-2 text-2xl font-bold">
+                        <h2 className="mt-2 text-2xl font-bold tracking-[-0.025em] text-white">
                           {selected.district}
                         </h2>
-                        <p className="mt-1 text-xs text-slate-500">
+                        <p className="mt-1 text-xs text-blue-100/55">
                           {selected.temp}°C · {selected.humidity}% humidity ·{' '}
                           {selected.source === 'open-meteo'
                             ? 'live weather'
@@ -997,18 +1012,18 @@ export function ThermoWatchDashboard() {
                       <RiskBadge risk={selected.risk} />
                     </CardHeader>
                     <CardContent>
-                      <div className="mt-4 flex items-end gap-2">
+                      <div className="mt-5 flex items-end gap-2">
                         <strong
                           className="text-6xl leading-none"
                           style={{ color: riskStyle[selected.risk].color }}
                         >
                           {selected.htsi}
                         </strong>
-                        <span className="pb-1 text-sm text-slate-400">
+                        <span className="pb-1 text-sm text-blue-100/45">
                           / 100 HTSI
                         </span>
                       </div>
-                      <div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-100">
+                      <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/10">
                         <i
                           className="block h-full rounded-full"
                           style={{
@@ -1018,16 +1033,16 @@ export function ThermoWatchDashboard() {
                         />
                       </div>
                       <div className="mt-6 grid grid-cols-3 gap-2 text-center">
-                        <div className="rounded-xl bg-slate-50 p-3">
-                          <span className="block text-[9px] text-slate-400">
+                        <div className="rounded-xl border border-white/8 bg-white/[0.06] p-3 backdrop-blur">
+                          <span className="block text-[9px] text-blue-100/45">
                             WBGT
                           </span>
                           <b>
                             {selected.wbgt ?? detail?.current.wbgt ?? '—'}°C
                           </b>
                         </div>
-                        <div className="rounded-xl bg-slate-50 p-3">
-                          <span className="block text-[9px] text-slate-400">
+                        <div className="rounded-xl border border-white/8 bg-white/[0.06] p-3 backdrop-blur">
+                          <span className="block text-[9px] text-blue-100/45">
                             HEAT INDEX
                           </span>
                           <b>
@@ -1037,15 +1052,15 @@ export function ThermoWatchDashboard() {
                             °C
                           </b>
                         </div>
-                        <div className="rounded-xl bg-slate-50 p-3">
-                          <span className="block text-[9px] text-slate-400">
+                        <div className="rounded-xl border border-white/8 bg-white/[0.06] p-3 backdrop-blur">
+                          <span className="block text-[9px] text-blue-100/45">
                             PET
                           </span>
                           <b>{selected.pet ?? detail?.current.pet ?? '—'}°C</b>
                         </div>
                       </div>
                       <div
-                        className="mt-5 rounded-xl border p-4 text-xs"
+                        className="mt-5 rounded-[1.15rem] border p-4 text-xs leading-relaxed shadow-[inset_0_1px_rgb(255_255_255/50%)]"
                         style={{
                           background: riskStyle[selected.risk].soft,
                           borderColor: `${riskStyle[selected.risk].color}22`,
@@ -1059,7 +1074,7 @@ export function ThermoWatchDashboard() {
                       </div>
                     </CardContent>
                   </Card>
-                  <Card className="border-0 shadow-[0_14px_38px_rgb(37_58_88/7%)] xl:col-span-8">
+                  <Card className="xl:col-span-8">
                     <CardHeader>
                       <PanelTitle
                         eyebrow="SPATIAL VIEW"
@@ -1085,7 +1100,7 @@ export function ThermoWatchDashboard() {
                   </Card>
                 </div>
                 <div className="contents">
-                  <Card className="border-0 shadow-[0_14px_38px_rgb(37_58_88/7%)] xl:col-span-5">
+                  <Card className="xl:col-span-5">
                     <CardHeader>
                       <PanelTitle
                         eyebrow="NEXT WARNING WINDOW"
@@ -1116,7 +1131,7 @@ export function ThermoWatchDashboard() {
                               <button
                                 key={item.horizon_hours}
                                 onClick={() => setView('forecast')}
-                                className="min-h-28 cursor-pointer rounded-xl border border-slate-200 p-3 text-center transition-colors duration-200 hover:border-blue-200 hover:bg-blue-50/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
+                                className="min-h-28 cursor-pointer rounded-[1.05rem] border border-[#ded9cf] bg-[#faf8f3] p-3 text-center transition-all duration-200 hover:-translate-y-0.5 hover:border-[#b7c6d8] hover:bg-white hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-700"
                               >
                                 <span className="font-mono text-[9px] text-slate-400">
                                   {item.horizon_hours}H
@@ -1128,7 +1143,7 @@ export function ThermoWatchDashboard() {
                               </button>
                             ))}
                           </div>
-                          <div className="mt-4 flex items-center gap-3 rounded-xl bg-blue-50 p-3 text-xs text-blue-900">
+                          <div className="mt-4 flex items-center gap-3 rounded-[1.05rem] border border-blue-100 bg-[#edf3f8] p-3 text-xs text-blue-950">
                             <CloudSun className="h-5 w-5" />
                             <span>
                               Peak risk:{' '}
@@ -1147,7 +1162,7 @@ export function ThermoWatchDashboard() {
                       )}
                     </CardContent>
                   </Card>
-                  <Card className="border-0 shadow-[0_14px_38px_rgb(37_58_88/7%)] xl:col-span-7">
+                  <Card className="xl:col-span-7">
                     <CardHeader>
                       <PanelTitle
                         eyebrow="PRIORITY LOCATIONS"
@@ -1160,7 +1175,7 @@ export function ThermoWatchDashboard() {
                         <button
                           key={item.district}
                           onClick={() => selectDistrict(item)}
-                          className="grid w-full grid-cols-[30px_1fr_auto_38px] items-center gap-2 rounded-xl px-2 py-2.5 text-left hover:bg-slate-50"
+                          className="grid w-full grid-cols-[30px_1fr_auto_38px] items-center gap-2 rounded-xl border border-transparent px-2 py-2.5 text-left transition-colors hover:border-[#e3ddd3] hover:bg-[#faf8f3] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-700"
                         >
                           <span className="font-mono text-[10px] text-slate-400">
                             0{index + 1}
@@ -1185,7 +1200,7 @@ export function ThermoWatchDashboard() {
                 </div>
               </div>
               <div className="grid gap-5 lg:grid-cols-2">
-                <Card className="border-0 shadow-[0_14px_38px_rgb(37_58_88/7%)] lg:col-span-2">
+                <Card className="lg:col-span-2">
                   <CardHeader>
                     <PanelTitle
                       eyebrow="EXPOSURE LENS"
@@ -1197,7 +1212,7 @@ export function ThermoWatchDashboard() {
                     {detail?.profiles?.slice(0, 6).map((item) => (
                       <div
                         key={item.profile}
-                        className="grid grid-cols-[1fr_auto_42px] items-center gap-2 rounded-xl bg-slate-50 p-3"
+                        className="grid grid-cols-[1fr_auto_42px] items-center gap-2 rounded-[1.05rem] border border-[#e5e0d7] bg-[#faf8f3] p-3"
                       >
                         <div>
                           <b className="block text-xs">{item.profile}</b>
@@ -1213,7 +1228,7 @@ export function ThermoWatchDashboard() {
                     )) ?? <Loading />}
                   </CardContent>
                 </Card>
-                <Card className="border-0 shadow-[0_14px_38px_rgb(37_58_88/7%)]">
+                <Card>
                   <CardHeader>
                     <PanelTitle
                       eyebrow="PERSONALIZED SCREENING"
@@ -1279,7 +1294,7 @@ export function ThermoWatchDashboard() {
                       Calculate personal HTSI
                     </Button>
                     {personalResult && (
-                      <div className="rounded-xl border bg-slate-50 p-3">
+                      <div className="rounded-[1.05rem] border bg-[#faf8f3] p-3">
                         <div className="flex items-center justify-between">
                           <span className="text-xs text-slate-500">
                             Personal HTSI
@@ -1301,7 +1316,7 @@ export function ThermoWatchDashboard() {
                     )}
                   </CardContent>
                 </Card>
-                <Card className="border-0 shadow-[0_14px_38px_rgb(37_58_88/7%)]">
+                <Card>
                   <CardHeader>
                     <PanelTitle
                       eyebrow="RESPONSE GUIDE"
@@ -1327,7 +1342,7 @@ export function ThermoWatchDashboard() {
                       ],
                     ].map(([number, title, copy]) => (
                       <div key={number} className="flex gap-3">
-                        <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-blue-50 font-mono text-xs font-bold text-blue-800">
+                        <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#e8edf4] font-mono text-xs font-bold text-[#244a80]">
                           {number}
                         </span>
                         <p className="text-xs text-slate-500">
