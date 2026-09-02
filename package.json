@@ -11,7 +11,10 @@
     "start": "wrangler dev --config dist/server/wrangler.json",
     "lint": "oxlint",
     "format": "oxfmt",
-    "db:generate": "drizzle-kit generate"
+    "db:generate": "drizzle-kit generate",
+    "test": "tsx --test tests/*.test.ts",
+    "test:ml": "python3 ml/verify_artifacts.py && tsx ml/verify_runtime.ts",
+    "test:api": "node tests/api-smoke.mjs"
   },
   "dependencies": {
     "@base-ui/react": "1.7.0",

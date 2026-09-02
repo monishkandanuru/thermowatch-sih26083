@@ -1,0 +1,19 @@
+{
+  "name": "ThermoWatch — Heatwave Early Warning",
+  "short_name": "ThermoWatch",
+  "description": "District heat-risk intelligence, early warning and response support for India.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f2ec",
+  "theme_color": "#10213f",
+  "lang": "en-IN",
+  "categories": ["weather", "health", "government", "utilities"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

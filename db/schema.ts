@@ -1,4 +1,10 @@
-import { index, real, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import {
+  index,
+  real,
+  sqliteTable,
+  text,
+  uniqueIndex,
+} from 'drizzle-orm/sqlite-core';
 
 export const incidents = sqliteTable('incidents', {
   id: text('id').primaryKey(),
@@ -43,3 +49,48 @@ export const predictions = sqliteTable('predictions', {
   source: text('source').notNull(),
   predictedAt: text('predicted_at').notNull(),
 }, (table) => [index('idx_predictions_district_time').on(table.district, table.predictedAt)]);
+
+export const warningEvents = sqliteTable('warning_events', {
+  id: text('id').primaryKey(),
+  dedupeKey: text('dedupe_key').notNull(),
+  district: text('district').notNull(),
+  horizonHours: real('horizon_hours').notNull(),
+  risk: text('risk').notNull(),
+  probability: real('probability').notNull(),
+  htsi: real('htsi').notNull(),
+  modelVersion: text('model_version').notNull(),
+  status: text('status').notNull().default('active'),
+  validAt: text('valid_at').notNull(),
+  createdAt: text('created_at').notNull(),
+}, (table) => [
+  uniqueIndex('idx_warning_events_dedupe').on(table.dedupeKey),
+  index('idx_warning_events_district_created').on(table.district, table.createdAt),
+  index('idx_warning_events_status_created').on(table.status, table.createdAt),
+]);
+
+export const auditLogs = sqliteTable('audit_logs', {
+  id: text('id').primaryKey(),
+  actorId: text('actor_id'),
+  actorRole: text('actor_role').notNull(),
+  action: text('action').notNull(),
+  entityType: text('entity_type').notNull(),
+  entityId: text('entity_id').notNull(),
+  detailsJson: text('details_json').notNull().default('{}'),
+  createdAt: text('created_at').notNull(),
+}, (table) => [
+  index('idx_audit_logs_created').on(table.createdAt),
+  index('idx_audit_logs_entity').on(table.entityType, table.entityId),
+]);
+
+export const rateLimits = sqliteTable('rate_limits', {
+  key: text('key').primaryKey(),
+  count: real('count').notNull(),
+  windowStart: text('window_start').notNull(),
+  updatedAt: text('updated_at').notNull(),
+});
+
+export const userRoles = sqliteTable('user_roles', {
+  userId: text('user_id').primaryKey(),
+  role: text('role').notNull().default('officer'),
+  updatedAt: text('updated_at').notNull(),
+});

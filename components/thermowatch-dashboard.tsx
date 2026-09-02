@@ -1,6 +1,15 @@
 'use client';
+/* oxlint-disable next/no-html-link-for-pages -- Sites auth requires top-level anchor navigation. */
+/* oxlint-disable typescript/no-deprecated -- Recharts 3.8 still uses Cell for per-bar risk colours. */
 
-import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  type SyntheticEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import Link from 'next/link';
 import {
   Activity,
   Bell,
@@ -89,6 +98,8 @@ type District = {
   model_confidence?: number;
   high_risk_probability?: number;
   explanation?: Contribution[];
+  horizon_hours?: 24 | 48 | 72;
+  valid_at?: string;
   action?: string;
 };
 type ForecastPoint = {
@@ -153,6 +164,31 @@ type IncidentRow = {
   status: string;
   created_at: string;
 };
+type AutomaticWarning = {
+  id: string;
+  district: string;
+  horizon_hours: number;
+  risk: Risk;
+  probability: number;
+  htsi: number;
+  model_version: string;
+  status: string;
+  valid_at: string;
+  created_at: string;
+};
+type SessionData = {
+  id: string | null;
+  email: string | null;
+  name: string | null;
+  role: 'public' | 'officer' | 'admin';
+  signed_in: boolean;
+};
+type ForecastMapData = {
+  layers: Record<'24' | '48' | '72', District[]>;
+  generated_at: string;
+  warning_count: number;
+  model_version: string;
+};
 type HistoryData = {
   observations: RecordRow[];
   predictions: RecordRow[];
@@ -185,6 +221,7 @@ type DashboardData = {
     coverage: number;
     high_risk_count: number;
     active_alerts: number;
+    automatic_warnings: number;
     open_incidents: number;
     highest_risk_locations: District[];
     recommended_interventions: string[];
@@ -399,6 +436,91 @@ const navigation: Array<{
   { id: 'alerts', label: 'Alert center', icon: Bell },
 ];
 
+type UiLanguage = 'en' | 'hi' | 'te';
+const shellCopy: Record<
+  UiLanguage,
+  {
+    nav: Record<View, string>;
+    hero: string;
+    overviewNote: string;
+    viewNote: string;
+    operational: string;
+    monitored: string;
+    refresh: string;
+    officerSignIn: string;
+    disasterManagement: string;
+    decisionSupport: string;
+  }
+> = {
+  en: {
+    nav: Object.fromEntries(
+      navigation.map((item) => [item.id, item.label]),
+    ) as Record<View, string>,
+    hero: 'Heat conditions, made actionable.',
+    overviewNote:
+      'See where heat is rising, who is exposed, and what response should come next.',
+    viewNote:
+      'Use transparent signals to make an earlier, more targeted response decision.',
+    operational: 'System operational',
+    monitored: 'districts monitored',
+    refresh: 'Refresh',
+    officerSignIn: 'OFFICER SIGN IN',
+    disasterManagement: 'DISASTER MANAGEMENT',
+    decisionSupport:
+      'Decision support · not a medical diagnosis or official government warning',
+  },
+  hi: {
+    nav: {
+      overview: 'कमांड सेंटर',
+      forecast: 'पूर्वानुमान समयरेखा',
+      map: 'जोखिम मानचित्र',
+      model: 'व्याख्यात्मक AI',
+      authority: 'प्राधिकरण',
+      response: 'प्रतिक्रिया केंद्र',
+      validation: 'सत्यापन',
+      history: 'इतिहास',
+      alerts: 'चेतावनी केंद्र',
+    },
+    hero: 'गर्मी की स्थिति, अब कार्रवाई योग्य।',
+    overviewNote:
+      'देखें गर्मी कहाँ बढ़ रही है, कौन प्रभावित है और अगली प्रतिक्रिया क्या होनी चाहिए।',
+    viewNote:
+      'पहले और अधिक लक्षित निर्णय के लिए पारदर्शी संकेतों का उपयोग करें।',
+    operational: 'सिस्टम चालू है',
+    monitored: 'जिलों की निगरानी',
+    refresh: 'रीफ़्रेश',
+    officerSignIn: 'अधिकारी साइन इन',
+    disasterManagement: 'आपदा प्रबंधन',
+    decisionSupport:
+      'निर्णय सहायता · चिकित्सा निदान या आधिकारिक सरकारी चेतावनी नहीं',
+  },
+  te: {
+    nav: {
+      overview: 'కమాండ్ సెంటర్',
+      forecast: 'అంచనా కాలరేఖ',
+      map: 'ప్రమాద పటం',
+      model: 'వివరణాత్మక AI',
+      authority: 'అధికార విభాగం',
+      response: 'ప్రతిస్పందన కేంద్రం',
+      validation: 'ధృవీకరణ',
+      history: 'చరిత్ర',
+      alerts: 'హెచ్చరిక కేంద్రం',
+    },
+    hero: 'వేడి పరిస్థితులను చర్యగా మార్చండి.',
+    overviewNote:
+      'వేడి ఎక్కడ పెరుగుతోంది, ఎవరు ప్రభావితమవుతున్నారు, తదుపరి చర్య ఏమిటో చూడండి.',
+    viewNote:
+      'ముందస్తు, లక్ష్యిత నిర్ణయాలకు పారదర్శక సంకేతాలను ఉపయోగించండి.',
+    operational: 'వ్యవస్థ పనిచేస్తోంది',
+    monitored: 'జిల్లాల పర్యవేక్షణ',
+    refresh: 'రిఫ్రెష్',
+    officerSignIn: 'అధికారి సైన్ ఇన్',
+    disasterManagement: 'విపత్తు నిర్వహణ',
+    decisionSupport:
+      'నిర్ణయ సహాయం · వైద్య నిర్ధారణ లేదా అధికారిక ప్రభుత్వ హెచ్చరిక కాదు',
+  },
+};
+
 async function api<T>(path: string, options?: RequestInit): Promise<T> {
   const response = await fetch(path, options);
   const payload = (await response.json()) as T & { error?: string };
@@ -492,11 +614,13 @@ function IndiaMap({
   selected,
   onSelect,
   expanded = false,
+  layerLabel = 'Live conditions',
 }: {
   districts: District[];
   selected: District;
   onSelect: (district: District) => void;
   expanded?: boolean;
+  layerLabel?: string;
 }) {
   const indiaLocations = indiaMap.locations as Array<{
     id: string;
@@ -514,7 +638,7 @@ function IndiaMap({
       <div className="pointer-events-none absolute left-4 top-4 z-10 rounded-full border border-white/80 bg-white/85 px-3 py-1.5 shadow-sm backdrop-blur">
         <span className="flex items-center gap-2 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-slate-600">
           <i className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_0_4px_rgb(16_185_129/12%)]" />
-          20 live districts
+          {layerLabel} · {districts.length} districts
         </span>
       </div>
       <div className="pointer-events-none absolute right-4 top-4 z-10 rounded-2xl border border-white/80 bg-white/90 px-3 py-2 text-right shadow-sm backdrop-blur">
@@ -527,12 +651,14 @@ function IndiaMap({
           style={{ color: riskStyle[selected.risk].color }}
         >
           {selected.risk}
+          {selected.high_risk_probability !== undefined && (
+            <> · {Math.round(selected.high_risk_probability)}% High+</>
+          )}
         </span>
       </div>
       <svg
         viewBox={indiaMap.viewBox}
         className="h-full w-full px-8 pb-14 pt-12 drop-shadow-[0_18px_24px_rgb(37_58_88/12%)]"
-        role="img"
         aria-label="Geographic heat-risk map of India showing 20 monitored districts"
         preserveAspectRatio="xMidYMid meet"
       >
@@ -572,13 +698,16 @@ function IndiaMap({
           const labelWidth = Math.max(62, item.district.length * 7 + 20);
 
           return (
-            <g
+            <a
               key={item.district}
-              role="button"
+              href={`#district-${item.district.toLowerCase().replaceAll(' ', '-')}`}
               tabIndex={0}
-              aria-label={`${item.district}: ${item.risk} risk, HTSI ${item.htsi}`}
+              aria-label={`${item.district}: ${item.risk} risk, HTSI ${item.htsi}${item.high_risk_probability !== undefined ? `, ${Math.round(item.high_risk_probability)} percent High plus probability` : ''}`}
               className="group cursor-pointer focus:outline-none"
-              onClick={() => onSelect(item)}
+              onClick={(event) => {
+                event.preventDefault();
+                onSelect(item);
+              }}
               onKeyDown={(event) => {
                 if (event.key === 'Enter' || event.key === ' ') {
                   event.preventDefault();
@@ -629,7 +758,7 @@ function IndiaMap({
                   </text>
                 </g>
               )}
-            </g>
+            </a>
           );
         })}
       </svg>
@@ -669,7 +798,17 @@ export function ThermoWatchDashboard() {
   const [detail, setDetail] = useState<DistrictDetail | null>(null);
   const [historyData, setHistoryData] = useState<HistoryData | null>(null);
   const [alerts, setAlerts] = useState<AlertRow[]>([]);
+  const [automaticWarnings, setAutomaticWarnings] = useState<
+    AutomaticWarning[]
+  >([]);
   const [incidents, setIncidents] = useState<IncidentRow[]>([]);
+  const [session, setSession] = useState<SessionData | null>(null);
+  const [forecastMap, setForecastMap] = useState<ForecastMapData | null>(null);
+  const [mapHorizon, setMapHorizon] = useState<0 | 24 | 48 | 72>(0);
+  const [mapLoading, setMapLoading] = useState(false);
+  const [online, setOnline] = useState(
+    () => typeof navigator === 'undefined' || navigator.onLine,
+  );
   const [loading, setLoading] = useState(true);
   const [detailLoading, setDetailLoading] = useState(true);
   const [error, setError] = useState('');
@@ -681,6 +820,7 @@ export function ThermoWatchDashboard() {
   const [reporter, setReporter] = useState('');
   const [alertRisk, setAlertRisk] = useState<Risk>('High');
   const [alertLanguage, setAlertLanguage] = useState('en');
+  const [uiLanguage, setUiLanguage] = useState<UiLanguage>('en');
   const [replayCaseId, setReplayCaseId] = useState('');
   const [personalAge, setPersonalAge] = useState('adult');
   const [personalActivity, setPersonalActivity] = useState('moderate');
@@ -696,6 +836,7 @@ export function ThermoWatchDashboard() {
       districts.find((item) => item.district === selectedName) ?? districts[0],
     [districts, selectedName],
   );
+  const copy = shellCopy[uiLanguage];
   const hotspots = useMemo(
     () => [...districts].sort((a, b) => b.htsi - a.htsi).slice(0, 5),
     [districts],
@@ -716,14 +857,39 @@ export function ThermoWatchDashboard() {
       districtReplayCases[0],
     [districtReplayCases, replayCaseId],
   );
+  const mapDistricts = useMemo(
+    () =>
+      mapHorizon === 0
+        ? districts
+        : (forecastMap?.layers[String(mapHorizon) as '24' | '48' | '72'] ??
+          districts),
+    [districts, forecastMap, mapHorizon],
+  );
+  const selectedMapDistrict = useMemo(
+    () =>
+      mapDistricts.find((item) => item.district === selectedName) ??
+      mapDistricts[0],
+    [mapDistricts, selectedName],
+  );
+  const selectedAutomaticWarnings = useMemo(
+    () =>
+      automaticWarnings.filter(
+        (warning) => warning.district === selectedName,
+      ),
+    [automaticWarnings, selectedName],
+  );
 
   const loadDashboard = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
-      const data = await api<DashboardData>('/api/dashboard');
+      const [data, actor] = await Promise.all([
+        api<DashboardData>('/api/dashboard'),
+        api<SessionData>('/api/session'),
+      ]);
       setDashboard(data);
       setDistricts(data.districts);
+      setSession(actor);
     } catch (requestError) {
       setError(
         requestError instanceof Error
@@ -732,6 +898,28 @@ export function ThermoWatchDashboard() {
       );
     } finally {
       setLoading(false);
+    }
+  }, []);
+
+  const loadForecastMap = useCallback(async (refresh = false) => {
+    setMapLoading(true);
+    try {
+      const data = await api<ForecastMapData>(
+        `/api/forecast-map${refresh ? '?refresh=true' : ''}`,
+      );
+      setForecastMap(data);
+      const warningData = await api<{ warnings: AutomaticWarning[] }>(
+        '/api/warnings',
+      );
+      setAutomaticWarnings(warningData.warnings);
+    } catch (requestError) {
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : 'Forecast map unavailable',
+      );
+    } finally {
+      setMapLoading(false);
     }
   }, []);
 
@@ -758,7 +946,7 @@ export function ThermoWatchDashboard() {
   );
 
   const loadRecords = useCallback(async (district: string) => {
-    const [history, alertData, incidentData] = await Promise.all([
+    const [history, alertData, incidentData, warningData] = await Promise.all([
       api<HistoryData>(`/api/history?district=${encodeURIComponent(district)}`),
       api<{ alerts: AlertRow[] }>(
         `/api/alerts?district=${encodeURIComponent(district)}`,
@@ -766,24 +954,106 @@ export function ThermoWatchDashboard() {
       api<{ incidents: IncidentRow[] }>(
         `/api/incidents?district=${encodeURIComponent(district)}`,
       ),
+      api<{ warnings: AutomaticWarning[] }>(
+        `/api/warnings?district=${encodeURIComponent(district)}`,
+      ),
     ]);
     setHistoryData(history);
     setAlerts(alertData.alerts);
     setIncidents(incidentData.incidents);
+    setAutomaticWarnings(warningData.warnings);
   }, []);
 
   useEffect(() => {
-    loadDashboard();
+    const timer = window.setTimeout(() => void loadDashboard(), 0);
+    return () => window.clearTimeout(timer);
   }, [loadDashboard]);
   useEffect(() => {
-    loadDetail(selectedName, view === 'response');
+    const timer = window.setTimeout(
+      () => void loadDetail(selectedName, view === 'response'),
+      0,
+    );
+    return () => window.clearTimeout(timer);
   }, [selectedName, view, loadDetail]);
   useEffect(() => {
-    if (['history', 'alerts', 'response'].includes(view))
-      loadRecords(selectedName).catch(() =>
-        setError('Saved records could not be loaded.'),
+    if ((view === 'map' || view === 'alerts') && !forecastMap) {
+      const timer = window.setTimeout(() => void loadForecastMap(), 0);
+      return () => window.clearTimeout(timer);
+    }
+  }, [view, forecastMap, loadForecastMap]);
+  useEffect(() => {
+    if (['history', 'alerts', 'response'].includes(view)) {
+      const timer = window.setTimeout(
+        () =>
+          void loadRecords(selectedName).catch(() =>
+            setError('Saved records could not be loaded.'),
+          ),
+        0,
       );
+      return () => window.clearTimeout(timer);
+    }
   }, [view, selectedName, loadRecords]);
+  useEffect(() => {
+    const handleOnline = () => setOnline(true);
+    const handleOffline = () => setOnline(false);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      const saved = window.localStorage.getItem('thermowatch-language');
+      if (saved === 'hi' || saved === 'te') setUiLanguage(saved);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, []);
+  useEffect(() => {
+    if (
+      !automaticWarnings.length ||
+      !('Notification' in window) ||
+      Notification.permission !== 'granted'
+    )
+      return;
+    const timer = window.setTimeout(() => {
+      let stored: string[] = [];
+      try {
+        stored = JSON.parse(
+          window.localStorage.getItem('thermowatch-notified-warnings') ?? '[]',
+        ) as string[];
+      } catch {
+        stored = [];
+      }
+      const notified = new Set(stored);
+      const fresh = automaticWarnings.filter(
+        (warning) => !notified.has(warning.id),
+      );
+      fresh.slice(0, 3).forEach((warning) => {
+        new Notification(
+          `ThermoWatch · ${warning.district} +${warning.horizon_hours}h`,
+          {
+            body: `${warning.risk} forecast risk · ${Math.round(warning.probability)}% High+ probability.`,
+          },
+        );
+        notified.add(warning.id);
+      });
+      window.localStorage.setItem(
+        'thermowatch-notified-warnings',
+        JSON.stringify([...notified].slice(-120)),
+      );
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [automaticWarnings]);
+
+  function changeLanguage(language: UiLanguage) {
+    setUiLanguage(language);
+    setAlertLanguage(language);
+    window.localStorage.setItem('thermowatch-language', language);
+    document.documentElement.lang =
+      language === 'hi' ? 'hi-IN' : language === 'te' ? 'te-IN' : 'en-IN';
+  }
 
   function selectDistrict(item: District) {
     setSelectedName(item.district);
@@ -825,7 +1095,7 @@ export function ThermoWatchDashboard() {
     }
   }
 
-  async function submitIncident(event: FormEvent) {
+  async function submitIncident(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
     setNotice('');
     try {
@@ -892,8 +1162,7 @@ export function ThermoWatchDashboard() {
     await loadRecords(selected.district);
   }
 
-  const navLabel =
-    navigation.find((item) => item.id === view)?.label ?? 'Command center';
+  const navLabel = copy.nav[view];
   const sourceLabel = districts.some((item) => item.source === 'open-meteo')
     ? 'Live Open-Meteo connected'
     : 'Resilient demonstration data';
@@ -930,7 +1199,7 @@ export function ThermoWatchDashboard() {
           <p className="px-3 pb-2 font-mono text-[9px] tracking-[0.18em] text-blue-200/45">
             OPERATIONS
           </p>
-          {navigation.map(({ id, label, icon: Icon }) => (
+          {navigation.map(({ id, icon: Icon }) => (
             <button
               key={id}
               onClick={() => changeView(id)}
@@ -941,7 +1210,7 @@ export function ThermoWatchDashboard() {
               >
                 <Icon className="h-4 w-4" />
               </span>
-              {label}
+              {copy.nav[id]}
               {id === 'alerts' && (
                 <span className="ml-auto rounded-full bg-[#f2c96c] px-2 py-0.5 text-[10px] text-[#352506]">
                   {highCount}
@@ -986,6 +1255,36 @@ export function ThermoWatchDashboard() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {session?.signed_in ? (
+              <a
+                href="/signout-with-chatgpt?return_to=/"
+                target="_top"
+                className="hidden rounded-xl border border-[#d8d3ca] bg-white px-3 py-2 text-[10px] font-semibold text-slate-600 sm:block"
+                title="Sign out"
+              >
+                {session.role.toUpperCase()}
+              </a>
+            ) : (
+              <a
+                href="/signin-with-chatgpt?return_to=/"
+                target="_top"
+                className="hidden rounded-xl border border-[#d8d3ca] bg-white px-3 py-2 text-[10px] font-semibold text-slate-600 sm:block"
+              >
+                {copy.officerSignIn}
+              </a>
+            )}
+            <NativeSelect
+              value={uiLanguage}
+              onChange={(event) =>
+                changeLanguage(event.target.value as UiLanguage)
+              }
+              aria-label="Interface language"
+              className="w-[92px]"
+            >
+              <NativeSelectOption value="en">English</NativeSelectOption>
+              <NativeSelectOption value="hi">हिन्दी</NativeSelectOption>
+              <NativeSelectOption value="te">తెలుగు</NativeSelectOption>
+            </NativeSelect>
             <NativeSelect
               value={selected.district}
               onChange={(event) => setSelectedName(event.target.value)}
@@ -1004,7 +1303,7 @@ export function ThermoWatchDashboard() {
               disabled={loading}
             >
               <RefreshCw className={loading ? 'animate-spin' : ''} />
-              Refresh
+              {copy.refresh}
             </Button>
           </div>
         </header>
@@ -1013,18 +1312,18 @@ export function ThermoWatchDashboard() {
             <div>
               <p className="mb-2.5 flex items-center gap-2 font-mono text-[9px] font-semibold tracking-[0.2em] text-[#9a6d19]">
                 <span className="h-px w-7 bg-[#c39a4b]" />
-                DISASTER MANAGEMENT ·{' '}
+                {copy.disasterManagement} ·{' '}
                 {view === 'overview' ? 'LIVE OVERVIEW' : view.toUpperCase()}
               </p>
               <h1 className="text-3xl font-bold tracking-[-0.035em] text-[#12203a] lg:text-[2.65rem] lg:leading-tight">
                 {view === 'overview'
-                  ? 'Heat conditions, made actionable.'
+                  ? copy.hero
                   : navLabel}
               </h1>
               <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-500">
                 {view === 'overview'
-                  ? 'See where heat is rising, who is exposed, and what response should come next.'
-                  : 'Use transparent signals to make an earlier, more targeted response decision.'}
+                  ? copy.overviewNote
+                  : copy.viewNote}
               </p>
             </div>
             <div className="flex items-center gap-3 rounded-[1.15rem] border border-[#cfdbd3] bg-[#f4faf5]/90 px-4 py-3 shadow-sm">
@@ -1032,9 +1331,9 @@ export function ThermoWatchDashboard() {
                 <ShieldCheck className="h-4 w-4" />
               </span>
               <div>
-                <b className="block text-xs">System operational</b>
+                <b className="block text-xs">{copy.operational}</b>
                 <span className="text-[11px] text-emerald-700">
-                  {districts.length} districts monitored
+                  {districts.length} {copy.monitored}
                 </span>
               </div>
             </div>
@@ -1048,6 +1347,14 @@ export function ThermoWatchDashboard() {
               <button onClick={() => setError('')} aria-label="Dismiss error">
                 <X className="h-4 w-4" />
               </button>
+            </div>
+          )}
+          {!online && (
+            <div className="mb-5 flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+              <CloudSun className="h-4 w-4" />
+              Offline mode: cached public weather and forecast views remain
+              available. Record submission and authority actions require a
+              connection.
             </div>
           )}
           {notice && (
@@ -1307,9 +1614,13 @@ export function ThermoWatchDashboard() {
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <div className="grid grid-cols-2 gap-2">
-                      <label className="text-[10px] font-semibold text-slate-500">
+                      <label
+                        htmlFor="personal-age"
+                        className="text-[10px] font-semibold text-slate-500"
+                      >
                         AGE
                         <NativeSelect
+                          id="personal-age"
                           className="mt-1 w-full"
                           value={personalAge}
                           onChange={(event) =>
@@ -1327,9 +1638,13 @@ export function ThermoWatchDashboard() {
                           </NativeSelectOption>
                         </NativeSelect>
                       </label>
-                      <label className="text-[10px] font-semibold text-slate-500">
+                      <label
+                        htmlFor="personal-activity"
+                        className="text-[10px] font-semibold text-slate-500"
+                      >
                         ACTIVITY
                         <NativeSelect
+                          id="personal-activity"
                           className="mt-1 w-full"
                           value={personalActivity}
                           onChange={(event) =>
@@ -1566,34 +1881,94 @@ export function ThermoWatchDashboard() {
           )}
 
           {view === 'map' && (
-            <div className="grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
+            <div className="space-y-5">
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-[1.2rem] border border-[#ddd7cc] bg-white/75 p-3 shadow-sm backdrop-blur">
+                <div>
+                  <b className="block text-sm text-[#14213a]">
+                    Forecast risk layer
+                  </b>
+                  <small className="text-slate-500">
+                    ML predictions across all monitored locations
+                  </small>
+                </div>
+                <div className="flex flex-wrap gap-1 rounded-xl bg-slate-100 p-1">
+                  {([0, 24, 48, 72] as const).map((horizon) => (
+                    <button
+                      key={horizon}
+                      onClick={() => setMapHorizon(horizon)}
+                      className={`rounded-lg px-4 py-2 text-xs font-semibold transition-colors ${
+                        mapHorizon === horizon
+                          ? 'bg-[#10213f] text-white shadow-sm'
+                          : 'text-slate-500 hover:bg-white hover:text-slate-800'
+                      }`}
+                    >
+                      {horizon === 0 ? 'Live' : `+${horizon}h`}
+                    </button>
+                  ))}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => loadForecastMap(true)}
+                  disabled={mapLoading}
+                >
+                  <RefreshCw className={mapLoading ? 'animate-spin' : ''} />
+                  Refresh layers
+                </Button>
+              </div>
+              <div className="grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
               <Card>
                 <CardHeader>
                   <PanelTitle
                     eyebrow="SPATIAL COMMAND"
-                    title="India district risk map"
-                    note="Select a marker to return to its command center."
+                    title={
+                      mapHorizon === 0
+                        ? 'India live risk map'
+                        : `India ${mapHorizon}-hour forecast map`
+                    }
+                    note={
+                      mapHorizon === 0
+                        ? 'Current model classifications across monitored districts.'
+                        : 'Select a marker to inspect its predicted class and High+ probability.'
+                    }
                   />
                 </CardHeader>
                 <CardContent>
-                  <IndiaMap
-                    districts={districts}
-                    selected={selected}
-                    onSelect={selectDistrict}
-                    expanded
-                  />
+                  {mapLoading && !forecastMap && mapHorizon !== 0 ? (
+                    <Loading label="Building national forecast layers" />
+                  ) : (
+                    <IndiaMap
+                      districts={mapDistricts}
+                      selected={selectedMapDistrict}
+                      onSelect={selectDistrict}
+                      expanded
+                      layerLabel={
+                        mapHorizon === 0 ? 'Live' : `Forecast +${mapHorizon}h`
+                      }
+                    />
+                  )}
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader>
                   <PanelTitle
                     eyebrow="ALL LOCATIONS"
-                    title={`${districts.length} monitored districts`}
+                    title={`${mapDistricts.length} monitored districts`}
+                    note={
+                      mapHorizon === 0
+                        ? 'Ranked by current HTSI.'
+                        : 'Ranked by forecast High+ probability.'
+                    }
                   />
                 </CardHeader>
                 <CardContent className="max-h-[500px] space-y-1 overflow-auto">
-                  {[...districts]
-                    .sort((a, b) => b.htsi - a.htsi)
+                  {[...mapDistricts]
+                    .sort((a, b) =>
+                      mapHorizon === 0
+                        ? b.htsi - a.htsi
+                        : (b.high_risk_probability ?? 0) -
+                          (a.high_risk_probability ?? 0),
+                    )
                     .map((item) => (
                       <button
                         key={item.district}
@@ -1604,6 +1979,13 @@ export function ThermoWatchDashboard() {
                           <b className="block text-sm">{item.district}</b>
                           <small className="text-slate-400">
                             {item.temp}°C · {item.humidity}% RH
+                            {mapHorizon !== 0 && (
+                              <>
+                                {' '}
+                                · {Math.round(item.high_risk_probability ?? 0)}%
+                                High+
+                              </>
+                            )}
                           </small>
                         </span>
                         <RiskBadge risk={item.risk} />
@@ -1614,6 +1996,7 @@ export function ThermoWatchDashboard() {
                     ))}
                 </CardContent>
               </Card>
+              </div>
             </div>
           )}
 
@@ -1856,9 +2239,13 @@ export function ThermoWatchDashboard() {
                       className="grid gap-3 sm:grid-cols-2"
                       onSubmit={submitIncident}
                     >
-                      <label className="text-[10px] font-semibold text-slate-500">
+                      <label
+                        htmlFor="incident-type"
+                        className="text-[10px] font-semibold text-slate-500"
+                      >
                         INCIDENT TYPE
                         <NativeSelect
+                          id="incident-type"
                           className="mt-1 w-full"
                           value={incidentType}
                           onChange={(event) =>
@@ -1882,9 +2269,13 @@ export function ThermoWatchDashboard() {
                           </NativeSelectOption>
                         </NativeSelect>
                       </label>
-                      <label className="text-[10px] font-semibold text-slate-500">
+                      <label
+                        htmlFor="incident-severity"
+                        className="text-[10px] font-semibold text-slate-500"
+                      >
                         SEVERITY
                         <NativeSelect
+                          id="incident-severity"
                           className="mt-1 w-full"
                           value={incidentSeverity}
                           onChange={(event) =>
@@ -1898,18 +2289,26 @@ export function ThermoWatchDashboard() {
                           ))}
                         </NativeSelect>
                       </label>
-                      <label className="text-[10px] font-semibold text-slate-500 sm:col-span-2">
+                      <label
+                        htmlFor="incident-reporter"
+                        className="text-[10px] font-semibold text-slate-500 sm:col-span-2"
+                      >
                         REPORTER
                         <Input
+                          id="incident-reporter"
                           className="mt-1"
                           value={reporter}
                           onChange={(event) => setReporter(event.target.value)}
                           placeholder="Name or organisation (optional)"
                         />
                       </label>
-                      <label className="text-[10px] font-semibold text-slate-500 sm:col-span-2">
+                      <label
+                        htmlFor="incident-description"
+                        className="text-[10px] font-semibold text-slate-500 sm:col-span-2"
+                      >
                         WHAT HAPPENED?
                         <Textarea
+                          id="incident-description"
                           className="mt-1 min-h-28"
                           value={incidentDescription}
                           onChange={(event) =>
@@ -2318,6 +2717,59 @@ export function ThermoWatchDashboard() {
 
           {view === 'alerts' && (
             <div className="space-y-5">
+              <Card>
+                <CardHeader>
+                  <PanelTitle
+                    eyebrow="AUTOMATIC ML WATCH"
+                    title={`${selectedAutomaticWarnings.length} active forecast warning${selectedAutomaticWarnings.length === 1 ? '' : 's'} for ${selected.district}`}
+                    note="Created automatically when the model predicts High+ risk with at least 60% High+ probability. Duplicate forecast windows are suppressed."
+                    action={
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => loadForecastMap(true)}
+                        disabled={mapLoading}
+                      >
+                        <RefreshCw
+                          className={mapLoading ? 'animate-spin' : ''}
+                        />
+                        Evaluate forecasts
+                      </Button>
+                    }
+                  />
+                </CardHeader>
+                <CardContent>
+                  {selectedAutomaticWarnings.length ? (
+                    <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                      {selectedAutomaticWarnings.map((warning) => (
+                        <div
+                          key={warning.id}
+                          className="rounded-[1.05rem] border border-orange-100 bg-orange-50/70 p-4"
+                        >
+                          <div className="flex items-center justify-between gap-3">
+                            <RiskBadge risk={warning.risk} />
+                            <b className="text-xs">
+                              +{warning.horizon_hours}h
+                            </b>
+                          </div>
+                          <strong className="mt-3 block text-2xl text-orange-800">
+                            {Math.round(warning.probability)}% High+
+                          </strong>
+                          <small className="mt-1 block text-orange-900/65">
+                            HTSI {warning.htsi} · valid{' '}
+                            {new Date(warning.valid_at).toLocaleString('en-IN')}
+                          </small>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <Empty>
+                      No automatic High+ warning is active for this district.
+                      Evaluate the forecast layers to refresh the warning engine.
+                    </Empty>
+                  )}
+                </CardContent>
+              </Card>
               <div className="grid gap-5 lg:grid-cols-[0.8fr_1.2fr]">
                 <Card>
                   <CardHeader>
@@ -2328,9 +2780,13 @@ export function ThermoWatchDashboard() {
                     />
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <label className="text-[10px] font-semibold text-slate-500">
+                    <label
+                      htmlFor="alert-risk"
+                      className="text-[10px] font-semibold text-slate-500"
+                    >
                       RISK LEVEL
                       <NativeSelect
+                        id="alert-risk"
                         className="mt-1 w-full"
                         value={alertRisk}
                         onChange={(event) =>
@@ -2346,9 +2802,13 @@ export function ThermoWatchDashboard() {
                         )}
                       </NativeSelect>
                     </label>
-                    <label className="text-[10px] font-semibold text-slate-500">
+                    <label
+                      htmlFor="alert-language"
+                      className="text-[10px] font-semibold text-slate-500"
+                    >
                       LANGUAGE
                       <NativeSelect
+                        id="alert-language"
                         className="mt-1 w-full"
                         value={alertLanguage}
                         onChange={(event) =>
@@ -2367,11 +2827,35 @@ export function ThermoWatchDashboard() {
                       </NativeSelect>
                     </label>
                     <div className="rounded-xl border border-emerald-100 bg-emerald-50 p-3 text-xs text-emerald-800">
-                      <b className="block">Browser channel ready</b>Uses this
-                      device&apos;s notification permission and stores the alert
-                      in the audit trail.
+                      <b className="block">
+                        {session?.signed_in
+                          ? `${session.role} access active`
+                          : 'Officer sign-in required'}
+                      </b>
+                      {session?.signed_in ? (
+                        <>
+                          Browser delivery uses this device&apos;s notification
+                          permission and stores the alert in the audit trail.
+                        </>
+                      ) : (
+                        <>
+                          Public visitors can view warnings, but only signed-in
+                          officers can send or acknowledge them.{' '}
+                          <a
+                            href="/signin-with-chatgpt?return_to=/"
+                            target="_top"
+                            className="font-semibold underline"
+                          >
+                            Sign in with ChatGPT
+                          </a>
+                        </>
+                      )}
                     </div>
-                    <Button className="w-full" onClick={sendAlert}>
+                    <Button
+                      className="w-full"
+                      onClick={sendAlert}
+                      disabled={!session?.signed_in}
+                    >
                       <Bell />
                       Send and record warning
                     </Button>
@@ -2408,7 +2892,8 @@ export function ThermoWatchDashboard() {
                               <small className="text-slate-400">
                                 {item.channel} · {item.language} · {item.status}
                               </small>
-                              {item.status !== 'acknowledged' && (
+                              {item.status !== 'acknowledged' &&
+                                session?.signed_in && (
                                 <Button
                                   variant="outline"
                                   size="sm"
@@ -2436,17 +2921,24 @@ export function ThermoWatchDashboard() {
           <footer className="mt-10 flex flex-wrap justify-between gap-2 border-t border-slate-200 py-6 text-[10px] text-slate-400">
             <span>ThermoWatch · SIH26083</span>
             <span>
-              Decision support · not a medical diagnosis or official government
-              warning
+              {copy.decisionSupport}
             </span>
-            <a
-              href="https://open-meteo.com/"
-              target="_blank"
-              rel="noreferrer"
-              className="text-blue-700"
-            >
-              Weather data by Open-Meteo
-            </a>
+            <span className="flex flex-wrap gap-3">
+              <Link href="/privacy" className="text-blue-700">
+                Privacy and data use
+              </Link>
+              <Link href="/api/health" className="text-blue-700">
+                System status
+              </Link>
+              <a
+                href="https://open-meteo.com/"
+                target="_blank"
+                rel="noreferrer"
+                className="text-blue-700"
+              >
+                Weather data by Open-Meteo
+              </a>
+            </span>
           </footer>
         </main>
       </section>

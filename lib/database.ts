@@ -36,6 +36,38 @@ export async function ensureDatabase() {
     db.prepare(
       'CREATE INDEX IF NOT EXISTS idx_predictions_district_time ON predictions(district, predicted_at)',
     ),
+    db.prepare(`CREATE TABLE IF NOT EXISTS warning_events (
+      id TEXT PRIMARY KEY, dedupe_key TEXT NOT NULL UNIQUE, district TEXT NOT NULL,
+      horizon_hours REAL NOT NULL, risk TEXT NOT NULL, probability REAL NOT NULL,
+      htsi REAL NOT NULL, model_version TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'active',
+      valid_at TEXT NOT NULL, created_at TEXT NOT NULL
+    )`),
+    db.prepare(
+      'CREATE UNIQUE INDEX IF NOT EXISTS idx_warning_events_dedupe ON warning_events(dedupe_key)',
+    ),
+    db.prepare(
+      'CREATE INDEX IF NOT EXISTS idx_warning_events_district_created ON warning_events(district, created_at)',
+    ),
+    db.prepare(
+      'CREATE INDEX IF NOT EXISTS idx_warning_events_status_created ON warning_events(status, created_at)',
+    ),
+    db.prepare(`CREATE TABLE IF NOT EXISTS audit_logs (
+      id TEXT PRIMARY KEY, actor_id TEXT, actor_role TEXT NOT NULL, action TEXT NOT NULL,
+      entity_type TEXT NOT NULL, entity_id TEXT NOT NULL, details_json TEXT NOT NULL DEFAULT '{}',
+      created_at TEXT NOT NULL
+    )`),
+    db.prepare(
+      'CREATE INDEX IF NOT EXISTS idx_audit_logs_created ON audit_logs(created_at)',
+    ),
+    db.prepare(
+      'CREATE INDEX IF NOT EXISTS idx_audit_logs_entity ON audit_logs(entity_type, entity_id)',
+    ),
+    db.prepare(`CREATE TABLE IF NOT EXISTS rate_limits (
+      key TEXT PRIMARY KEY, count REAL NOT NULL, window_start TEXT NOT NULL, updated_at TEXT NOT NULL
+    )`),
+    db.prepare(`CREATE TABLE IF NOT EXISTS user_roles (
+      user_id TEXT PRIMARY KEY, role TEXT NOT NULL DEFAULT 'officer', updated_at TEXT NOT NULL
+    )`),
   ]);
   initialized = true;
   return db;

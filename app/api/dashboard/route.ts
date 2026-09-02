@@ -30,10 +30,15 @@ export async function GET() {
         ),
     ),
   );
-  const [alertCount, incidentCount] = await Promise.all([
+  const [alertCount, automaticWarningCount, incidentCount] = await Promise.all([
     db
       .prepare(
         "SELECT COUNT(*) AS count FROM alerts WHERE status != 'acknowledged'",
+      )
+      .first<{ count: number }>(),
+    db
+      .prepare(
+        "SELECT COUNT(*) AS count FROM warning_events WHERE status = 'active'",
       )
       .first<{ count: number }>(),
     db
@@ -49,7 +54,9 @@ export async function GET() {
       high_risk_count: districts.filter((item) =>
         ['High', 'Extreme', 'Emergency'].includes(item.risk),
       ).length,
-      active_alerts: alertCount?.count ?? 0,
+      active_alerts:
+        (alertCount?.count ?? 0) + (automaticWarningCount?.count ?? 0),
+      automatic_warnings: automaticWarningCount?.count ?? 0,
       open_incidents: incidentCount?.count ?? 0,
       highest_risk_locations: highest.slice(0, 7),
       recommended_interventions: [

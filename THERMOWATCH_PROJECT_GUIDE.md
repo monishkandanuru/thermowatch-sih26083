@@ -104,6 +104,8 @@ Users can:
 - See the district’s HTSI and risk
 - Compare all monitored districts
 - Identify hotspots quickly
+- Switch between live, +24-hour, +48-hour and +72-hour ML forecast layers
+- Compare High+ probability across all monitored locations
 
 The current prototype monitors 20 important Indian cities/district locations.
 
@@ -175,6 +177,13 @@ The History page displays recent observations and forecasts for the selected dis
 
 One real notification channel is implemented: **browser notifications**.
 
+The forecast warning engine automatically creates a persistent warning when:
+
+- The predicted class is High, Extreme, or Emergency, and
+- High+ probability is at least 60%.
+
+Warnings are deduplicated by district, horizon, valid forecast hour and class. If the user has already granted browser-notification permission, new automatic warnings are delivered on that device without another permission prompt.
+
 The alert workflow:
 
 1. User selects the risk level.
@@ -185,6 +194,27 @@ The alert workflow:
 6. The authority can acknowledge the alert.
 
 SMS and webhook delivery are not active because they require an external provider and credentials.
+
+### Access and accountability
+
+- Public visitors can read the dashboard, maps and warnings.
+- A ChatGPT-authenticated visitor remains public unless the account is in the server-side officer allowlist or has an approved `user_roles` entry.
+- Only officer/admin roles can send or acknowledge authority alerts or change incident status.
+- Alert and incident mutations are written to an audit log.
+- Rate limits protect incident and alert endpoints from repeated abuse.
+- Initial administrators are configured through the server-only `THERMOWATCH_OFFICER_IDS` allowlist; individual roles can then be represented in the `user_roles` table.
+
+### Offline and installable app support
+
+ThermoWatch includes a web-app manifest and service worker. It can be installed as a PWA. Public dashboard and forecast responses can be viewed from cache during a temporary connection failure. Sensitive history, identity, alert and incident endpoints are deliberately not cached.
+
+### Operational readiness
+
+- `/api/health` checks the database and active model version.
+- A public privacy and data-use page explains collection, purpose and limitations.
+- Security headers disable unnecessary camera, microphone and location permissions.
+- Automated tests cover HTSI thresholds, model probability integrity, warning thresholds and API smoke checks.
+- Application-owned pages and controls pass the scoped static accessibility/lint check; manual VoiceOver/NVDA testing is still recommended before field deployment.
 
 ### Personalized screening
 
@@ -333,6 +363,8 @@ Call the current result a **reproducible live ML classifier evaluated on real we
 | Incident reporting | Complete | Validated reports stored in D1 |
 | Persistent history | Complete | Observations and predictions stored in D1 |
 | Browser notification | Complete | Real browser notification and alert audit trail |
+| Automatic ML warnings | Complete | High+ forecasts generate deduplicated persistent warning events |
+| 24/48/72-hour map layers | Complete | National monitored-location layers use live model inference |
 | Hindi and Telugu alert text | Complete | Alert message templates are available |
 | Alert acknowledgement | Complete | Status is updated and stored |
 | Validation dashboard | Complete for engineering stage | Real chronological 2025 replay, metrics, matrix and selectable cases; labels remain proxy labels |
@@ -340,13 +372,13 @@ Call the current result a **reproducible live ML classifier evaluated on real we
 | Live ML risk prediction | Complete | Current and forecast weather produce class, confidence, High+ probability and explanations |
 | Official IMD outcome labels | Not complete | Must be obtained and verified by the team |
 | SMS/WhatsApp alerts | Not complete | Requires a provider, credentials and sender approval |
-| Full multilingual interface | Not complete | Only alert messages are multilingual |
-| Login and role permissions | Not complete | No citizen/officer/admin authentication yet |
-| Offline/PWA mode | Not complete | Website currently needs connectivity |
-| Automated test suite | Not complete | Production unit, integration and end-to-end tests are needed |
-| Production monitoring | Not complete | Logging, uptime alerts and API monitoring are needed |
-| Formal accessibility audit | Not complete | Keyboard and reduced-motion support exist, but a full WCAG audit is still needed |
-| Privacy and retention policy | Not complete | Must be written before collecting real citizen data |
+| Multilingual interface | Partial | Navigation and operational shell support English, Hindi and Telugu; specialist content needs human language review |
+| Login and role permissions | Complete for hosted prototype | Platform identity gives public/officer/admin server-side roles |
+| Offline/PWA mode | Complete | Installable shell and privacy-safe cached public intelligence |
+| Automated test suite | Complete for core paths | Unit, ML integrity, runtime parity and API smoke tests are included; full browser E2E remains a production improvement |
+| Production monitoring | Partial | Health endpoint and audit logs are active; external uptime paging needs a monitoring provider |
+| Formal accessibility audit | Complete for static application review | Labels, keyboard map markers, reduced motion and semantics checked; assistive-technology field testing remains |
+| Privacy and retention policy | Complete for prototype | Public policy and collection limits are documented; authority-approved retention is needed for field use |
 
 ## 10. System architecture
 
@@ -391,6 +423,11 @@ Dashboard, CSV export, browser notification and authority actions
 | `app/api/alerts/route.ts` | Sends, stores, lists and acknowledges alerts |
 | `app/api/incidents/route.ts` | Stores and lists incident reports |
 | `app/api/history/route.ts` | Returns stored observations and predictions |
+| `app/api/forecast-map/route.ts` | Builds cached 24/48/72-hour national forecast layers and evaluates warnings |
+| `app/api/warnings/route.ts` | Returns active automatic ML warning events |
+| `app/api/session/route.ts` | Returns the signed-in user’s server-side role |
+| `app/api/audit/route.ts` | Returns the protected authority mutation trail |
+| `app/api/health/route.ts` | Reports database and model health |
 | `app/api/export/route.ts` | Downloads a CSV authority brief |
 | `app/globals.css` | Design colors, theme and accessibility-related motion settings |
 | `.openai/hosting.json` | Sites project and D1 binding configuration |
@@ -413,6 +450,22 @@ Stores alert ID, district, risk, channel, language, message, status and acknowle
 
 Stores district, incident type, severity, description, reporter, status and creation time.
 
+### `warning_events`
+
+Stores deduplicated automatic forecast warnings, model version, horizon, valid time and status.
+
+### `audit_logs`
+
+Stores authority and community mutations with actor role, action, entity and timestamp.
+
+### `rate_limits`
+
+Stores privacy-preserving request buckets used to control repeated submissions.
+
+### `user_roles`
+
+Stores optional role overrides for platform-authenticated users.
+
 The API automatically creates these tables if they do not already exist.
 
 ## 13. API reference
@@ -429,6 +482,11 @@ The API automatically creates these tables if they do not already exist.
 | `GET /api/incidents?district=Delhi` | List district incident reports |
 | `POST /api/incidents` | Store a new incident report |
 | `GET /api/history?district=Delhi` | Get stored observations and predictions |
+| `GET /api/forecast-map` | Get cached 24/48/72-hour map layers and run the automatic warning engine |
+| `GET /api/warnings?district=Delhi` | List active automatic warning events |
+| `GET /api/session` | Read current public/officer/admin access state |
+| `GET /api/audit` | Read the protected authority audit log |
+| `GET /api/health` | Check database and model status |
 | `GET /api/export` | Download current district data as CSV |
 
 ### Personalized HTSI request example
@@ -592,17 +650,15 @@ These activities require team ownership, official access, credentials, or field 
 
 ### Production safety
 
-- Add officer/admin login and role permissions.
-- Add rate limiting and abuse prevention to incident and alert endpoints.
-- Write a privacy policy and data-retention policy.
-- Avoid collecting unnecessary personal or medical information.
-- Add security review, backups and disaster recovery.
+- Periodically review the implemented officer/admin permissions and audit logs.
+- Approve the prototype privacy/retention policy for the target authority and jurisdiction.
+- Configure platform backups and a tested disaster-recovery procedure.
+- Complete an independent security review before field deployment.
 
 ### Reliability
 
-- Add automated unit tests for HTSI thresholds.
-- Add API integration tests and browser end-to-end tests.
-- Add uptime monitoring and provider-failure alerts.
+- Add full browser end-to-end tests to the existing unit and API smoke suite.
+- Connect the health endpoint to an external uptime and paging provider.
 - Add caching so external APIs are not called unnecessarily.
 - Load-test the system for district and national usage.
 
@@ -610,7 +666,7 @@ These activities require team ownership, official access, credentials, or field 
 
 - Translate the full dashboard into required Indian languages.
 - Improve low-bandwidth and mobile support.
-- Consider offline/PWA functionality.
+- Have native Hindi and Telugu reviewers approve the translated operational shell and specialist wording.
 - Add an official source and last-updated timestamp to every major data panel.
 - Add state/district filtering for nationwide expansion.
 
@@ -649,10 +705,10 @@ Before the SIH demonstration:
 
 ## 20. Short final pitch
 
-> “ThermoWatch converts live weather into human-centered heat-risk intelligence. It helps authorities see where danger is rising, understand who is most exposed, act before the peak, record field incidents, and send auditable warnings. The current prototype combines real weather, a transparent HTSI engine, persistent history, response facilities and browser notifications, while clearly identifying the official data and ML calibration needed for production.”
+> “ThermoWatch converts live and forecast weather into human-centered heat-risk intelligence. Its reproducible classifier estimates risk and High+ probability, while transparent HTSI explains the conditions behind each result. Authorities can see where danger is rising, identify exposed groups, review forecast-map layers, record incidents and send auditable warnings. The prototype is validated on real historical weather with proxy labels and clearly separates engineering evidence from the official validation still required for field deployment.”
 
 ---
 
 ## 21. Current release note
 
-The refreshed premium dashboard design is saved as **Version 4**. At the time this guide was created, it was prepared but still awaiting approval to replace the existing public version.
+The current source includes the trained ML model, historical replay, automatic warnings, national forecast layers, hardened authority permissions, multilingual operational shell, PWA support, health/privacy safeguards and automated core tests. A newly saved hosted version still requires explicit approval before it can replace the public release.

@@ -1,4 +1,7 @@
+import { canOperate, forbiddenResponse, getRequestActor } from '@/lib/access';
 import { ensureDatabase, makeId } from '@/lib/database';
+import { enforceRateLimit, writeAuditLog } from '@/lib/security';
+import { DISTRICTS, type Risk } from '@/lib/thermowatch';
 
 export const runtime = 'edge';
 
@@ -39,9 +42,22 @@ export async function POST(request: Request) {
     language?: string;
     channel?: string;
   };
-  if (!body.district || !body.risk)
+  const validDistricts = new Set(DISTRICTS.map((item) => item.district));
+  const validRisks = new Set<Risk>([
+    'Low',
+    'Moderate',
+    'High',
+    'Extreme',
+    'Emergency',
+  ]);
+  if (
+    !body.district ||
+    !validDistricts.has(body.district) ||
+    !body.risk ||
+    !validRisks.has(body.risk as Risk)
+  )
     return Response.json(
-      { error: 'District and risk are required.' },
+      { error: 'A valid district and risk are required.' },
       { status: 400 },
     );
   if ((body.channel || 'browser') !== 'browser')
@@ -52,11 +68,22 @@ export async function POST(request: Request) {
       },
       { status: 400 },
     );
+  const db = await ensureDatabase();
+  const actor = await getRequestActor(request, db);
+  if (!canOperate(actor)) return forbiddenResponse(actor);
+  const limited = await enforceRateLimit({
+    db,
+    request,
+    actor,
+    action: 'send-alert',
+    limit: 12,
+    windowSeconds: 3600,
+  });
+  if (limited) return limited;
   const language = templates[body.language || 'en']
     ? body.language || 'en'
     : 'en';
   const message = templates[language](body.district, body.risk);
-  const db = await ensureDatabase();
   const id = makeId('ALT');
   const createdAt = new Date().toISOString();
   await db
@@ -74,6 +101,14 @@ export async function POST(request: Request) {
       createdAt,
     )
     .run();
+  await writeAuditLog({
+    db,
+    actor,
+    action: 'alert.sent',
+    entityType: 'alert',
+    entityId: id,
+    details: { district: body.district, risk: body.risk, language },
+  });
   return Response.json(
     { id, message, channel: 'browser', status: 'sent', created_at: createdAt },
     { status: 201 },
@@ -85,6 +120,8 @@ export async function PATCH(request: Request) {
   if (!body.id)
     return Response.json({ error: 'Alert id is required.' }, { status: 400 });
   const db = await ensureDatabase();
+  const actor = await getRequestActor(request, db);
+  if (!canOperate(actor)) return forbiddenResponse(actor);
   const acknowledgedAt = new Date().toISOString();
   await db
     .prepare(
@@ -92,6 +129,13 @@ export async function PATCH(request: Request) {
     )
     .bind(acknowledgedAt, body.id)
     .run();
+  await writeAuditLog({
+    db,
+    actor,
+    action: 'alert.acknowledged',
+    entityType: 'alert',
+    entityId: body.id,
+  });
   return Response.json({
     id: body.id,
     status: 'acknowledged',

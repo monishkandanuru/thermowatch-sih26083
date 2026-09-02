@@ -1,6 +1,7 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Fira_Code, Fira_Sans } from 'next/font/google';
 import './globals.css';
+import { PwaRegister } from '@/components/pwa-register';
 
 const firaSans = Fira_Sans({
   variable: '--font-fira-sans',
@@ -17,6 +18,13 @@ export const metadata: Metadata = {
   title: 'ThermoWatch — Heatwave Early Warning',
   description:
     'District heat-risk intelligence, early warning and response support for India.',
+  manifest: '/manifest.webmanifest',
+  applicationName: 'ThermoWatch',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'ThermoWatch',
+  },
   openGraph: {
     title: 'ThermoWatch — Heatwave Early Warning',
     description:
@@ -39,6 +47,11 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  themeColor: '#10213f',
+  colorScheme: 'light',
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -47,6 +60,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${firaSans.variable} ${firaCode.variable} antialiased`}>
+        <PwaRegister />
         {children}
       </body>
     </html>

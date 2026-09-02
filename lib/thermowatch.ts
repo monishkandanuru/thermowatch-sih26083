@@ -423,6 +423,140 @@ export async function fetchAllDistricts() {
   return Promise.all(DISTRICTS.map(fetchCurrentDistrict));
 }
 
+export type ForecastLayerPoint = DistrictConfig & {
+  horizon_hours: 24 | 48 | 72;
+  valid_at: string;
+  temp: number;
+  humidity: number;
+  wind: number;
+  uv: number;
+  solar: number;
+  htsi: number;
+  risk: Risk;
+  probability: number;
+  model_confidence: number;
+  high_risk_probability: number;
+  source: string;
+  model_version: string;
+};
+
+async function fetchDistrictForecastLayers(config: DistrictConfig) {
+  const horizons = [24, 48, 72] as const;
+  try {
+    const params = new URLSearchParams({
+      latitude: String(config.lat),
+      longitude: String(config.lon),
+      hourly:
+        'temperature_2m,relative_humidity_2m,wind_speed_10m,uv_index,shortwave_radiation',
+      timezone: 'Asia/Kolkata',
+      forecast_days: '5',
+    });
+    const response = await fetch(
+      `https://api.open-meteo.com/v1/forecast?${params}`,
+      { headers: { 'User-Agent': 'ThermoWatch-SIH26083/4.0' } },
+    );
+    if (!response.ok) throw new Error('forecast layer unavailable');
+    const payload = (await response.json()) as {
+      hourly: {
+        time: string[];
+        temperature_2m: number[];
+        relative_humidity_2m: number[];
+        wind_speed_10m: number[];
+        uv_index: number[];
+        shortwave_radiation: number[];
+      };
+    };
+    const targetNow = Date.now();
+    return horizons.map((horizon) => {
+      const target = targetNow + horizon * 3_600_000;
+      let index = 0;
+      let distance = Number.POSITIVE_INFINITY;
+      payload.hourly.time.forEach((time, position) => {
+        const timestamp = new Date(`${time}+05:30`).getTime();
+        const candidate = Math.abs(timestamp - target);
+        if (candidate < distance) {
+          index = position;
+          distance = candidate;
+        }
+      });
+      const time = payload.hourly.time[index];
+      const temp = payload.hourly.temperature_2m[index];
+      const humidity = payload.hourly.relative_humidity_2m[index];
+      const wind = payload.hourly.wind_speed_10m[index] / 3.6;
+      const solar = payload.hourly.shortwave_radiation[index] ?? 0;
+      const uv = payload.hourly.uv_index[index] ?? solar / 95;
+      const thermal = computeHtsi({ temp, humidity, wind, solar, uv });
+      const prediction = modelFields(config, {
+        temp,
+        humidity,
+        wind,
+        solar,
+        timestamp: time,
+      });
+      return {
+        ...config,
+        horizon_hours: horizon,
+        valid_at: time,
+        temp: Number(temp.toFixed(1)),
+        humidity: Math.round(humidity),
+        wind: Number(wind.toFixed(1)),
+        uv: Number(uv.toFixed(1)),
+        solar: Number(solar.toFixed(1)),
+        source: 'open-meteo',
+        ...thermal,
+        ...prediction,
+      } as ForecastLayerPoint;
+    });
+  } catch {
+    return horizons.map((horizon) => {
+      const timestamp = new Date(Date.now() + horizon * 3_600_000);
+      const hour = Number(
+        new Intl.DateTimeFormat('en-IN', {
+          timeZone: 'Asia/Kolkata',
+          hour: '2-digit',
+          hourCycle: 'h23',
+        }).format(timestamp),
+      );
+      const solar = hour >= 7 && hour <= 18 ? 620 : 10;
+      const temp = config.fallbackTemp - (hour < 9 || hour > 19 ? 6 : 0);
+      const humidity = config.fallbackHumidity + (hour < 8 ? 10 : 0);
+      const wind = 1.7;
+      const thermal = computeHtsi({ temp, humidity, wind, solar });
+      const prediction = modelFields(config, {
+        temp,
+        humidity,
+        wind,
+        solar,
+        timestamp,
+      });
+      return {
+        ...config,
+        horizon_hours: horizon,
+        valid_at: timestamp.toISOString(),
+        temp: Number(temp.toFixed(1)),
+        humidity: Math.round(humidity),
+        wind,
+        uv: Number((solar / 95).toFixed(1)),
+        solar,
+        source: 'resilient-fallback',
+        ...thermal,
+        ...prediction,
+      } as ForecastLayerPoint;
+    });
+  }
+}
+
+export async function fetchAllForecastLayers() {
+  const districtLayers = await Promise.all(
+    DISTRICTS.map(fetchDistrictForecastLayers),
+  );
+  return {
+    24: districtLayers.map((layers) => layers[0]),
+    48: districtLayers.map((layers) => layers[1]),
+    72: districtLayers.map((layers) => layers[2]),
+  };
+}
+
 export async function fetchDistrictForecast(name: string) {
   const config =
     DISTRICTS.find(
