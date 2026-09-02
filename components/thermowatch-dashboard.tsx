@@ -51,6 +51,13 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 
 type Risk = 'Low' | 'Moderate' | 'High' | 'Extreme' | 'Emergency';
+type Contribution = {
+  feature: string;
+  label: string;
+  contribution_pct: number;
+  direction: 'raises' | 'reduces';
+  value: number;
+};
 type View =
   | 'overview'
   | 'forecast'
@@ -78,6 +85,10 @@ type District = {
   wbgt?: number;
   heat_index?: number;
   pet?: number;
+  solar?: number;
+  model_confidence?: number;
+  high_risk_probability?: number;
+  explanation?: Contribution[];
   action?: string;
 };
 type ForecastPoint = {
@@ -87,12 +98,17 @@ type ForecastPoint = {
   humidity: number;
   htsi: number;
   risk: Risk;
+  model_confidence?: number;
+  high_risk_probability?: number;
+  explanation?: Contribution[];
 };
 type Horizon = {
   horizon_hours: number;
   predicted_class: Risk;
   probability: number;
+  high_risk_probability: number;
   htsi: number;
+  explanation: Contribution[];
 };
 type Profile = {
   profile: string;
@@ -150,10 +166,20 @@ type DashboardData = {
     model_type: string;
     data_source: string;
     train_samples: number;
+    calibration_samples: number;
     test_samples: number;
+    train_period: string;
+    calibration_period: string;
+    test_period: string;
     metrics: Record<string, number>;
     feature_names: string[];
+    feature_importance: Array<{
+      feature: string;
+      label: string;
+      importance_pct: number;
+    }>;
     label_note: string;
+    artifact_sha256: string;
   };
   authority: {
     coverage: number;
@@ -173,10 +199,39 @@ type DashboardData = {
     class_support: Record<string, number>;
     confusion_matrix: number[][];
     labels: string[];
+    brier_score: number;
+    test_samples: number;
+    test_period: string;
+    methodology: string;
+    caveat: string;
+    district_accuracy_pct: Record<string, number>;
     replay: Array<{
       label: string;
+      timestamp: string;
+      district: string;
       actual_htsi: number;
       predicted_probability: number;
+    }>;
+    replay_cases: Array<{
+      id: string;
+      district: string;
+      timestamp: string;
+      observed: {
+        temperature_c: number;
+        humidity_pct: number;
+        wind_speed_ms: number;
+        shortwave_radiation_wm2: number;
+        htsi: number;
+        risk: Risk;
+      };
+      prediction: {
+        risk: Risk;
+        confidence_pct: number;
+        high_risk_probability_pct: number;
+        probabilities: Record<Risk, number>;
+        correct: boolean;
+        explanation: Contribution[];
+      };
     }>;
   };
   generated_at: string;
@@ -626,6 +681,7 @@ export function ThermoWatchDashboard() {
   const [reporter, setReporter] = useState('');
   const [alertRisk, setAlertRisk] = useState<Risk>('High');
   const [alertLanguage, setAlertLanguage] = useState('en');
+  const [replayCaseId, setReplayCaseId] = useState('');
   const [personalAge, setPersonalAge] = useState('adult');
   const [personalActivity, setPersonalActivity] = useState('moderate');
   const [acclimatized, setAcclimatized] = useState(false);
@@ -647,6 +703,19 @@ export function ThermoWatchDashboard() {
   const highCount = districts.filter((item) =>
     ['High', 'Extreme', 'Emergency'].includes(item.risk),
   ).length;
+  const districtReplayCases = useMemo(
+    () =>
+      dashboard?.validation.replay_cases.filter(
+        (item) => item.district === selectedName,
+      ) ?? [],
+    [dashboard, selectedName],
+  );
+  const selectedReplay = useMemo(
+    () =>
+      districtReplayCases.find((item) => item.id === replayCaseId) ??
+      districtReplayCases[0],
+    [districtReplayCases, replayCaseId],
+  );
 
   const loadDashboard = useCallback(async () => {
     setLoading(true);
@@ -887,7 +956,7 @@ export function ThermoWatchDashboard() {
           />
           {sourceLabel}
           <span className="mt-2 block border-t border-white/8 pt-2 text-[9px] text-blue-200/40">
-            Model {dashboard?.model.model_version ?? 'htsi-real-3.0'}
+            Model {dashboard?.model.model_version ?? 'htsi-logit-4.0'}
           </span>
         </div>
       </aside>
@@ -1375,8 +1444,8 @@ export function ThermoWatchDashboard() {
                       <Stat
                         key={item.horizon_hours}
                         label={`${item.horizon_hours}-hour warning`}
-                        value={`${item.probability}%`}
-                        detail={`${item.predicted_class} · HTSI ${item.htsi}`}
+                        value={`${Math.round(item.probability)}%`}
+                        detail={`${item.predicted_class} confidence · ${Math.round(item.high_risk_probability)}% High+`}
                         tone={
                           item.predicted_class === 'Extreme'
                             ? 'red'
@@ -1459,21 +1528,34 @@ export function ThermoWatchDashboard() {
                         note="Temperature, humidity, WBGT, PET, solar load, UV, wind and time of day contribute to each class."
                       />
                     </CardHeader>
-                    <CardContent className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                      {dashboard?.model.feature_names.map((feature, index) => (
+                    <CardContent className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                      {(detail?.horizons[0]?.explanation ?? []).map((item) => (
                         <div
-                          key={feature}
+                          key={item.feature}
                           className="rounded-xl bg-slate-50 p-3"
                         >
-                          <span className="block text-xs font-semibold capitalize">
-                            {feature}
+                          <span className="flex items-center justify-between gap-2 text-xs font-semibold">
+                            {item.label}
+                            <small
+                              className={
+                                item.direction === 'raises'
+                                  ? 'text-red-600'
+                                  : 'text-emerald-700'
+                              }
+                            >
+                              {item.direction} class
+                            </small>
                           </span>
                           <div className="mt-3 h-1.5 rounded-full bg-slate-200">
                             <i
                               className="block h-full rounded-full bg-blue-700"
-                              style={{ width: `${92 - index * 7}%` }}
+                              style={{ width: `${item.contribution_pct}%` }}
                             />
                           </div>
+                          <small className="mt-2 block text-[10px] text-slate-500">
+                            {item.contribution_pct}% contribution · value{' '}
+                            {item.value}
+                          </small>
                         </div>
                       ))}
                     </CardContent>
@@ -1578,18 +1660,21 @@ export function ThermoWatchDashboard() {
                         {dashboard.model.label_note}
                       </div>
                       <div className="grid gap-3 md:grid-cols-2">
-                        {dashboard.model.feature_names.map((name, index) => (
+                        {dashboard.model.feature_importance.map((item) => (
                           <div
-                            key={name}
-                            className="grid grid-cols-[130px_1fr] items-center gap-3 rounded-xl bg-slate-50 p-3"
+                            key={item.feature}
+                            className="grid grid-cols-[130px_1fr_auto] items-center gap-3 rounded-xl bg-slate-50 p-3"
                           >
-                            <span className="text-xs capitalize">{name}</span>
+                            <span className="text-xs">{item.label}</span>
                             <div className="h-2 rounded-full bg-slate-200">
                               <i
                                 className="block h-full rounded-full bg-blue-700"
-                                style={{ width: `${95 - index * 8}%` }}
+                                style={{ width: `${Math.min(100, item.importance_pct * 4)}%` }}
                               />
                             </div>
+                            <b className="text-[10px] text-slate-500">
+                              {item.importance_pct}%
+                            </b>
                           </div>
                         ))}
                       </div>
@@ -1895,7 +1980,7 @@ export function ThermoWatchDashboard() {
                     <Stat
                       label="Accuracy"
                       value={`${dashboard.validation.accuracy_pct}%`}
-                      detail="364 held-out samples"
+                      detail={`${dashboard.validation.test_samples.toLocaleString('en-IN')} held-out 2025 rows`}
                       tone="green"
                     />
                     <Stat
@@ -1921,8 +2006,8 @@ export function ThermoWatchDashboard() {
                       <CardHeader>
                         <PanelTitle
                           eyebrow="HISTORICAL REPLAY"
-                          title="Observed vs predicted"
-                          note="Transparent held-out replay from the active real-weather training run."
+                          title="Observed stress vs High+ probability"
+                          note={`Untouched chronological test period · ${dashboard.validation.test_period}`}
                         />
                       </CardHeader>
                       <CardContent>
@@ -1971,13 +2056,18 @@ export function ThermoWatchDashboard() {
                         />
                       </CardHeader>
                       <CardContent>
-                        <div className="grid grid-cols-4 gap-2">
+                        <div
+                          className="grid gap-2"
+                          style={{
+                            gridTemplateColumns: `repeat(${dashboard.validation.labels.length}, minmax(0, 1fr))`,
+                          }}
+                        >
                           {dashboard.validation.confusion_matrix.flatMap(
                             (row, rowIndex) =>
                               row.map((value, colIndex) => (
                                 <div
                                   key={`${rowIndex}-${colIndex}`}
-                                  className={`rounded-xl p-3 text-center ${rowIndex === colIndex ? 'bg-emerald-50 text-emerald-800' : 'bg-red-50 text-red-700'}`}
+                                  className={`rounded-xl p-2 text-center ${rowIndex === colIndex ? 'bg-emerald-50 text-emerald-800' : 'bg-red-50 text-red-700'}`}
                                 >
                                   <strong className="block text-lg">
                                     {value}
@@ -2011,11 +2101,127 @@ export function ThermoWatchDashboard() {
                       </CardContent>
                     </Card>
                   </div>
+                  {selectedReplay && (
+                    <Card>
+                      <CardHeader>
+                        <PanelTitle
+                          eyebrow="SELECTABLE 2025 EVIDENCE"
+                          title={`${selectedReplay.district} historical case`}
+                          note="Choose a real held-out timestamp and inspect the weather, result and model reasoning."
+                          action={
+                            <NativeSelect
+                              value={selectedReplay.id}
+                              onChange={(event) =>
+                                setReplayCaseId(event.target.value)
+                              }
+                              aria-label="Select historical replay case"
+                            >
+                              {districtReplayCases.map((item) => (
+                                <NativeSelectOption
+                                  key={item.id}
+                                  value={item.id}
+                                >
+                                  {new Date(item.timestamp).toLocaleString(
+                                    'en-IN',
+                                    {
+                                      dateStyle: 'medium',
+                                      timeStyle: 'short',
+                                    },
+                                  )}
+                                </NativeSelectOption>
+                              ))}
+                            </NativeSelect>
+                          }
+                        />
+                      </CardHeader>
+                      <CardContent className="space-y-5">
+                        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
+                          <Stat
+                            label="Observed proxy"
+                            value={selectedReplay.observed.risk}
+                            detail={`HTSI ${selectedReplay.observed.htsi}`}
+                            tone="amber"
+                          />
+                          <Stat
+                            label="Model result"
+                            value={selectedReplay.prediction.risk}
+                            detail={`${selectedReplay.prediction.confidence_pct}% confidence`}
+                            tone={
+                              selectedReplay.prediction.correct ? 'green' : 'red'
+                            }
+                          />
+                          <Stat
+                            label="High+ probability"
+                            value={`${selectedReplay.prediction.high_risk_probability_pct}%`}
+                            detail={
+                              selectedReplay.prediction.correct
+                                ? 'class matched'
+                                : 'class mismatch'
+                            }
+                          />
+                          <Stat
+                            label="Temperature"
+                            value={`${selectedReplay.observed.temperature_c}°C`}
+                            detail={`${selectedReplay.observed.humidity_pct}% humidity`}
+                          />
+                          <Stat
+                            label="Wind"
+                            value={`${selectedReplay.observed.wind_speed_ms} m/s`}
+                            detail="ERA5-Seamless"
+                          />
+                          <Stat
+                            label="Solar load"
+                            value={`${selectedReplay.observed.shortwave_radiation_wm2}`}
+                            detail="W/m²"
+                          />
+                        </div>
+                        <div>
+                          <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+                            Why the model selected {selectedReplay.prediction.risk}
+                          </p>
+                          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                            {selectedReplay.prediction.explanation.map(
+                              (item) => (
+                                <div
+                                  key={item.feature}
+                                  className="rounded-xl bg-slate-50 p-3"
+                                >
+                                  <span className="flex justify-between gap-2 text-xs font-semibold">
+                                    {item.label}
+                                    <small className="text-slate-500">
+                                      {item.contribution_pct}%
+                                    </small>
+                                  </span>
+                                  <div className="mt-3 h-1.5 rounded-full bg-slate-200">
+                                    <i
+                                      className={`block h-full rounded-full ${
+                                        item.direction === 'raises'
+                                          ? 'bg-red-600'
+                                          : 'bg-emerald-600'
+                                      }`}
+                                      style={{
+                                        width: `${item.contribution_pct}%`,
+                                      }}
+                                    />
+                                  </div>
+                                  <small className="mt-2 block text-[10px] text-slate-500">
+                                    {item.direction} this class · value{' '}
+                                    {item.value}
+                                  </small>
+                                </div>
+                              ),
+                            )}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
                   <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs leading-relaxed text-amber-900">
-                    These metrics use real ERA5-Seamless weather and transparent
-                    HTSI proxy labels. Verified official IMD district/date
-                    outcomes are still required before claiming official
-                    calibration.
+                    <b className="block">Validation boundary</b>
+                    {dashboard.validation.methodology}{' '}
+                    {dashboard.validation.caveat} The Emergency row is retained
+                    in the matrix, but its 2025 support is zero and therefore no
+                    Emergency performance claim is made.
                   </div>
                 </>
               ) : (

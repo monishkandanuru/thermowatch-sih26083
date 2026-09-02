@@ -1,9 +1,10 @@
 import { ensureDatabase, makeId } from '@/lib/database';
 import {
-  fetchAllDistricts,
   MODEL_INFO,
-  validationReplay,
-} from '@/lib/thermowatch';
+  REPLAY_CASES,
+  VALIDATION_REPORT,
+} from '@/lib/ml-model';
+import { fetchAllDistricts } from '@/lib/thermowatch';
 
 export const runtime = 'edge';
 
@@ -59,24 +60,8 @@ export async function GET() {
       ],
     },
     validation: {
-      ...MODEL_INFO.metrics,
-      precision_pct: 47.8,
-      recall_pct: 47.1,
-      class_support: {
-        Low: 2,
-        Moderate: 61,
-        High: 269,
-        Extreme: 32,
-        Emergency: 0,
-      },
-      confusion_matrix: [
-        [2, 0, 0, 0],
-        [0, 28, 31, 2],
-        [0, 11, 232, 26],
-        [0, 0, 29, 3],
-      ],
-      labels: ['Low', 'Moderate', 'High', 'Extreme'],
-      replay: validationReplay(),
+      ...VALIDATION_REPORT,
+      replay_cases: REPLAY_CASES,
     },
     generated_at: now,
   });

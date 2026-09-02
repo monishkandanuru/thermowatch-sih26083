@@ -1,0 +1,254 @@
+{
+  "schema_version": 1,
+  "model_version": "htsi-logit-4.0",
+  "model_type": "Class-balanced multinomial logistic regression",
+  "classes": [
+    "Low",
+    "Moderate",
+    "High",
+    "Extreme",
+    "Emergency"
+  ],
+  "features": [
+    "temperature_c",
+    "humidity_pct",
+    "wind_speed_ms",
+    "shortwave_radiation_wm2",
+    "uv_index_proxy",
+    "heat_index_c",
+    "wbgt_c",
+    "pet_c",
+    "hour_sin",
+    "hour_cos",
+    "day_sin",
+    "day_cos",
+    "latitude",
+    "longitude"
+  ],
+  "feature_labels": {
+    "temperature_c": "Temperature",
+    "humidity_pct": "Relative humidity",
+    "wind_speed_ms": "Wind speed",
+    "shortwave_radiation_wm2": "Solar radiation",
+    "uv_index_proxy": "UV proxy",
+    "heat_index_c": "Heat Index",
+    "wbgt_c": "WBGT",
+    "pet_c": "PET",
+    "hour_sin": "Time of day (sin)",
+    "hour_cos": "Time of day (cos)",
+    "day_sin": "Season (sin)",
+    "day_cos": "Season (cos)",
+    "latitude": "Latitude",
+    "longitude": "Longitude"
+  },
+  "scaler": {
+    "mean": [
+      25.5551104452,
+      61.253390411,
+      2.5454339897,
+      214.9430222603,
+      2.2625576784,
+      28.7506709644,
+      21.5770614254,
+      26.8127712429,
+      0.0,
+      -0.0,
+      -4.4185e-06,
+      -0.0006849252,
+      24.17223,
+      79.15929
+    ],
+    "scale": [
+      6.8400708269,
+      23.8941011695,
+      1.3056946165,
+      293.0405031237,
+      3.0846355948,
+      5.6363117044,
+      5.4127849708,
+      6.9383083789,
+      0.7071067812,
+      0.7071067812,
+      0.7073488906,
+      0.706864257,
+      3.4018663861,
+      4.1330719747
+    ]
+  },
+  "coefficients": [
+    [
+      -0.2188768872,
+      -3.5694073606,
+      1.0291302764,
+      -1.8030684576,
+      -1.8030608729,
+      -3.1272460885,
+      -2.0359300162,
+      -1.0753962952,
+      -0.1991388139,
+      0.2520242554,
+      0.4576768882,
+      0.4811147999,
+      -0.0778700917,
+      -0.2141315399
+    ],
+    [
+      0.7672715958,
+      -0.4158858971,
+      0.5265806807,
+      -0.8365391062,
+      -0.8365589738,
+      -2.1221939091,
+      0.0630765177,
+      0.5014722913,
+      -0.1493077675,
+      0.0840057873,
+      0.1546830623,
+      -0.0068084462,
+      -0.0110452522,
+      -0.0852872068
+    ],
+    [
+      0.5084582083,
+      1.1868823944,
+      -0.114514894,
+      0.089254358,
+      0.0892645054,
+      0.0533949652,
+      1.2894783564,
+      0.5908677141,
+      0.1614882904,
+      -0.9281078185,
+      -0.2117017905,
+      -0.3585168133,
+      -0.0104449784,
+      0.0814017136
+    ],
+    [
+      -0.8457800305,
+      2.6290217112,
+      -1.340987377,
+      1.9116228901,
+      1.9116232504,
+      3.6070052314,
+      0.2553781753,
+      -0.0497638232,
+      0.1646593165,
+      0.6038177961,
+      -0.3172147312,
+      -0.1520700516,
+      0.1529171658,
+      0.2324090941
+    ],
+    [
+      -0.1043203554,
+      0.0144590153,
+      0.0068809736,
+      -0.1311042992,
+      -0.1311043249,
+      -0.1474564853,
+      -0.1260267102,
+      -0.1279003123,
+      0.0074954962,
+      0.1041457501,
+      0.0243460222,
+      0.0740684902,
+      -0.0035518858,
+      -0.0209005493
+    ]
+  ],
+  "intercepts": [
+    9.2169215087,
+    6.4557846803,
+    -0.6382871475,
+    -8.9659398828,
+    -2.4293930089
+  ],
+  "calibration_temperature": 0.55,
+  "feature_importance": [
+    {
+      "feature": "heat_index_c",
+      "label": "Heat Index",
+      "importance_pct": 20.7
+    },
+    {
+      "feature": "humidity_pct",
+      "label": "Relative humidity",
+      "importance_pct": 17.9
+    },
+    {
+      "feature": "uv_index_proxy",
+      "label": "UV proxy",
+      "importance_pct": 10.9
+    },
+    {
+      "feature": "shortwave_radiation_wm2",
+      "label": "Solar radiation",
+      "importance_pct": 10.9
+    },
+    {
+      "feature": "wbgt_c",
+      "label": "WBGT",
+      "importance_pct": 8.6
+    },
+    {
+      "feature": "wind_speed_ms",
+      "label": "Wind speed",
+      "importance_pct": 6.9
+    },
+    {
+      "feature": "temperature_c",
+      "label": "Temperature",
+      "importance_pct": 5.6
+    },
+    {
+      "feature": "pet_c",
+      "label": "PET",
+      "importance_pct": 5.4
+    },
+    {
+      "feature": "hour_cos",
+      "label": "Time of day (cos)",
+      "importance_pct": 4.5
+    },
+    {
+      "feature": "day_sin",
+      "label": "Season (sin)",
+      "importance_pct": 2.7
+    },
+    {
+      "feature": "day_cos",
+      "label": "Season (cos)",
+      "importance_pct": 2.5
+    },
+    {
+      "feature": "hour_sin",
+      "label": "Time of day (sin)",
+      "importance_pct": 1.6
+    },
+    {
+      "feature": "longitude",
+      "label": "Longitude",
+      "importance_pct": 1.4
+    },
+    {
+      "feature": "latitude",
+      "label": "Latitude",
+      "importance_pct": 0.6
+    }
+  ],
+  "training": {
+    "source": "Open-Meteo ERA5-Seamless historical weather",
+    "sampling": "every third hour",
+    "train_period": "2022-01-01 to 2023-12-31",
+    "calibration_period": "2024-01-01 to 2024-12-31",
+    "test_period": "2025-01-01 to 2025-12-31",
+    "train_samples": 116800,
+    "calibration_samples": 58560,
+    "test_samples": 58400,
+    "random_seed": 26083,
+    "final_weighted_nll": 0.212946,
+    "epochs": 48
+  },
+  "label_note": "Real historical weather with HTSI-derived proxy thermal-risk labels; not verified IMD event or health-outcome labels."
+}

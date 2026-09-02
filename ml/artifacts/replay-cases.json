@@ -1,0 +1,4202 @@
+[
+  {
+    "id": "ahmedabad-2025010618",
+    "district": "Ahmedabad",
+    "timestamp": "2025-01-06T18:00:00",
+    "observed": {
+      "temperature_c": 22.4,
+      "humidity_pct": 33.0,
+      "wind_speed_ms": 2.5,
+      "shortwave_radiation_wm2": 23.0,
+      "htsi": 0.0,
+      "risk": "Low"
+    },
+    "prediction": {
+      "risk": "Low",
+      "confidence_pct": 100.0,
+      "high_risk_probability_pct": 0.0,
+      "probabilities": {
+        "Low": 100.0,
+        "Moderate": 0.0,
+        "High": 0.0,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 31.9,
+          "direction": "raises",
+          "value": 33.0
+        },
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 16.7,
+          "direction": "raises",
+          "value": 24.77
+        },
+        {
+          "feature": "wbgt_c",
+          "label": "WBGT",
+          "contribution_pct": 16.0,
+          "direction": "raises",
+          "value": 15.95
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 8.9,
+          "direction": "raises",
+          "value": 23.0
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 8.9,
+          "direction": "raises",
+          "value": 0.24
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 5.7,
+          "direction": "raises",
+          "value": 21.93
+        }
+      ]
+    }
+  },
+  {
+    "id": "ahmedabad-2025052212",
+    "district": "Ahmedabad",
+    "timestamp": "2025-05-22T12:00:00",
+    "observed": {
+      "temperature_c": 38.1,
+      "humidity_pct": 42.0,
+      "wind_speed_ms": 1.4,
+      "shortwave_radiation_wm2": 947.0,
+      "htsi": 72.5,
+      "risk": "Extreme"
+    },
+    "prediction": {
+      "risk": "Extreme",
+      "confidence_pct": 97.5,
+      "high_risk_probability_pct": 100.0,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 0.0,
+        "High": 2.5,
+        "Extreme": 97.5,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 37.8,
+          "direction": "raises",
+          "value": 44.6
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 17.8,
+          "direction": "raises",
+          "value": 9.97
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 17.8,
+          "direction": "raises",
+          "value": 947.0
+        },
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 7.9,
+          "direction": "reduces",
+          "value": 42.0
+        },
+        {
+          "feature": "temperature_c",
+          "label": "Temperature",
+          "contribution_pct": 5.8,
+          "direction": "reduces",
+          "value": 38.1
+        },
+        {
+          "feature": "wind_speed_ms",
+          "label": "Wind speed",
+          "contribution_pct": 4.3,
+          "direction": "raises",
+          "value": 1.41
+        }
+      ]
+    }
+  },
+  {
+    "id": "ahmedabad-2025060509",
+    "district": "Ahmedabad",
+    "timestamp": "2025-06-05T09:00:00",
+    "observed": {
+      "temperature_c": 31.6,
+      "humidity_pct": 57.0,
+      "wind_speed_ms": 2.3,
+      "shortwave_radiation_wm2": 540.0,
+      "htsi": 52.0,
+      "risk": "Moderate"
+    },
+    "prediction": {
+      "risk": "Moderate",
+      "confidence_pct": 57.3,
+      "high_risk_probability_pct": 42.6,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 57.3,
+        "High": 42.6,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 39.5,
+          "direction": "reduces",
+          "value": 35.34
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 14.8,
+          "direction": "reduces",
+          "value": 5.68
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 14.8,
+          "direction": "reduces",
+          "value": 540.0
+        },
+        {
+          "feature": "temperature_c",
+          "label": "Temperature",
+          "contribution_pct": 10.8,
+          "direction": "raises",
+          "value": 31.6
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 8.6,
+          "direction": "raises",
+          "value": 34.25
+        },
+        {
+          "feature": "hour_sin",
+          "label": "Time of day (sin)",
+          "contribution_pct": 2.4,
+          "direction": "reduces",
+          "value": 0.71
+        }
+      ]
+    }
+  },
+  {
+    "id": "aurangabad-2025010918",
+    "district": "Aurangabad",
+    "timestamp": "2025-01-09T18:00:00",
+    "observed": {
+      "temperature_c": 22.8,
+      "humidity_pct": 36.0,
+      "wind_speed_ms": 2.7,
+      "shortwave_radiation_wm2": 19.0,
+      "htsi": 0.0,
+      "risk": "Low"
+    },
+    "prediction": {
+      "risk": "Low",
+      "confidence_pct": 100.0,
+      "high_risk_probability_pct": 0.0,
+      "probabilities": {
+        "Low": 100.0,
+        "Moderate": 0.0,
+        "High": 0.0,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 30.4,
+          "direction": "raises",
+          "value": 36.0
+        },
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 17.1,
+          "direction": "raises",
+          "value": 24.94
+        },
+        {
+          "feature": "wbgt_c",
+          "label": "WBGT",
+          "contribution_pct": 15.0,
+          "direction": "raises",
+          "value": 16.63
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 9.7,
+          "direction": "raises",
+          "value": 19.0
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 9.7,
+          "direction": "raises",
+          "value": 0.2
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 5.7,
+          "direction": "raises",
+          "value": 22.28
+        }
+      ]
+    }
+  },
+  {
+    "id": "aurangabad-2025052012",
+    "district": "Aurangabad",
+    "timestamp": "2025-05-20T12:00:00",
+    "observed": {
+      "temperature_c": 33.2,
+      "humidity_pct": 54.0,
+      "wind_speed_ms": 2.0,
+      "shortwave_radiation_wm2": 904.0,
+      "htsi": 65.2,
+      "risk": "High"
+    },
+    "prediction": {
+      "risk": "High",
+      "confidence_pct": 75.1,
+      "high_risk_probability_pct": 99.9,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 0.1,
+        "High": 75.1,
+        "Extreme": 24.8,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "wbgt_c",
+          "label": "WBGT",
+          "contribution_pct": 28.9,
+          "direction": "raises",
+          "value": 29.02
+        },
+        {
+          "feature": "hour_cos",
+          "label": "Time of day (cos)",
+          "contribution_pct": 21.4,
+          "direction": "raises",
+          "value": -1.0
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 14.8,
+          "direction": "raises",
+          "value": 37.48
+        },
+        {
+          "feature": "temperature_c",
+          "label": "Temperature",
+          "contribution_pct": 9.2,
+          "direction": "raises",
+          "value": 33.2
+        },
+        {
+          "feature": "day_cos",
+          "label": "Season (cos)",
+          "contribution_pct": 6.1,
+          "direction": "raises",
+          "value": -0.74
+        },
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 5.9,
+          "direction": "reduces",
+          "value": 54.0
+        }
+      ]
+    }
+  },
+  {
+    "id": "aurangabad-2025052915",
+    "district": "Aurangabad",
+    "timestamp": "2025-05-29T15:00:00",
+    "observed": {
+      "temperature_c": 32.5,
+      "humidity_pct": 53.0,
+      "wind_speed_ms": 3.1,
+      "shortwave_radiation_wm2": 599.0,
+      "htsi": 52.0,
+      "risk": "Moderate"
+    },
+    "prediction": {
+      "risk": "Moderate",
+      "confidence_pct": 78.1,
+      "high_risk_probability_pct": 21.9,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 78.1,
+        "High": 21.9,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 38.5,
+          "direction": "reduces",
+          "value": 36.12
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 15.2,
+          "direction": "reduces",
+          "value": 6.31
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 15.2,
+          "direction": "reduces",
+          "value": 599.0
+        },
+        {
+          "feature": "temperature_c",
+          "label": "Temperature",
+          "contribution_pct": 10.8,
+          "direction": "raises",
+          "value": 32.5
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 7.9,
+          "direction": "raises",
+          "value": 34.67
+        },
+        {
+          "feature": "wind_speed_ms",
+          "label": "Wind speed",
+          "contribution_pct": 3.2,
+          "direction": "raises",
+          "value": 3.11
+        }
+      ]
+    }
+  },
+  {
+    "id": "bhopal-2025013018",
+    "district": "Bhopal",
+    "timestamp": "2025-01-30T18:00:00",
+    "observed": {
+      "temperature_c": 24.5,
+      "humidity_pct": 32.0,
+      "wind_speed_ms": 2.5,
+      "shortwave_radiation_wm2": 18.0,
+      "htsi": 0.0,
+      "risk": "Low"
+    },
+    "prediction": {
+      "risk": "Low",
+      "confidence_pct": 100.0,
+      "high_risk_probability_pct": 0.0,
+      "probabilities": {
+        "Low": 100.0,
+        "Moderate": 0.0,
+        "High": 0.0,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 36.3,
+          "direction": "raises",
+          "value": 32.0
+        },
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 16.1,
+          "direction": "raises",
+          "value": 25.25
+        },
+        {
+          "feature": "wbgt_c",
+          "label": "WBGT",
+          "contribution_pct": 12.5,
+          "direction": "raises",
+          "value": 17.58
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 10.1,
+          "direction": "raises",
+          "value": 18.0
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 10.1,
+          "direction": "raises",
+          "value": 0.19
+        },
+        {
+          "feature": "day_cos",
+          "label": "Season (cos)",
+          "contribution_pct": 4.9,
+          "direction": "raises",
+          "value": 0.87
+        }
+      ]
+    }
+  },
+  {
+    "id": "bhopal-2025062615",
+    "district": "Bhopal",
+    "timestamp": "2025-06-26T15:00:00",
+    "observed": {
+      "temperature_c": 28.8,
+      "humidity_pct": 75.0,
+      "wind_speed_ms": 1.8,
+      "shortwave_radiation_wm2": 361.0,
+      "htsi": 52.0,
+      "risk": "Moderate"
+    },
+    "prediction": {
+      "risk": "Moderate",
+      "confidence_pct": 85.5,
+      "high_risk_probability_pct": 14.5,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 85.5,
+        "High": 14.5,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 40.5,
+          "direction": "reduces",
+          "value": 33.21
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 10.1,
+          "direction": "reduces",
+          "value": 3.8
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 10.1,
+          "direction": "reduces",
+          "value": 361.0
+        },
+        {
+          "feature": "temperature_c",
+          "label": "Temperature",
+          "contribution_pct": 8.8,
+          "direction": "raises",
+          "value": 28.8
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 8.5,
+          "direction": "raises",
+          "value": 31.68
+        },
+        {
+          "feature": "wind_speed_ms",
+          "label": "Wind speed",
+          "contribution_pct": 7.5,
+          "direction": "reduces",
+          "value": 1.78
+        }
+      ]
+    }
+  },
+  {
+    "id": "bhopal-2025081512",
+    "district": "Bhopal",
+    "timestamp": "2025-08-15T12:00:00",
+    "observed": {
+      "temperature_c": 30.4,
+      "humidity_pct": 77.0,
+      "wind_speed_ms": 1.7,
+      "shortwave_radiation_wm2": 811.0,
+      "htsi": 71.1,
+      "risk": "Extreme"
+    },
+    "prediction": {
+      "risk": "Extreme",
+      "confidence_pct": 88.3,
+      "high_risk_probability_pct": 100.0,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 0.0,
+        "High": 11.7,
+        "Extreme": 88.3,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 31.6,
+          "direction": "raises",
+          "value": 38.0
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 20.7,
+          "direction": "raises",
+          "value": 8.54
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 20.7,
+          "direction": "raises",
+          "value": 811.0
+        },
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 9.2,
+          "direction": "raises",
+          "value": 77.0
+        },
+        {
+          "feature": "hour_cos",
+          "label": "Time of day (cos)",
+          "contribution_pct": 4.6,
+          "direction": "reduces",
+          "value": -1.0
+        },
+        {
+          "feature": "wind_speed_ms",
+          "label": "Wind speed",
+          "contribution_pct": 4.5,
+          "direction": "raises",
+          "value": 1.72
+        }
+      ]
+    }
+  },
+  {
+    "id": "bhubaneswar-2025030603",
+    "district": "Bhubaneswar",
+    "timestamp": "2025-03-06T03:00:00",
+    "observed": {
+      "temperature_c": 19.9,
+      "humidity_pct": 42.0,
+      "wind_speed_ms": 2.6,
+      "shortwave_radiation_wm2": 0.0,
+      "htsi": 0.7,
+      "risk": "Low"
+    },
+    "prediction": {
+      "risk": "Low",
+      "confidence_pct": 100.0,
+      "high_risk_probability_pct": 0.0,
+      "probabilities": {
+        "Low": 100.0,
+        "Moderate": 0.0,
+        "High": 0.0,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 21.9,
+          "direction": "raises",
+          "value": 42.0
+        },
+        {
+          "feature": "wbgt_c",
+          "label": "WBGT",
+          "contribution_pct": 19.6,
+          "direction": "raises",
+          "value": 14.73
+        },
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 14.6,
+          "direction": "raises",
+          "value": 25.28
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 10.1,
+          "direction": "raises",
+          "value": 0.0
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 10.1,
+          "direction": "raises",
+          "value": 0.0
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 8.6,
+          "direction": "raises",
+          "value": 19.54
+        }
+      ]
+    }
+  },
+  {
+    "id": "bhubaneswar-2025050215",
+    "district": "Bhubaneswar",
+    "timestamp": "2025-05-02T15:00:00",
+    "observed": {
+      "temperature_c": 33.0,
+      "humidity_pct": 49.0,
+      "wind_speed_ms": 2.1,
+      "shortwave_radiation_wm2": 599.0,
+      "htsi": 52.0,
+      "risk": "Moderate"
+    },
+    "prediction": {
+      "risk": "Moderate",
+      "confidence_pct": 69.9,
+      "high_risk_probability_pct": 30.1,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 69.9,
+        "High": 30.1,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 36.8,
+          "direction": "reduces",
+          "value": 36.01
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 14.8,
+          "direction": "reduces",
+          "value": 6.31
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 14.8,
+          "direction": "reduces",
+          "value": 599.0
+        },
+        {
+          "feature": "temperature_c",
+          "label": "Temperature",
+          "contribution_pct": 11.2,
+          "direction": "raises",
+          "value": 33.0
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 8.7,
+          "direction": "raises",
+          "value": 35.71
+        },
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 2.9,
+          "direction": "raises",
+          "value": 49.0
+        }
+      ]
+    }
+  },
+  {
+    "id": "bhubaneswar-2025092012",
+    "district": "Bhubaneswar",
+    "timestamp": "2025-09-20T12:00:00",
+    "observed": {
+      "temperature_c": 32.7,
+      "humidity_pct": 70.0,
+      "wind_speed_ms": 0.4,
+      "shortwave_radiation_wm2": 819.0,
+      "htsi": 76.1,
+      "risk": "Extreme"
+    },
+    "prediction": {
+      "risk": "Extreme",
+      "confidence_pct": 100.0,
+      "high_risk_probability_pct": 100.0,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 0.0,
+        "High": 0.0,
+        "Extreme": 100.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 38.1,
+          "direction": "raises",
+          "value": 42.53
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 17.0,
+          "direction": "raises",
+          "value": 8.62
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 17.0,
+          "direction": "raises",
+          "value": 819.0
+        },
+        {
+          "feature": "wind_speed_ms",
+          "label": "Wind speed",
+          "contribution_pct": 9.5,
+          "direction": "raises",
+          "value": 0.4
+        },
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 4.2,
+          "direction": "raises",
+          "value": 70.0
+        },
+        {
+          "feature": "temperature_c",
+          "label": "Temperature",
+          "contribution_pct": 3.8,
+          "direction": "reduces",
+          "value": 32.7
+        }
+      ]
+    }
+  },
+  {
+    "id": "bikaner-2025010418",
+    "district": "Bikaner",
+    "timestamp": "2025-01-04T18:00:00",
+    "observed": {
+      "temperature_c": 21.5,
+      "humidity_pct": 44.0,
+      "wind_speed_ms": 3.6,
+      "shortwave_radiation_wm2": 6.0,
+      "htsi": 0.0,
+      "risk": "Low"
+    },
+    "prediction": {
+      "risk": "Low",
+      "confidence_pct": 100.0,
+      "high_risk_probability_pct": 0.0,
+      "probabilities": {
+        "Low": 100.0,
+        "Moderate": 0.0,
+        "High": 0.0,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 20.6,
+          "direction": "raises",
+          "value": 44.0
+        },
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 16.5,
+          "direction": "raises",
+          "value": 25.02
+        },
+        {
+          "feature": "wbgt_c",
+          "label": "WBGT",
+          "contribution_pct": 15.7,
+          "direction": "raises",
+          "value": 16.35
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 10.3,
+          "direction": "raises",
+          "value": 6.0
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 10.3,
+          "direction": "raises",
+          "value": 0.06
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 7.8,
+          "direction": "raises",
+          "value": 20.53
+        }
+      ]
+    }
+  },
+  {
+    "id": "bikaner-2025050712",
+    "district": "Bikaner",
+    "timestamp": "2025-05-07T12:00:00",
+    "observed": {
+      "temperature_c": 34.5,
+      "humidity_pct": 31.0,
+      "wind_speed_ms": 1.6,
+      "shortwave_radiation_wm2": 918.0,
+      "htsi": 52.0,
+      "risk": "Moderate"
+    },
+    "prediction": {
+      "risk": "Moderate",
+      "confidence_pct": 52.9,
+      "high_risk_probability_pct": 47.1,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 52.9,
+        "High": 47.0,
+        "Extreme": 0.1,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 21.9,
+          "direction": "reduces",
+          "value": 34.16
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 21.6,
+          "direction": "reduces",
+          "value": 9.66
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 21.6,
+          "direction": "reduces",
+          "value": 918.0
+        },
+        {
+          "feature": "temperature_c",
+          "label": "Temperature",
+          "contribution_pct": 10.8,
+          "direction": "raises",
+          "value": 34.5
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 8.9,
+          "direction": "raises",
+          "value": 38.31
+        },
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 5.7,
+          "direction": "raises",
+          "value": 31.0
+        }
+      ]
+    }
+  },
+  {
+    "id": "bikaner-2025090312",
+    "district": "Bikaner",
+    "timestamp": "2025-09-03T12:00:00",
+    "observed": {
+      "temperature_c": 31.2,
+      "humidity_pct": 68.0,
+      "wind_speed_ms": 0.9,
+      "shortwave_radiation_wm2": 843.0,
+      "htsi": 69.5,
+      "risk": "High"
+    },
+    "prediction": {
+      "risk": "Extreme",
+      "confidence_pct": 92.7,
+      "high_risk_probability_pct": 100.0,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 0.0,
+        "High": 7.3,
+        "Extreme": 92.7,
+        "Emergency": 0.0
+      },
+      "correct": false,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 29.2,
+          "direction": "raises",
+          "value": 37.52
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 21.3,
+          "direction": "raises",
+          "value": 8.87
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 21.3,
+          "direction": "raises",
+          "value": 843.0
+        },
+        {
+          "feature": "wind_speed_ms",
+          "label": "Wind speed",
+          "contribution_pct": 8.9,
+          "direction": "raises",
+          "value": 0.89
+        },
+        {
+          "feature": "hour_cos",
+          "label": "Time of day (cos)",
+          "contribution_pct": 4.4,
+          "direction": "reduces",
+          "value": -1.0
+        },
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 3.9,
+          "direction": "raises",
+          "value": 68.0
+        }
+      ]
+    }
+  },
+  {
+    "id": "chandigarh-2025021218",
+    "district": "Chandigarh",
+    "timestamp": "2025-02-12T18:00:00",
+    "observed": {
+      "temperature_c": 18.8,
+      "humidity_pct": 38.0,
+      "wind_speed_ms": 4.4,
+      "shortwave_radiation_wm2": 21.0,
+      "htsi": 0.0,
+      "risk": "Low"
+    },
+    "prediction": {
+      "risk": "Low",
+      "confidence_pct": 100.0,
+      "high_risk_probability_pct": 0.0,
+      "probabilities": {
+        "Low": 100.0,
+        "Moderate": 0.0,
+        "High": 0.0,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 22.6,
+          "direction": "raises",
+          "value": 38.0
+        },
+        {
+          "feature": "wbgt_c",
+          "label": "WBGT",
+          "contribution_pct": 20.0,
+          "direction": "raises",
+          "value": 13.41
+        },
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 11.7,
+          "direction": "raises",
+          "value": 25.49
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 9.7,
+          "direction": "raises",
+          "value": 17.15
+        },
+        {
+          "feature": "wind_speed_ms",
+          "label": "Wind speed",
+          "contribution_pct": 9.4,
+          "direction": "raises",
+          "value": 4.38
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 7.8,
+          "direction": "raises",
+          "value": 21.0
+        }
+      ]
+    }
+  },
+  {
+    "id": "chandigarh-2025071312",
+    "district": "Chandigarh",
+    "timestamp": "2025-07-13T12:00:00",
+    "observed": {
+      "temperature_c": 31.5,
+      "humidity_pct": 70.0,
+      "wind_speed_ms": 1.0,
+      "shortwave_radiation_wm2": 825.0,
+      "htsi": 71.3,
+      "risk": "Extreme"
+    },
+    "prediction": {
+      "risk": "Extreme",
+      "confidence_pct": 97.1,
+      "high_risk_probability_pct": 100.0,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 0.0,
+        "High": 2.9,
+        "Extreme": 97.1,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 33.0,
+          "direction": "raises",
+          "value": 38.97
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 20.1,
+          "direction": "raises",
+          "value": 8.68
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 20.1,
+          "direction": "raises",
+          "value": 825.0
+        },
+        {
+          "feature": "wind_speed_ms",
+          "label": "Wind speed",
+          "contribution_pct": 8.0,
+          "direction": "raises",
+          "value": 1.0
+        },
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 4.9,
+          "direction": "raises",
+          "value": 70.0
+        },
+        {
+          "feature": "hour_cos",
+          "label": "Time of day (cos)",
+          "contribution_pct": 4.3,
+          "direction": "reduces",
+          "value": -1.0
+        }
+      ]
+    }
+  },
+  {
+    "id": "chandigarh-2025072518",
+    "district": "Chandigarh",
+    "timestamp": "2025-07-25T18:00:00",
+    "observed": {
+      "temperature_c": 30.6,
+      "humidity_pct": 76.0,
+      "wind_speed_ms": 2.3,
+      "shortwave_radiation_wm2": 146.0,
+      "htsi": 52.0,
+      "risk": "Moderate"
+    },
+    "prediction": {
+      "risk": "Moderate",
+      "confidence_pct": 89.7,
+      "high_risk_probability_pct": 10.3,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 89.7,
+        "High": 10.3,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 62.3,
+          "direction": "reduces",
+          "value": 38.29
+        },
+        {
+          "feature": "temperature_c",
+          "label": "Temperature",
+          "contribution_pct": 9.8,
+          "direction": "raises",
+          "value": 30.6
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 6.8,
+          "direction": "raises",
+          "value": 32.28
+        },
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 4.4,
+          "direction": "reduces",
+          "value": 76.0
+        },
+        {
+          "feature": "hour_sin",
+          "label": "Time of day (sin)",
+          "contribution_pct": 3.7,
+          "direction": "raises",
+          "value": -1.0
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 3.4,
+          "direction": "raises",
+          "value": 1.54
+        }
+      ]
+    }
+  },
+  {
+    "id": "delhi-2025021218",
+    "district": "Delhi",
+    "timestamp": "2025-02-12T18:00:00",
+    "observed": {
+      "temperature_c": 19.8,
+      "humidity_pct": 40.0,
+      "wind_speed_ms": 3.6,
+      "shortwave_radiation_wm2": 22.0,
+      "htsi": 0.0,
+      "risk": "Low"
+    },
+    "prediction": {
+      "risk": "Low",
+      "confidence_pct": 100.0,
+      "high_risk_probability_pct": 0.0,
+      "probabilities": {
+        "Low": 100.0,
+        "Moderate": 0.0,
+        "High": 0.0,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 23.0,
+          "direction": "raises",
+          "value": 40.0
+        },
+        {
+          "feature": "wbgt_c",
+          "label": "WBGT",
+          "contribution_pct": 19.3,
+          "direction": "raises",
+          "value": 14.47
+        },
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 14.0,
+          "direction": "raises",
+          "value": 25.25
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 9.0,
+          "direction": "raises",
+          "value": 18.79
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 8.6,
+          "direction": "raises",
+          "value": 22.0
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 8.6,
+          "direction": "raises",
+          "value": 0.23
+        }
+      ]
+    }
+  },
+  {
+    "id": "delhi-2025061412",
+    "district": "Delhi",
+    "timestamp": "2025-06-14T12:00:00",
+    "observed": {
+      "temperature_c": 39.6,
+      "humidity_pct": 39.0,
+      "wind_speed_ms": 0.9,
+      "shortwave_radiation_wm2": 906.0,
+      "htsi": 74.1,
+      "risk": "Extreme"
+    },
+    "prediction": {
+      "risk": "Extreme",
+      "confidence_pct": 99.6,
+      "high_risk_probability_pct": 100.0,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 0.0,
+        "High": 0.4,
+        "Extreme": 99.6,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 40.2,
+          "direction": "raises",
+          "value": 46.7
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 15.8,
+          "direction": "raises",
+          "value": 9.54
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 15.8,
+          "direction": "raises",
+          "value": 906.0
+        },
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 8.6,
+          "direction": "reduces",
+          "value": 39.0
+        },
+        {
+          "feature": "temperature_c",
+          "label": "Temperature",
+          "contribution_pct": 6.1,
+          "direction": "reduces",
+          "value": 39.6
+        },
+        {
+          "feature": "wind_speed_ms",
+          "label": "Wind speed",
+          "contribution_pct": 6.1,
+          "direction": "raises",
+          "value": 0.86
+        }
+      ]
+    }
+  },
+  {
+    "id": "delhi-2025072218",
+    "district": "Delhi",
+    "timestamp": "2025-07-22T18:00:00",
+    "observed": {
+      "temperature_c": 29.7,
+      "humidity_pct": 78.0,
+      "wind_speed_ms": 0.9,
+      "shortwave_radiation_wm2": 117.0,
+      "htsi": 52.0,
+      "risk": "Moderate"
+    },
+    "prediction": {
+      "risk": "Moderate",
+      "confidence_pct": 93.5,
+      "high_risk_probability_pct": 6.5,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 93.5,
+        "High": 6.5,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 50.1,
+          "direction": "reduces",
+          "value": 36.24
+        },
+        {
+          "feature": "wind_speed_ms",
+          "label": "Wind speed",
+          "contribution_pct": 12.0,
+          "direction": "reduces",
+          "value": 0.87
+        },
+        {
+          "feature": "temperature_c",
+          "label": "Temperature",
+          "contribution_pct": 8.3,
+          "direction": "raises",
+          "value": 29.7
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 7.1,
+          "direction": "raises",
+          "value": 32.31
+        },
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 5.2,
+          "direction": "reduces",
+          "value": 78.0
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 5.0,
+          "direction": "raises",
+          "value": 1.23
+        }
+      ]
+    }
+  },
+  {
+    "id": "gaya-2025020618",
+    "district": "Gaya",
+    "timestamp": "2025-02-06T18:00:00",
+    "observed": {
+      "temperature_c": 20.6,
+      "humidity_pct": 35.0,
+      "wind_speed_ms": 2.6,
+      "shortwave_radiation_wm2": 0.0,
+      "htsi": 0.0,
+      "risk": "Low"
+    },
+    "prediction": {
+      "risk": "Low",
+      "confidence_pct": 100.0,
+      "high_risk_probability_pct": 0.0,
+      "probabilities": {
+        "Low": 100.0,
+        "Moderate": 0.0,
+        "High": 0.0,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 27.8,
+          "direction": "raises",
+          "value": 35.0
+        },
+        {
+          "feature": "wbgt_c",
+          "label": "WBGT",
+          "contribution_pct": 18.5,
+          "direction": "raises",
+          "value": 14.62
+        },
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 15.3,
+          "direction": "raises",
+          "value": 24.86
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 9.4,
+          "direction": "raises",
+          "value": 0.0
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 9.4,
+          "direction": "raises",
+          "value": 0.0
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 7.5,
+          "direction": "raises",
+          "value": 20.01
+        }
+      ]
+    }
+  },
+  {
+    "id": "gaya-2025052309",
+    "district": "Gaya",
+    "timestamp": "2025-05-23T09:00:00",
+    "observed": {
+      "temperature_c": 30.0,
+      "humidity_pct": 71.0,
+      "wind_speed_ms": 3.3,
+      "shortwave_radiation_wm2": 415.0,
+      "htsi": 52.0,
+      "risk": "Moderate"
+    },
+    "prediction": {
+      "risk": "Moderate",
+      "confidence_pct": 57.7,
+      "high_risk_probability_pct": 42.3,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 57.7,
+        "High": 42.3,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 44.6,
+          "direction": "reduces",
+          "value": 35.28
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 10.4,
+          "direction": "reduces",
+          "value": 4.37
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 10.4,
+          "direction": "reduces",
+          "value": 415.0
+        },
+        {
+          "feature": "temperature_c",
+          "label": "Temperature",
+          "contribution_pct": 9.0,
+          "direction": "raises",
+          "value": 30.0
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 6.7,
+          "direction": "raises",
+          "value": 31.9
+        },
+        {
+          "feature": "wind_speed_ms",
+          "label": "Wind speed",
+          "contribution_pct": 5.5,
+          "direction": "raises",
+          "value": 3.3
+        }
+      ]
+    }
+  },
+  {
+    "id": "gaya-2025071812",
+    "district": "Gaya",
+    "timestamp": "2025-07-18T12:00:00",
+    "observed": {
+      "temperature_c": 33.2,
+      "humidity_pct": 68.0,
+      "wind_speed_ms": 1.1,
+      "shortwave_radiation_wm2": 846.0,
+      "htsi": 75.7,
+      "risk": "Extreme"
+    },
+    "prediction": {
+      "risk": "Extreme",
+      "confidence_pct": 99.9,
+      "high_risk_probability_pct": 100.0,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 0.0,
+        "High": 0.1,
+        "Extreme": 99.9,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 40.9,
+          "direction": "raises",
+          "value": 43.24
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 18.1,
+          "direction": "raises",
+          "value": 8.91
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 18.1,
+          "direction": "raises",
+          "value": 846.0
+        },
+        {
+          "feature": "wind_speed_ms",
+          "label": "Wind speed",
+          "contribution_pct": 6.4,
+          "direction": "raises",
+          "value": 1.14
+        },
+        {
+          "feature": "temperature_c",
+          "label": "Temperature",
+          "contribution_pct": 4.2,
+          "direction": "reduces",
+          "value": 33.2
+        },
+        {
+          "feature": "hour_cos",
+          "label": "Time of day (cos)",
+          "contribution_pct": 3.8,
+          "direction": "reduces",
+          "value": -1.0
+        }
+      ]
+    }
+  },
+  {
+    "id": "gwalior-2025020518",
+    "district": "Gwalior",
+    "timestamp": "2025-02-05T18:00:00",
+    "observed": {
+      "temperature_c": 19.4,
+      "humidity_pct": 37.0,
+      "wind_speed_ms": 2.5,
+      "shortwave_radiation_wm2": 14.0,
+      "htsi": 0.0,
+      "risk": "Low"
+    },
+    "prediction": {
+      "risk": "Low",
+      "confidence_pct": 100.0,
+      "high_risk_probability_pct": 0.0,
+      "probabilities": {
+        "Low": 100.0,
+        "Moderate": 0.0,
+        "High": 0.0,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 26.4,
+          "direction": "raises",
+          "value": 37.0
+        },
+        {
+          "feature": "wbgt_c",
+          "label": "WBGT",
+          "contribution_pct": 21.3,
+          "direction": "raises",
+          "value": 13.82
+        },
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 14.3,
+          "direction": "raises",
+          "value": 25.22
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 9.0,
+          "direction": "raises",
+          "value": 14.0
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 9.0,
+          "direction": "raises",
+          "value": 0.15
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 8.8,
+          "direction": "raises",
+          "value": 19.01
+        }
+      ]
+    }
+  },
+  {
+    "id": "gwalior-2025040812",
+    "district": "Gwalior",
+    "timestamp": "2025-04-08T12:00:00",
+    "observed": {
+      "temperature_c": 39.3,
+      "humidity_pct": 15.0,
+      "wind_speed_ms": 2.9,
+      "shortwave_radiation_wm2": 969.0,
+      "htsi": 52.0,
+      "risk": "Moderate"
+    },
+    "prediction": {
+      "risk": "Moderate",
+      "confidence_pct": 70.9,
+      "high_risk_probability_pct": 29.1,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 70.9,
+        "High": 29.1,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 27.7,
+          "direction": "reduces",
+          "value": 37.19
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 18.7,
+          "direction": "reduces",
+          "value": 10.2
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 18.7,
+          "direction": "reduces",
+          "value": 969.0
+        },
+        {
+          "feature": "temperature_c",
+          "label": "Temperature",
+          "contribution_pct": 13.4,
+          "direction": "raises",
+          "value": 39.3
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 9.5,
+          "direction": "raises",
+          "value": 41.83
+        },
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 7.0,
+          "direction": "raises",
+          "value": 15.0
+        }
+      ]
+    }
+  },
+  {
+    "id": "gwalior-2025070712",
+    "district": "Gwalior",
+    "timestamp": "2025-07-07T12:00:00",
+    "observed": {
+      "temperature_c": 31.7,
+      "humidity_pct": 75.0,
+      "wind_speed_ms": 1.1,
+      "shortwave_radiation_wm2": 724.0,
+      "htsi": 72.6,
+      "risk": "Extreme"
+    },
+    "prediction": {
+      "risk": "Extreme",
+      "confidence_pct": 97.5,
+      "high_risk_probability_pct": 100.0,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 0.0,
+        "High": 2.5,
+        "Extreme": 97.5,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 40.0,
+          "direction": "raises",
+          "value": 41.34
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 16.5,
+          "direction": "raises",
+          "value": 7.62
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 16.5,
+          "direction": "raises",
+          "value": 724.0
+        },
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 7.5,
+          "direction": "raises",
+          "value": 75.0
+        },
+        {
+          "feature": "wind_speed_ms",
+          "label": "Wind speed",
+          "contribution_pct": 7.2,
+          "direction": "raises",
+          "value": 1.14
+        },
+        {
+          "feature": "hour_cos",
+          "label": "Time of day (cos)",
+          "contribution_pct": 4.2,
+          "direction": "reduces",
+          "value": -1.0
+        }
+      ]
+    }
+  },
+  {
+    "id": "hyderabad-2025010318",
+    "district": "Hyderabad",
+    "timestamp": "2025-01-03T18:00:00",
+    "observed": {
+      "temperature_c": 23.2,
+      "humidity_pct": 40.0,
+      "wind_speed_ms": 2.9,
+      "shortwave_radiation_wm2": 6.0,
+      "htsi": 0.0,
+      "risk": "Low"
+    },
+    "prediction": {
+      "risk": "Low",
+      "confidence_pct": 100.0,
+      "high_risk_probability_pct": 0.0,
+      "probabilities": {
+        "Low": 100.0,
+        "Moderate": 0.0,
+        "High": 0.0,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 27.6,
+          "direction": "raises",
+          "value": 40.0
+        },
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 17.6,
+          "direction": "raises",
+          "value": 25.1
+        },
+        {
+          "feature": "wbgt_c",
+          "label": "WBGT",
+          "contribution_pct": 13.6,
+          "direction": "raises",
+          "value": 17.41
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 11.2,
+          "direction": "raises",
+          "value": 6.0
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 11.2,
+          "direction": "raises",
+          "value": 0.06
+        },
+        {
+          "feature": "day_cos",
+          "label": "Season (cos)",
+          "contribution_pct": 5.9,
+          "direction": "raises",
+          "value": 1.0
+        }
+      ]
+    }
+  },
+  {
+    "id": "hyderabad-2025051312",
+    "district": "Hyderabad",
+    "timestamp": "2025-05-13T12:00:00",
+    "observed": {
+      "temperature_c": 35.1,
+      "humidity_pct": 42.0,
+      "wind_speed_ms": 0.9,
+      "shortwave_radiation_wm2": 956.0,
+      "htsi": 64.5,
+      "risk": "High"
+    },
+    "prediction": {
+      "risk": "High",
+      "confidence_pct": 60.9,
+      "high_risk_probability_pct": 99.9,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 0.1,
+        "High": 60.9,
+        "Extreme": 39.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "wbgt_c",
+          "label": "WBGT",
+          "contribution_pct": 25.1,
+          "direction": "raises",
+          "value": 29.11
+        },
+        {
+          "feature": "hour_cos",
+          "label": "Time of day (cos)",
+          "contribution_pct": 18.3,
+          "direction": "raises",
+          "value": -1.0
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 15.6,
+          "direction": "raises",
+          "value": 39.92
+        },
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 13.3,
+          "direction": "reduces",
+          "value": 42.0
+        },
+        {
+          "feature": "temperature_c",
+          "label": "Temperature",
+          "contribution_pct": 9.9,
+          "direction": "raises",
+          "value": 35.1
+        },
+        {
+          "feature": "day_cos",
+          "label": "Season (cos)",
+          "contribution_pct": 4.6,
+          "direction": "raises",
+          "value": -0.66
+        }
+      ]
+    }
+  },
+  {
+    "id": "hyderabad-2025052015",
+    "district": "Hyderabad",
+    "timestamp": "2025-05-20T15:00:00",
+    "observed": {
+      "temperature_c": 32.9,
+      "humidity_pct": 51.0,
+      "wind_speed_ms": 3.2,
+      "shortwave_radiation_wm2": 618.0,
+      "htsi": 52.0,
+      "risk": "Moderate"
+    },
+    "prediction": {
+      "risk": "Moderate",
+      "confidence_pct": 75.9,
+      "high_risk_probability_pct": 24.1,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 75.9,
+        "High": 24.1,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 38.1,
+          "direction": "reduces",
+          "value": 36.37
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 15.3,
+          "direction": "reduces",
+          "value": 6.51
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 15.3,
+          "direction": "reduces",
+          "value": 618.0
+        },
+        {
+          "feature": "temperature_c",
+          "label": "Temperature",
+          "contribution_pct": 10.9,
+          "direction": "raises",
+          "value": 32.9
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 7.9,
+          "direction": "raises",
+          "value": 35.01
+        },
+        {
+          "feature": "wind_speed_ms",
+          "label": "Wind speed",
+          "contribution_pct": 3.6,
+          "direction": "raises",
+          "value": 3.21
+        }
+      ]
+    }
+  },
+  {
+    "id": "jaipur-2025020518",
+    "district": "Jaipur",
+    "timestamp": "2025-02-05T18:00:00",
+    "observed": {
+      "temperature_c": 18.3,
+      "humidity_pct": 37.0,
+      "wind_speed_ms": 2.6,
+      "shortwave_radiation_wm2": 26.0,
+      "htsi": 0.0,
+      "risk": "Low"
+    },
+    "prediction": {
+      "risk": "Low",
+      "confidence_pct": 100.0,
+      "high_risk_probability_pct": 0.0,
+      "probabilities": {
+        "Low": 100.0,
+        "Moderate": 0.0,
+        "High": 0.0,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 25.8,
+          "direction": "raises",
+          "value": 37.0
+        },
+        {
+          "feature": "wbgt_c",
+          "label": "WBGT",
+          "contribution_pct": 23.2,
+          "direction": "raises",
+          "value": 12.89
+        },
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 12.3,
+          "direction": "raises",
+          "value": 25.63
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 9.8,
+          "direction": "raises",
+          "value": 17.88
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 8.3,
+          "direction": "raises",
+          "value": 26.0
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 8.3,
+          "direction": "raises",
+          "value": 0.27
+        }
+      ]
+    }
+  },
+  {
+    "id": "jaipur-2025062412",
+    "district": "Jaipur",
+    "timestamp": "2025-06-24T12:00:00",
+    "observed": {
+      "temperature_c": 32.5,
+      "humidity_pct": 67.0,
+      "wind_speed_ms": 1.9,
+      "shortwave_radiation_wm2": 828.0,
+      "htsi": 71.0,
+      "risk": "Extreme"
+    },
+    "prediction": {
+      "risk": "Extreme",
+      "confidence_pct": 93.7,
+      "high_risk_probability_pct": 100.0,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 0.0,
+        "High": 6.3,
+        "Extreme": 93.7,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 38.8,
+          "direction": "raises",
+          "value": 40.75
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 20.2,
+          "direction": "raises",
+          "value": 8.72
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 20.2,
+          "direction": "raises",
+          "value": 828.0
+        },
+        {
+          "feature": "temperature_c",
+          "label": "Temperature",
+          "contribution_pct": 4.3,
+          "direction": "reduces",
+          "value": 32.5
+        },
+        {
+          "feature": "hour_cos",
+          "label": "Time of day (cos)",
+          "contribution_pct": 4.3,
+          "direction": "reduces",
+          "value": -1.0
+        },
+        {
+          "feature": "wind_speed_ms",
+          "label": "Wind speed",
+          "contribution_pct": 3.6,
+          "direction": "raises",
+          "value": 1.86
+        }
+      ]
+    }
+  },
+  {
+    "id": "jaipur-2025081709",
+    "district": "Jaipur",
+    "timestamp": "2025-08-17T09:00:00",
+    "observed": {
+      "temperature_c": 29.3,
+      "humidity_pct": 74.0,
+      "wind_speed_ms": 3.9,
+      "shortwave_radiation_wm2": 461.0,
+      "htsi": 52.0,
+      "risk": "Moderate"
+    },
+    "prediction": {
+      "risk": "Moderate",
+      "confidence_pct": 56.7,
+      "high_risk_probability_pct": 43.3,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 56.7,
+        "High": 43.3,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 37.5,
+          "direction": "reduces",
+          "value": 34.23
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 12.8,
+          "direction": "reduces",
+          "value": 4.85
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 12.8,
+          "direction": "reduces",
+          "value": 461.0
+        },
+        {
+          "feature": "wind_speed_ms",
+          "label": "Wind speed",
+          "contribution_pct": 10.0,
+          "direction": "raises",
+          "value": 3.91
+        },
+        {
+          "feature": "temperature_c",
+          "label": "Temperature",
+          "contribution_pct": 7.6,
+          "direction": "raises",
+          "value": 29.3
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 5.6,
+          "direction": "raises",
+          "value": 31.07
+        }
+      ]
+    }
+  },
+  {
+    "id": "jodhpur-2025010118",
+    "district": "Jodhpur",
+    "timestamp": "2025-01-01T18:00:00",
+    "observed": {
+      "temperature_c": 21.0,
+      "humidity_pct": 39.0,
+      "wind_speed_ms": 2.6,
+      "shortwave_radiation_wm2": 7.0,
+      "htsi": 0.0,
+      "risk": "Low"
+    },
+    "prediction": {
+      "risk": "Low",
+      "confidence_pct": 100.0,
+      "high_risk_probability_pct": 0.0,
+      "probabilities": {
+        "Low": 100.0,
+        "Moderate": 0.0,
+        "High": 0.0,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 26.0,
+          "direction": "raises",
+          "value": 39.0
+        },
+        {
+          "feature": "wbgt_c",
+          "label": "WBGT",
+          "contribution_pct": 18.2,
+          "direction": "raises",
+          "value": 15.4
+        },
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 16.3,
+          "direction": "raises",
+          "value": 24.99
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 10.0,
+          "direction": "raises",
+          "value": 7.0
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 10.0,
+          "direction": "raises",
+          "value": 0.07
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 7.6,
+          "direction": "raises",
+          "value": 20.58
+        }
+      ]
+    }
+  },
+  {
+    "id": "jodhpur-2025070312",
+    "district": "Jodhpur",
+    "timestamp": "2025-07-03T12:00:00",
+    "observed": {
+      "temperature_c": 32.3,
+      "humidity_pct": 67.0,
+      "wind_speed_ms": 1.0,
+      "shortwave_radiation_wm2": 743.0,
+      "htsi": 69.5,
+      "risk": "High"
+    },
+    "prediction": {
+      "risk": "Extreme",
+      "confidence_pct": 82.3,
+      "high_risk_probability_pct": 100.0,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 0.0,
+        "High": 17.7,
+        "Extreme": 82.3,
+        "Emergency": 0.0
+      },
+      "correct": false,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 38.1,
+          "direction": "raises",
+          "value": 40.18
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 17.9,
+          "direction": "raises",
+          "value": 7.82
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 17.9,
+          "direction": "raises",
+          "value": 743.0
+        },
+        {
+          "feature": "wind_speed_ms",
+          "label": "Wind speed",
+          "contribution_pct": 8.2,
+          "direction": "raises",
+          "value": 1.01
+        },
+        {
+          "feature": "hour_cos",
+          "label": "Time of day (cos)",
+          "contribution_pct": 4.4,
+          "direction": "reduces",
+          "value": -1.0
+        },
+        {
+          "feature": "temperature_c",
+          "label": "Temperature",
+          "contribution_pct": 4.3,
+          "direction": "reduces",
+          "value": 32.3
+        }
+      ]
+    }
+  },
+  {
+    "id": "jodhpur-2025081609",
+    "district": "Jodhpur",
+    "timestamp": "2025-08-16T09:00:00",
+    "observed": {
+      "temperature_c": 28.0,
+      "humidity_pct": 83.0,
+      "wind_speed_ms": 2.6,
+      "shortwave_radiation_wm2": 306.0,
+      "htsi": 52.0,
+      "risk": "Moderate"
+    },
+    "prediction": {
+      "risk": "Moderate",
+      "confidence_pct": 77.9,
+      "high_risk_probability_pct": 22.1,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 77.9,
+        "High": 22.1,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 41.5,
+          "direction": "reduces",
+          "value": 32.57
+        },
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 10.9,
+          "direction": "reduces",
+          "value": 83.0
+        },
+        {
+          "feature": "temperature_c",
+          "label": "Temperature",
+          "contribution_pct": 7.9,
+          "direction": "raises",
+          "value": 28.0
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 7.5,
+          "direction": "reduces",
+          "value": 3.22
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 7.5,
+          "direction": "reduces",
+          "value": 306.0
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 7.4,
+          "direction": "raises",
+          "value": 30.38
+        }
+      ]
+    }
+  },
+  {
+    "id": "lucknow-2025020618",
+    "district": "Lucknow",
+    "timestamp": "2025-02-06T18:00:00",
+    "observed": {
+      "temperature_c": 18.8,
+      "humidity_pct": 42.0,
+      "wind_speed_ms": 3.8,
+      "shortwave_radiation_wm2": 5.0,
+      "htsi": 0.0,
+      "risk": "Low"
+    },
+    "prediction": {
+      "risk": "Low",
+      "confidence_pct": 100.0,
+      "high_risk_probability_pct": 0.0,
+      "probabilities": {
+        "Low": 100.0,
+        "Moderate": 0.0,
+        "High": 0.0,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "wbgt_c",
+          "label": "WBGT",
+          "contribution_pct": 20.9,
+          "direction": "raises",
+          "value": 13.78
+        },
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 20.5,
+          "direction": "raises",
+          "value": 42.0
+        },
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 12.1,
+          "direction": "raises",
+          "value": 25.69
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 10.1,
+          "direction": "raises",
+          "value": 17.65
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 9.2,
+          "direction": "raises",
+          "value": 5.0
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 9.2,
+          "direction": "raises",
+          "value": 0.05
+        }
+      ]
+    }
+  },
+  {
+    "id": "lucknow-2025072018",
+    "district": "Lucknow",
+    "timestamp": "2025-07-20T18:00:00",
+    "observed": {
+      "temperature_c": 30.1,
+      "humidity_pct": 78.0,
+      "wind_speed_ms": 0.2,
+      "shortwave_radiation_wm2": 28.0,
+      "htsi": 52.0,
+      "risk": "Moderate"
+    },
+    "prediction": {
+      "risk": "Moderate",
+      "confidence_pct": 87.7,
+      "high_risk_probability_pct": 12.3,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 87.7,
+        "High": 12.3,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 47.3,
+          "direction": "reduces",
+          "value": 37.4
+        },
+        {
+          "feature": "wind_speed_ms",
+          "label": "Wind speed",
+          "contribution_pct": 13.4,
+          "direction": "reduces",
+          "value": 0.25
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 7.7,
+          "direction": "raises",
+          "value": 0.29
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 7.7,
+          "direction": "raises",
+          "value": 28.0
+        },
+        {
+          "feature": "temperature_c",
+          "label": "Temperature",
+          "contribution_pct": 7.4,
+          "direction": "raises",
+          "value": 30.1
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 6.3,
+          "direction": "raises",
+          "value": 32.77
+        }
+      ]
+    }
+  },
+  {
+    "id": "lucknow-2025072512",
+    "district": "Lucknow",
+    "timestamp": "2025-07-25T12:00:00",
+    "observed": {
+      "temperature_c": 34.4,
+      "humidity_pct": 62.0,
+      "wind_speed_ms": 0.3,
+      "shortwave_radiation_wm2": 772.0,
+      "htsi": 74.5,
+      "risk": "Extreme"
+    },
+    "prediction": {
+      "risk": "Extreme",
+      "confidence_pct": 99.8,
+      "high_risk_probability_pct": 100.0,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 0.0,
+        "High": 0.2,
+        "Extreme": 99.8,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 43.8,
+          "direction": "raises",
+          "value": 44.21
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 16.1,
+          "direction": "raises",
+          "value": 8.13
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 16.1,
+          "direction": "raises",
+          "value": 772.0
+        },
+        {
+          "feature": "wind_speed_ms",
+          "label": "Wind speed",
+          "contribution_pct": 10.1,
+          "direction": "raises",
+          "value": 0.32
+        },
+        {
+          "feature": "temperature_c",
+          "label": "Temperature",
+          "contribution_pct": 4.8,
+          "direction": "reduces",
+          "value": 34.4
+        },
+        {
+          "feature": "hour_cos",
+          "label": "Time of day (cos)",
+          "contribution_pct": 3.8,
+          "direction": "reduces",
+          "value": -1.0
+        }
+      ]
+    }
+  },
+  {
+    "id": "nagpur-2025010218",
+    "district": "Nagpur",
+    "timestamp": "2025-01-02T18:00:00",
+    "observed": {
+      "temperature_c": 23.6,
+      "humidity_pct": 35.0,
+      "wind_speed_ms": 2.7,
+      "shortwave_radiation_wm2": 1.0,
+      "htsi": 0.0,
+      "risk": "Low"
+    },
+    "prediction": {
+      "risk": "Low",
+      "confidence_pct": 100.0,
+      "high_risk_probability_pct": 0.0,
+      "probabilities": {
+        "Low": 100.0,
+        "Moderate": 0.0,
+        "High": 0.0,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 32.4,
+          "direction": "raises",
+          "value": 35.0
+        },
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 16.9,
+          "direction": "raises",
+          "value": 25.07
+        },
+        {
+          "feature": "wbgt_c",
+          "label": "WBGT",
+          "contribution_pct": 13.7,
+          "direction": "raises",
+          "value": 17.17
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 10.9,
+          "direction": "raises",
+          "value": 1.0
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 10.9,
+          "direction": "raises",
+          "value": 0.01
+        },
+        {
+          "feature": "day_cos",
+          "label": "Season (cos)",
+          "contribution_pct": 5.6,
+          "direction": "raises",
+          "value": 1.0
+        }
+      ]
+    }
+  },
+  {
+    "id": "nagpur-2025052712",
+    "district": "Nagpur",
+    "timestamp": "2025-05-27T12:00:00",
+    "observed": {
+      "temperature_c": 33.8,
+      "humidity_pct": 62.0,
+      "wind_speed_ms": 0.8,
+      "shortwave_radiation_wm2": 863.0,
+      "htsi": 74.3,
+      "risk": "Extreme"
+    },
+    "prediction": {
+      "risk": "Extreme",
+      "confidence_pct": 99.6,
+      "high_risk_probability_pct": 100.0,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 0.0,
+        "High": 0.4,
+        "Extreme": 99.6,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 39.7,
+          "direction": "raises",
+          "value": 42.46
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 19.1,
+          "direction": "raises",
+          "value": 9.08
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 19.1,
+          "direction": "raises",
+          "value": 863.0
+        },
+        {
+          "feature": "wind_speed_ms",
+          "label": "Wind speed",
+          "contribution_pct": 8.3,
+          "direction": "raises",
+          "value": 0.75
+        },
+        {
+          "feature": "temperature_c",
+          "label": "Temperature",
+          "contribution_pct": 4.6,
+          "direction": "reduces",
+          "value": 33.8
+        },
+        {
+          "feature": "hour_cos",
+          "label": "Time of day (cos)",
+          "contribution_pct": 3.9,
+          "direction": "reduces",
+          "value": -1.0
+        }
+      ]
+    }
+  },
+  {
+    "id": "nagpur-2025081009",
+    "district": "Nagpur",
+    "timestamp": "2025-08-10T09:00:00",
+    "observed": {
+      "temperature_c": 28.0,
+      "humidity_pct": 74.0,
+      "wind_speed_ms": 1.9,
+      "shortwave_radiation_wm2": 495.0,
+      "htsi": 52.0,
+      "risk": "Moderate"
+    },
+    "prediction": {
+      "risk": "Moderate",
+      "confidence_pct": 60.4,
+      "high_risk_probability_pct": 39.6,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 60.4,
+        "High": 39.6,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 23.0,
+          "direction": "reduces",
+          "value": 31.21
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 19.9,
+          "direction": "reduces",
+          "value": 5.21
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 19.9,
+          "direction": "reduces",
+          "value": 495.0
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 8.0,
+          "direction": "raises",
+          "value": 31.29
+        },
+        {
+          "feature": "temperature_c",
+          "label": "Temperature",
+          "contribution_pct": 6.8,
+          "direction": "raises",
+          "value": 28.0
+        },
+        {
+          "feature": "wind_speed_ms",
+          "label": "Wind speed",
+          "contribution_pct": 6.0,
+          "direction": "reduces",
+          "value": 1.95
+        }
+      ]
+    }
+  },
+  {
+    "id": "nanded-2025010318",
+    "district": "Nanded",
+    "timestamp": "2025-01-03T18:00:00",
+    "observed": {
+      "temperature_c": 25.1,
+      "humidity_pct": 31.0,
+      "wind_speed_ms": 2.5,
+      "shortwave_radiation_wm2": 8.0,
+      "htsi": 0.0,
+      "risk": "Low"
+    },
+    "prediction": {
+      "risk": "Low",
+      "confidence_pct": 100.0,
+      "high_risk_probability_pct": 0.0,
+      "probabilities": {
+        "Low": 100.0,
+        "Moderate": 0.0,
+        "High": 0.0,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 38.0,
+          "direction": "raises",
+          "value": 31.0
+        },
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 15.4,
+          "direction": "raises",
+          "value": 25.45
+        },
+        {
+          "feature": "wbgt_c",
+          "label": "WBGT",
+          "contribution_pct": 11.5,
+          "direction": "raises",
+          "value": 17.94
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 10.7,
+          "direction": "raises",
+          "value": 8.0
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 10.7,
+          "direction": "raises",
+          "value": 0.08
+        },
+        {
+          "feature": "day_cos",
+          "label": "Season (cos)",
+          "contribution_pct": 5.7,
+          "direction": "raises",
+          "value": 1.0
+        }
+      ]
+    }
+  },
+  {
+    "id": "nanded-2025032712",
+    "district": "Nanded",
+    "timestamp": "2025-03-27T12:00:00",
+    "observed": {
+      "temperature_c": 37.5,
+      "humidity_pct": 22.0,
+      "wind_speed_ms": 2.8,
+      "shortwave_radiation_wm2": 911.0,
+      "htsi": 52.0,
+      "risk": "Moderate"
+    },
+    "prediction": {
+      "risk": "Moderate",
+      "confidence_pct": 76.2,
+      "high_risk_probability_pct": 23.8,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 76.2,
+        "High": 23.8,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 27.8,
+          "direction": "reduces",
+          "value": 36.44
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 19.1,
+          "direction": "reduces",
+          "value": 9.59
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 19.1,
+          "direction": "reduces",
+          "value": 911.0
+        },
+        {
+          "feature": "temperature_c",
+          "label": "Temperature",
+          "contribution_pct": 12.9,
+          "direction": "raises",
+          "value": 37.5
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 9.2,
+          "direction": "raises",
+          "value": 40.11
+        },
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 6.6,
+          "direction": "raises",
+          "value": 22.0
+        }
+      ]
+    }
+  },
+  {
+    "id": "nanded-2025051912",
+    "district": "Nanded",
+    "timestamp": "2025-05-19T12:00:00",
+    "observed": {
+      "temperature_c": 34.1,
+      "humidity_pct": 56.0,
+      "wind_speed_ms": 0.7,
+      "shortwave_radiation_wm2": 903.0,
+      "htsi": 71.7,
+      "risk": "Extreme"
+    },
+    "prediction": {
+      "risk": "Extreme",
+      "confidence_pct": 97.3,
+      "high_risk_probability_pct": 100.0,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 0.0,
+        "High": 2.7,
+        "Extreme": 97.3,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 34.5,
+          "direction": "raises",
+          "value": 40.82
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 20.1,
+          "direction": "raises",
+          "value": 9.51
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 20.1,
+          "direction": "raises",
+          "value": 903.0
+        },
+        {
+          "feature": "wind_speed_ms",
+          "label": "Wind speed",
+          "contribution_pct": 8.4,
+          "direction": "raises",
+          "value": 0.71
+        },
+        {
+          "feature": "temperature_c",
+          "label": "Temperature",
+          "contribution_pct": 4.7,
+          "direction": "reduces",
+          "value": 34.1
+        },
+        {
+          "feature": "hour_cos",
+          "label": "Time of day (cos)",
+          "contribution_pct": 3.8,
+          "direction": "reduces",
+          "value": -1.0
+        }
+      ]
+    }
+  },
+  {
+    "id": "patna-2025021318",
+    "district": "Patna",
+    "timestamp": "2025-02-13T18:00:00",
+    "observed": {
+      "temperature_c": 20.7,
+      "humidity_pct": 41.0,
+      "wind_speed_ms": 3.5,
+      "shortwave_radiation_wm2": 1.0,
+      "htsi": 0.0,
+      "risk": "Low"
+    },
+    "prediction": {
+      "risk": "Low",
+      "confidence_pct": 100.0,
+      "high_risk_probability_pct": 0.0,
+      "probabilities": {
+        "Low": 100.0,
+        "Moderate": 0.0,
+        "High": 0.0,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 22.3,
+          "direction": "raises",
+          "value": 41.0
+        },
+        {
+          "feature": "wbgt_c",
+          "label": "WBGT",
+          "contribution_pct": 17.3,
+          "direction": "raises",
+          "value": 15.33
+        },
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 15.0,
+          "direction": "raises",
+          "value": 25.08
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 9.7,
+          "direction": "raises",
+          "value": 1.0
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 9.7,
+          "direction": "raises",
+          "value": 0.01
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 8.1,
+          "direction": "raises",
+          "value": 19.71
+        }
+      ]
+    }
+  },
+  {
+    "id": "patna-2025072212",
+    "district": "Patna",
+    "timestamp": "2025-07-22T12:00:00",
+    "observed": {
+      "temperature_c": 34.0,
+      "humidity_pct": 66.0,
+      "wind_speed_ms": 1.0,
+      "shortwave_radiation_wm2": 852.0,
+      "htsi": 77.3,
+      "risk": "Extreme"
+    },
+    "prediction": {
+      "risk": "Extreme",
+      "confidence_pct": 100.0,
+      "high_risk_probability_pct": 100.0,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 0.0,
+        "High": 0.0,
+        "Extreme": 100.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 43.1,
+          "direction": "raises",
+          "value": 44.84
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 17.4,
+          "direction": "raises",
+          "value": 8.97
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 17.4,
+          "direction": "raises",
+          "value": 852.0
+        },
+        {
+          "feature": "wind_speed_ms",
+          "label": "Wind speed",
+          "contribution_pct": 6.6,
+          "direction": "raises",
+          "value": 1.0
+        },
+        {
+          "feature": "temperature_c",
+          "label": "Temperature",
+          "contribution_pct": 4.4,
+          "direction": "reduces",
+          "value": 34.0
+        },
+        {
+          "feature": "hour_cos",
+          "label": "Time of day (cos)",
+          "contribution_pct": 3.6,
+          "direction": "reduces",
+          "value": -1.0
+        }
+      ]
+    }
+  },
+  {
+    "id": "patna-2025072421",
+    "district": "Patna",
+    "timestamp": "2025-07-24T21:00:00",
+    "observed": {
+      "temperature_c": 28.4,
+      "humidity_pct": 96.0,
+      "wind_speed_ms": 2.1,
+      "shortwave_radiation_wm2": 0.0,
+      "htsi": 52.0,
+      "risk": "Moderate"
+    },
+    "prediction": {
+      "risk": "Moderate",
+      "confidence_pct": 97.5,
+      "high_risk_probability_pct": 2.5,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 97.5,
+        "High": 2.5,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 47.9,
+          "direction": "reduces",
+          "value": 36.32
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 10.3,
+          "direction": "raises",
+          "value": 0.0
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 10.3,
+          "direction": "raises",
+          "value": 0.0
+        },
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 10.2,
+          "direction": "reduces",
+          "value": 96.0
+        },
+        {
+          "feature": "temperature_c",
+          "label": "Temperature",
+          "contribution_pct": 5.4,
+          "direction": "raises",
+          "value": 28.4
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 4.2,
+          "direction": "raises",
+          "value": 30.27
+        }
+      ]
+    }
+  },
+  {
+    "id": "prayagraj-2025020618",
+    "district": "Prayagraj",
+    "timestamp": "2025-02-06T18:00:00",
+    "observed": {
+      "temperature_c": 19.4,
+      "humidity_pct": 40.0,
+      "wind_speed_ms": 3.2,
+      "shortwave_radiation_wm2": 4.0,
+      "htsi": 0.0,
+      "risk": "Low"
+    },
+    "prediction": {
+      "risk": "Low",
+      "confidence_pct": 100.0,
+      "high_risk_probability_pct": 0.0,
+      "probabilities": {
+        "Low": 100.0,
+        "Moderate": 0.0,
+        "High": 0.0,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 22.9,
+          "direction": "raises",
+          "value": 40.0
+        },
+        {
+          "feature": "wbgt_c",
+          "label": "WBGT",
+          "contribution_pct": 20.3,
+          "direction": "raises",
+          "value": 14.11
+        },
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 13.5,
+          "direction": "raises",
+          "value": 25.38
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 9.4,
+          "direction": "raises",
+          "value": 4.0
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 9.4,
+          "direction": "raises",
+          "value": 0.04
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 9.2,
+          "direction": "raises",
+          "value": 18.54
+        }
+      ]
+    }
+  },
+  {
+    "id": "prayagraj-2025072512",
+    "district": "Prayagraj",
+    "timestamp": "2025-07-25T12:00:00",
+    "observed": {
+      "temperature_c": 32.8,
+      "humidity_pct": 74.0,
+      "wind_speed_ms": 0.9,
+      "shortwave_radiation_wm2": 770.0,
+      "htsi": 77.1,
+      "risk": "Extreme"
+    },
+    "prediction": {
+      "risk": "Extreme",
+      "confidence_pct": 100.0,
+      "high_risk_probability_pct": 100.0,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 0.0,
+        "High": 0.0,
+        "Extreme": 100.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 43.5,
+          "direction": "raises",
+          "value": 44.56
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 15.6,
+          "direction": "raises",
+          "value": 8.11
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 15.6,
+          "direction": "raises",
+          "value": 770.0
+        },
+        {
+          "feature": "wind_speed_ms",
+          "label": "Wind speed",
+          "contribution_pct": 7.1,
+          "direction": "raises",
+          "value": 0.94
+        },
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 6.0,
+          "direction": "raises",
+          "value": 74.0
+        },
+        {
+          "feature": "temperature_c",
+          "label": "Temperature",
+          "contribution_pct": 3.9,
+          "direction": "reduces",
+          "value": 32.8
+        }
+      ]
+    }
+  },
+  {
+    "id": "prayagraj-2025102115",
+    "district": "Prayagraj",
+    "timestamp": "2025-10-21T15:00:00",
+    "observed": {
+      "temperature_c": 30.8,
+      "humidity_pct": 62.0,
+      "wind_speed_ms": 0.6,
+      "shortwave_radiation_wm2": 394.0,
+      "htsi": 52.0,
+      "risk": "Moderate"
+    },
+    "prediction": {
+      "risk": "Moderate",
+      "confidence_pct": 63.2,
+      "high_risk_probability_pct": 36.8,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 63.2,
+        "High": 36.8,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 39.9,
+          "direction": "reduces",
+          "value": 34.91
+        },
+        {
+          "feature": "wind_speed_ms",
+          "label": "Wind speed",
+          "contribution_pct": 13.2,
+          "direction": "reduces",
+          "value": 0.64
+        },
+        {
+          "feature": "temperature_c",
+          "label": "Temperature",
+          "contribution_pct": 10.1,
+          "direction": "raises",
+          "value": 30.8
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 9.1,
+          "direction": "raises",
+          "value": 34.16
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 8.8,
+          "direction": "reduces",
+          "value": 4.15
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 8.8,
+          "direction": "reduces",
+          "value": 394.0
+        }
+      ]
+    }
+  },
+  {
+    "id": "raipur-2025020921",
+    "district": "Raipur",
+    "timestamp": "2025-02-09T21:00:00",
+    "observed": {
+      "temperature_c": 21.9,
+      "humidity_pct": 36.0,
+      "wind_speed_ms": 2.6,
+      "shortwave_radiation_wm2": 0.0,
+      "htsi": 0.0,
+      "risk": "Low"
+    },
+    "prediction": {
+      "risk": "Low",
+      "confidence_pct": 100.0,
+      "high_risk_probability_pct": 0.0,
+      "probabilities": {
+        "Low": 100.0,
+        "Moderate": 0.0,
+        "High": 0.0,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 28.3,
+          "direction": "raises",
+          "value": 36.0
+        },
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 16.2,
+          "direction": "raises",
+          "value": 24.86
+        },
+        {
+          "feature": "wbgt_c",
+          "label": "WBGT",
+          "contribution_pct": 16.2,
+          "direction": "raises",
+          "value": 15.84
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 9.9,
+          "direction": "raises",
+          "value": 0.0
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 9.9,
+          "direction": "raises",
+          "value": 0.0
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 6.4,
+          "direction": "raises",
+          "value": 21.34
+        }
+      ]
+    }
+  },
+  {
+    "id": "raipur-2025050115",
+    "district": "Raipur",
+    "timestamp": "2025-05-01T15:00:00",
+    "observed": {
+      "temperature_c": 36.9,
+      "humidity_pct": 33.0,
+      "wind_speed_ms": 2.2,
+      "shortwave_radiation_wm2": 657.0,
+      "htsi": 52.0,
+      "risk": "Moderate"
+    },
+    "prediction": {
+      "risk": "Moderate",
+      "confidence_pct": 63.2,
+      "high_risk_probability_pct": 36.8,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 63.2,
+        "High": 36.8,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 38.4,
+          "direction": "reduces",
+          "value": 38.5
+        },
+        {
+          "feature": "temperature_c",
+          "label": "Temperature",
+          "contribution_pct": 13.3,
+          "direction": "raises",
+          "value": 36.9
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 13.2,
+          "direction": "reduces",
+          "value": 6.92
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 13.2,
+          "direction": "reduces",
+          "value": 657.0
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 9.4,
+          "direction": "raises",
+          "value": 39.25
+        },
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 5.1,
+          "direction": "raises",
+          "value": 33.0
+        }
+      ]
+    }
+  },
+  {
+    "id": "raipur-2025052712",
+    "district": "Raipur",
+    "timestamp": "2025-05-27T12:00:00",
+    "observed": {
+      "temperature_c": 33.9,
+      "humidity_pct": 60.0,
+      "wind_speed_ms": 0.5,
+      "shortwave_radiation_wm2": 808.0,
+      "htsi": 72.0,
+      "risk": "Extreme"
+    },
+    "prediction": {
+      "risk": "Extreme",
+      "confidence_pct": 98.2,
+      "high_risk_probability_pct": 100.0,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 0.0,
+        "High": 1.8,
+        "Extreme": 98.2,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 39.2,
+          "direction": "raises",
+          "value": 41.9
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 18.0,
+          "direction": "raises",
+          "value": 8.51
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 18.0,
+          "direction": "raises",
+          "value": 808.0
+        },
+        {
+          "feature": "wind_speed_ms",
+          "label": "Wind speed",
+          "contribution_pct": 9.7,
+          "direction": "raises",
+          "value": 0.51
+        },
+        {
+          "feature": "temperature_c",
+          "label": "Temperature",
+          "contribution_pct": 4.8,
+          "direction": "reduces",
+          "value": 33.9
+        },
+        {
+          "feature": "hour_cos",
+          "label": "Time of day (cos)",
+          "contribution_pct": 4.0,
+          "direction": "reduces",
+          "value": -1.0
+        }
+      ]
+    }
+  },
+  {
+    "id": "ranchi-2025020618",
+    "district": "Ranchi",
+    "timestamp": "2025-02-06T18:00:00",
+    "observed": {
+      "temperature_c": 21.1,
+      "humidity_pct": 28.0,
+      "wind_speed_ms": 2.9,
+      "shortwave_radiation_wm2": 0.0,
+      "htsi": 0.0,
+      "risk": "Low"
+    },
+    "prediction": {
+      "risk": "Low",
+      "confidence_pct": 100.0,
+      "high_risk_probability_pct": 0.0,
+      "probabilities": {
+        "Low": 100.0,
+        "Moderate": 0.0,
+        "High": 0.0,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 31.4,
+          "direction": "raises",
+          "value": 28.0
+        },
+        {
+          "feature": "wbgt_c",
+          "label": "WBGT",
+          "contribution_pct": 17.4,
+          "direction": "raises",
+          "value": 14.25
+        },
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 15.5,
+          "direction": "raises",
+          "value": 24.33
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 8.4,
+          "direction": "raises",
+          "value": 0.0
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 8.4,
+          "direction": "raises",
+          "value": 0.0
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 6.6,
+          "direction": "raises",
+          "value": 20.07
+        }
+      ]
+    }
+  },
+  {
+    "id": "ranchi-2025052712",
+    "district": "Ranchi",
+    "timestamp": "2025-05-27T12:00:00",
+    "observed": {
+      "temperature_c": 29.5,
+      "humidity_pct": 66.0,
+      "wind_speed_ms": 3.3,
+      "shortwave_radiation_wm2": 608.0,
+      "htsi": 52.0,
+      "risk": "Moderate"
+    },
+    "prediction": {
+      "risk": "Moderate",
+      "confidence_pct": 57.0,
+      "high_risk_probability_pct": 43.0,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 57.0,
+        "High": 43.0,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 29.3,
+          "direction": "reduces",
+          "value": 33.03
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 20.4,
+          "direction": "reduces",
+          "value": 6.4
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 20.4,
+          "direction": "reduces",
+          "value": 608.0
+        },
+        {
+          "feature": "temperature_c",
+          "label": "Temperature",
+          "contribution_pct": 8.0,
+          "direction": "raises",
+          "value": 29.5
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 6.8,
+          "direction": "raises",
+          "value": 32.03
+        },
+        {
+          "feature": "wind_speed_ms",
+          "label": "Wind speed",
+          "contribution_pct": 5.6,
+          "direction": "raises",
+          "value": 3.31
+        }
+      ]
+    }
+  },
+  {
+    "id": "ranchi-2025081212",
+    "district": "Ranchi",
+    "timestamp": "2025-08-12T12:00:00",
+    "observed": {
+      "temperature_c": 30.7,
+      "humidity_pct": 68.0,
+      "wind_speed_ms": 0.5,
+      "shortwave_radiation_wm2": 795.0,
+      "htsi": 67.3,
+      "risk": "High"
+    },
+    "prediction": {
+      "risk": "Extreme",
+      "confidence_pct": 79.2,
+      "high_risk_probability_pct": 100.0,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 0.0,
+        "High": 20.8,
+        "Extreme": 79.2,
+        "Emergency": 0.0
+      },
+      "correct": false,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 26.7,
+          "direction": "raises",
+          "value": 36.25
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 21.1,
+          "direction": "raises",
+          "value": 8.37
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 21.1,
+          "direction": "raises",
+          "value": 795.0
+        },
+        {
+          "feature": "wind_speed_ms",
+          "label": "Wind speed",
+          "contribution_pct": 12.0,
+          "direction": "raises",
+          "value": 0.45
+        },
+        {
+          "feature": "hour_cos",
+          "label": "Time of day (cos)",
+          "contribution_pct": 4.8,
+          "direction": "reduces",
+          "value": -1.0
+        },
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 4.1,
+          "direction": "raises",
+          "value": 68.0
+        }
+      ]
+    }
+  },
+  {
+    "id": "varanasi-2025020618",
+    "district": "Varanasi",
+    "timestamp": "2025-02-06T18:00:00",
+    "observed": {
+      "temperature_c": 19.8,
+      "humidity_pct": 41.0,
+      "wind_speed_ms": 3.4,
+      "shortwave_radiation_wm2": 2.0,
+      "htsi": 0.0,
+      "risk": "Low"
+    },
+    "prediction": {
+      "risk": "Low",
+      "confidence_pct": 100.0,
+      "high_risk_probability_pct": 0.0,
+      "probabilities": {
+        "Low": 100.0,
+        "Moderate": 0.0,
+        "High": 0.0,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 22.0,
+          "direction": "raises",
+          "value": 41.0
+        },
+        {
+          "feature": "wbgt_c",
+          "label": "WBGT",
+          "contribution_pct": 19.2,
+          "direction": "raises",
+          "value": 14.55
+        },
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 14.0,
+          "direction": "raises",
+          "value": 25.29
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 9.5,
+          "direction": "raises",
+          "value": 2.0
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 9.5,
+          "direction": "raises",
+          "value": 0.02
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 9.0,
+          "direction": "raises",
+          "value": 18.86
+        }
+      ]
+    }
+  },
+  {
+    "id": "varanasi-2025082209",
+    "district": "Varanasi",
+    "timestamp": "2025-08-22T09:00:00",
+    "observed": {
+      "temperature_c": 29.0,
+      "humidity_pct": 76.0,
+      "wind_speed_ms": 2.9,
+      "shortwave_radiation_wm2": 382.0,
+      "htsi": 52.0,
+      "risk": "Moderate"
+    },
+    "prediction": {
+      "risk": "High",
+      "confidence_pct": 55.7,
+      "high_risk_probability_pct": 55.7,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 44.3,
+        "High": 55.7,
+        "Extreme": 0.0,
+        "Emergency": 0.0
+      },
+      "correct": false,
+      "explanation": [
+        {
+          "feature": "wbgt_c",
+          "label": "WBGT",
+          "contribution_pct": 28.4,
+          "direction": "raises",
+          "value": 27.03
+        },
+        {
+          "feature": "hour_cos",
+          "label": "Time of day (cos)",
+          "contribution_pct": 20.3,
+          "direction": "raises",
+          "value": -0.71
+        },
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 16.0,
+          "direction": "raises",
+          "value": 76.0
+        },
+        {
+          "feature": "pet_c",
+          "label": "PET",
+          "contribution_pct": 8.3,
+          "direction": "raises",
+          "value": 31.24
+        },
+        {
+          "feature": "day_cos",
+          "label": "Season (cos)",
+          "contribution_pct": 7.0,
+          "direction": "raises",
+          "value": -0.63
+        },
+        {
+          "feature": "temperature_c",
+          "label": "Temperature",
+          "contribution_pct": 5.6,
+          "direction": "raises",
+          "value": 29.0
+        }
+      ]
+    }
+  },
+  {
+    "id": "varanasi-2025090712",
+    "district": "Varanasi",
+    "timestamp": "2025-09-07T12:00:00",
+    "observed": {
+      "temperature_c": 32.1,
+      "humidity_pct": 70.0,
+      "wind_speed_ms": 0.7,
+      "shortwave_radiation_wm2": 848.0,
+      "htsi": 74.5,
+      "risk": "Extreme"
+    },
+    "prediction": {
+      "risk": "Extreme",
+      "confidence_pct": 99.8,
+      "high_risk_probability_pct": 100.0,
+      "probabilities": {
+        "Low": 0.0,
+        "Moderate": 0.0,
+        "High": 0.2,
+        "Extreme": 99.8,
+        "Emergency": 0.0
+      },
+      "correct": true,
+      "explanation": [
+        {
+          "feature": "heat_index_c",
+          "label": "Heat Index",
+          "contribution_pct": 35.2,
+          "direction": "raises",
+          "value": 40.7
+        },
+        {
+          "feature": "uv_index_proxy",
+          "label": "UV proxy",
+          "contribution_pct": 19.0,
+          "direction": "raises",
+          "value": 8.93
+        },
+        {
+          "feature": "shortwave_radiation_wm2",
+          "label": "Solar radiation",
+          "contribution_pct": 19.0,
+          "direction": "raises",
+          "value": 848.0
+        },
+        {
+          "feature": "wind_speed_ms",
+          "label": "Wind speed",
+          "contribution_pct": 9.0,
+          "direction": "raises",
+          "value": 0.65
+        },
+        {
+          "feature": "humidity_pct",
+          "label": "Relative humidity",
+          "contribution_pct": 4.4,
+          "direction": "raises",
+          "value": 70.0
+        },
+        {
+          "feature": "hour_cos",
+          "label": "Time of day (cos)",
+          "contribution_pct": 3.9,
+          "direction": "reduces",
+          "value": -1.0
+        }
+      ]
+    }
+  }
+]

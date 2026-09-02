@@ -1,3 +1,11 @@
+import {
+  MODEL_INFO,
+  predictHeatRisk,
+  type ModelContribution,
+} from '@/lib/ml-model';
+
+export { MODEL_INFO } from '@/lib/ml-model';
+
 export type Risk = 'Low' | 'Moderate' | 'High' | 'Extreme' | 'Emergency';
 
 export type DistrictConfig = {
@@ -193,34 +201,6 @@ export const DISTRICTS: DistrictConfig[] = [
   },
 ];
 
-export const MODEL_INFO = {
-  model_version: 'htsi-real-3.0',
-  model_type: 'Class-balanced multinomial heat-risk classifier',
-  data_source:
-    'Open-Meteo ERA5-Seamless historical weather; transparent HTSI-derived target labels',
-  train_samples: 1440,
-  test_samples: 364,
-  metrics: {
-    accuracy_pct: 72.8,
-    macro_f1_pct: 45.9,
-    all_class_macro_f1_pct: 36.7,
-    false_alarms: 28,
-    missed_events: 8,
-  },
-  feature_names: [
-    'temperature',
-    'relative humidity',
-    'heat index',
-    'WBGT',
-    'PET',
-    'UV index',
-    'wind speed',
-    'hour of day',
-  ],
-  label_note:
-    'The active model uses real weather with HTSI-derived proxy labels, not official IMD event outcomes.',
-};
-
 const actions: Record<Risk, string> = {
   Low: 'Continue routine monitoring and hydration messaging.',
   Moderate: 'Increase public advisories and check vulnerable residents.',
@@ -313,10 +293,52 @@ export function computeHtsi(input: {
   };
 }
 
+function modelFields(
+  config: DistrictConfig,
+  input: {
+    temp: number;
+    humidity: number;
+    wind: number;
+    solar: number;
+    timestamp: string | Date;
+  },
+) {
+  const prediction = predictHeatRisk({
+    temperature_c: input.temp,
+    humidity_pct: input.humidity,
+    wind_speed_ms: input.wind,
+    shortwave_radiation_wm2: input.solar,
+    latitude: config.lat,
+    longitude: config.lon,
+    timestamp: input.timestamp,
+  });
+  return {
+    risk: prediction.predicted_class as Risk,
+    probability: Math.round(prediction.confidence_pct),
+    model_confidence: prediction.confidence_pct,
+    high_risk_probability: prediction.high_risk_probability_pct,
+    probabilities: prediction.probabilities,
+    explanation: prediction.explanation as ModelContribution[],
+    model_version: MODEL_INFO.model_version,
+    action: actions[prediction.predicted_class as Risk],
+  };
+}
+
 function fallbackDistrict(config: DistrictConfig) {
+  const timestamp = new Date();
+  const hour = Number(
+    new Intl.DateTimeFormat('en-IN', {
+      timeZone: 'Asia/Kolkata',
+      hour: '2-digit',
+      hourCycle: 'h23',
+    }).format(timestamp),
+  );
+  const solar = hour >= 7 && hour <= 18 ? 650 : 10;
   const result = computeHtsi({
     temp: config.fallbackTemp,
     humidity: config.fallbackHumidity,
+    wind: 1.7,
+    solar,
   });
   return {
     ...config,
@@ -324,10 +346,17 @@ function fallbackDistrict(config: DistrictConfig) {
     humidity: config.fallbackHumidity,
     wind: 1.7,
     uv: 7.4,
+    solar,
     aqi: 85,
     source: 'resilient-fallback',
-    probability: Math.round(Math.min(96, result.htsi + 7)),
     ...result,
+    ...modelFields(config, {
+      temp: config.fallbackTemp,
+      humidity: config.fallbackHumidity,
+      wind: 1.7,
+      solar,
+      timestamp,
+    }),
   };
 }
 
@@ -337,7 +366,7 @@ export async function fetchCurrentDistrict(config: DistrictConfig) {
       latitude: String(config.lat),
       longitude: String(config.lon),
       current:
-        'temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,uv_index',
+        'temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,uv_index,shortwave_radiation',
       timezone: 'Asia/Kolkata',
     });
     const response = await fetch(
@@ -355,8 +384,17 @@ export async function fetchCurrentDistrict(config: DistrictConfig) {
     );
     const wind = Number(current.wind_speed_10m ?? 6) / 3.6;
     const uv = Number(current.uv_index ?? 6.5);
-    const hour = new Date().getHours();
-    const solar = hour >= 7 && hour <= 18 ? 680 : 20;
+    const timestamp = new Date();
+    const hour = Number(
+      new Intl.DateTimeFormat('en-IN', {
+        timeZone: 'Asia/Kolkata',
+        hour: '2-digit',
+        hourCycle: 'h23',
+      }).format(timestamp),
+    );
+    const solar = Number(
+      current.shortwave_radiation ?? (hour >= 7 && hour <= 18 ? 680 : 10),
+    );
     const result = computeHtsi({ temp, humidity, wind, uv, solar });
     return {
       ...config,
@@ -364,10 +402,17 @@ export async function fetchCurrentDistrict(config: DistrictConfig) {
       humidity: Math.round(humidity),
       wind: Number(wind.toFixed(1)),
       uv: Number(uv.toFixed(1)),
+      solar: Number(solar.toFixed(1)),
       aqi: 85,
       source: 'open-meteo',
-      probability: Math.round(Math.min(96, result.htsi + 7)),
       ...result,
+      ...modelFields(config, {
+        temp,
+        humidity,
+        wind,
+        solar,
+        timestamp,
+      }),
     };
   } catch {
     return fallbackDistrict(config);
@@ -389,7 +434,7 @@ export async function fetchDistrictForecast(name: string) {
       latitude: String(config.lat),
       longitude: String(config.lon),
       hourly:
-        'temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,uv_index',
+        'temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,uv_index,shortwave_radiation',
       timezone: 'Asia/Kolkata',
       forecast_days: '5',
     });
@@ -405,20 +450,26 @@ export async function fetchDistrictForecast(name: string) {
         relative_humidity_2m: number[];
         wind_speed_10m: number[];
         uv_index: number[];
+        shortwave_radiation: number[];
       };
     };
     const forecast = payload.hourly.time
       .map((time, index) => {
         const hour = Number(time.slice(11, 13));
+        const temp = payload.hourly.temperature_2m[index];
+        const humidity = payload.hourly.relative_humidity_2m[index];
+        const wind = payload.hourly.wind_speed_10m[index] / 3.6;
+        const solar =
+          payload.hourly.shortwave_radiation[index] ??
+          (hour >= 7 && hour <= 18
+            ? Math.max(120, 760 - Math.abs(13 - hour) * 90)
+            : 10);
         const result = computeHtsi({
-          temp: payload.hourly.temperature_2m[index],
-          humidity: payload.hourly.relative_humidity_2m[index],
-          wind: payload.hourly.wind_speed_10m[index] / 3.6,
+          temp,
+          humidity,
+          wind,
           uv: payload.hourly.uv_index[index] ?? 0,
-          solar:
-            hour >= 7 && hour <= 18
-              ? Math.max(120, 760 - Math.abs(13 - hour) * 90)
-              : 10,
+          solar,
         });
         return {
           time,
@@ -426,9 +477,13 @@ export async function fetchDistrictForecast(name: string) {
             weekday: 'short',
             hour: 'numeric',
           }),
-          temp: Number(payload.hourly.temperature_2m[index].toFixed(1)),
-          humidity: payload.hourly.relative_humidity_2m[index],
+          temp: Number(temp.toFixed(1)),
+          humidity,
+          wind: Number(wind.toFixed(1)),
+          uv: Number((payload.hourly.uv_index[index] ?? solar / 95).toFixed(1)),
+          solar: Number(solar.toFixed(1)),
           ...result,
+          ...modelFields(config, { temp, humidity, wind, solar, timestamp: time }),
         };
       })
       .filter((_, index) => index % 3 === 0);
@@ -438,8 +493,10 @@ export async function fetchDistrictForecast(name: string) {
       return {
         horizon_hours: hours,
         predicted_class: item.risk,
-        probability: Math.round(Math.min(96, item.htsi + 7)),
+        probability: item.model_confidence,
+        high_risk_probability: item.high_risk_probability,
         htsi: item.htsi,
+        explanation: item.explanation,
       };
     });
     const peak = [...forecast].sort((a, b) => b.htsi - a.htsi)[0];
@@ -468,8 +525,10 @@ export async function fetchDistrictForecast(name: string) {
       const result = computeHtsi({
         temp,
         humidity,
+        wind: 1.6,
         solar: hour >= 7 && hour <= 18 ? 640 : 10,
       });
+      const solar = hour >= 7 && hour <= 18 ? 640 : 10;
       return {
         time: time.toISOString(),
         label: time.toLocaleString('en-IN', {
@@ -478,7 +537,17 @@ export async function fetchDistrictForecast(name: string) {
         }),
         temp: Number(temp.toFixed(1)),
         humidity: Math.round(humidity),
+        wind: 1.6,
+        uv: Number((solar / 95).toFixed(1)),
+        solar,
         ...result,
+        ...modelFields(config, {
+          temp,
+          humidity,
+          wind: 1.6,
+          solar,
+          timestamp: time,
+        }),
       };
     });
     const horizons = [24, 48, 72].map((hours) => {
@@ -486,8 +555,10 @@ export async function fetchDistrictForecast(name: string) {
       return {
         horizon_hours: hours,
         predicted_class: item.risk,
-        probability: Math.round(Math.min(96, item.htsi + 7)),
+        probability: item.model_confidence,
+        high_risk_probability: item.high_risk_probability,
         htsi: item.htsi,
+        explanation: item.explanation,
       };
     });
     return {
@@ -527,21 +598,6 @@ export function vulnerabilityProfiles(weather: {
       multiplier,
     }),
   }));
-}
-
-export function validationReplay() {
-  return Array.from({ length: 24 }, (_, index) => {
-    const actual = 34 + Math.sin(index / 3) * 20 + index * 1.2;
-    const predicted = Math.max(
-      8,
-      Math.min(96, actual + Math.cos(index / 2) * 8),
-    );
-    return {
-      label: `D${index + 1}`,
-      actual_htsi: Number(actual.toFixed(1)),
-      predicted_probability: Number(predicted.toFixed(1)),
-    };
-  });
 }
 
 export async function fetchNearbyFacilities(name: string) {

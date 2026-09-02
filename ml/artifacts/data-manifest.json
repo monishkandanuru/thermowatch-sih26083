@@ -1,0 +1,144 @@
+{
+  "source": "Open-Meteo Historical Weather API",
+  "model": "ERA5-Seamless",
+  "source_url": "https://open-meteo.com/en/docs/historical-weather-api",
+  "date_range": "2022-01-01 to 2025-12-31",
+  "timezone": "Asia/Kolkata",
+  "variables": [
+    "temperature_2m",
+    "relative_humidity_2m",
+    "wind_speed_10m",
+    "shortwave_radiation"
+  ],
+  "sampling": "every third hour after validation",
+  "locations": [
+    {
+      "district": "Delhi",
+      "latitude": 28.6139,
+      "longitude": 77.209,
+      "rows": 11688
+    },
+    {
+      "district": "Jaipur",
+      "latitude": 26.9124,
+      "longitude": 75.7873,
+      "rows": 11688
+    },
+    {
+      "district": "Ahmedabad",
+      "latitude": 23.0225,
+      "longitude": 72.5714,
+      "rows": 11688
+    },
+    {
+      "district": "Nagpur",
+      "latitude": 21.1458,
+      "longitude": 79.0882,
+      "rows": 11688
+    },
+    {
+      "district": "Hyderabad",
+      "latitude": 17.385,
+      "longitude": 78.4867,
+      "rows": 11688
+    },
+    {
+      "district": "Patna",
+      "latitude": 25.5941,
+      "longitude": 85.1376,
+      "rows": 11688
+    },
+    {
+      "district": "Lucknow",
+      "latitude": 26.8467,
+      "longitude": 80.9462,
+      "rows": 11688
+    },
+    {
+      "district": "Bhopal",
+      "latitude": 23.2599,
+      "longitude": 77.4126,
+      "rows": 11688
+    },
+    {
+      "district": "Bhubaneswar",
+      "latitude": 20.2961,
+      "longitude": 85.8245,
+      "rows": 11688
+    },
+    {
+      "district": "Chandigarh",
+      "latitude": 30.7333,
+      "longitude": 76.7794,
+      "rows": 11688
+    },
+    {
+      "district": "Bikaner",
+      "latitude": 28.0229,
+      "longitude": 73.3119,
+      "rows": 11688
+    },
+    {
+      "district": "Jodhpur",
+      "latitude": 26.2389,
+      "longitude": 73.0243,
+      "rows": 11688
+    },
+    {
+      "district": "Varanasi",
+      "latitude": 25.3176,
+      "longitude": 82.9739,
+      "rows": 11688
+    },
+    {
+      "district": "Prayagraj",
+      "latitude": 25.4358,
+      "longitude": 81.8463,
+      "rows": 11688
+    },
+    {
+      "district": "Gwalior",
+      "latitude": 26.2183,
+      "longitude": 78.1828,
+      "rows": 11688
+    },
+    {
+      "district": "Aurangabad",
+      "latitude": 19.8762,
+      "longitude": 75.3433,
+      "rows": 11688
+    },
+    {
+      "district": "Nanded",
+      "latitude": 19.1383,
+      "longitude": 77.321,
+      "rows": 11688
+    },
+    {
+      "district": "Raipur",
+      "latitude": 21.2514,
+      "longitude": 81.6296,
+      "rows": 11688
+    },
+    {
+      "district": "Ranchi",
+      "latitude": 23.3441,
+      "longitude": 85.3096,
+      "rows": 11688
+    },
+    {
+      "district": "Gaya",
+      "latitude": 24.7914,
+      "longitude": 85.0002,
+      "rows": 11688
+    }
+  ],
+  "rows": {
+    "total": 233760,
+    "train": 116800,
+    "calibration": 58560,
+    "test": 58400
+  },
+  "source_payload_sha256": "e59fed6e11b6475bba05e02b24bbcf22fc8d9b444c1724b02e5e5f3f225d8981",
+  "model_sha256": "3524641bcd67eea074c4351cf805549601c76795e30d6f9f6892cd179b18c311"
+}
