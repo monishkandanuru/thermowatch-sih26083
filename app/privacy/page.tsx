@@ -51,6 +51,20 @@ export default function PrivacyPage() {
           </section>
           <section>
             <h2 className="text-lg font-semibold text-[#17233a]">
+              Local assistant and voice
+            </h2>
+            <p>
+              Assistant answers are created in the browser from the heat-risk
+              data already shown on screen. Chat messages and audio are not
+              stored by ThermoWatch. Optional speech recognition and read-aloud
+              use browser-provided voice services, whose processing and
+              regional-language availability depend on the user&apos;s browser and
+              device. Users can always use text without granting microphone
+              access.
+            </p>
+          </section>
+          <section>
+            <h2 className="text-lg font-semibold text-[#17233a]">
               Retention and deletion
             </h2>
             <p>

@@ -199,6 +199,96 @@ export const DISTRICTS: DistrictConfig[] = [
     fallbackTemp: 40.5,
     fallbackHumidity: 49,
   },
+  {
+    district: 'Srinagar',
+    lat: 34.0837,
+    lon: 74.7973,
+    x: 125,
+    y: 35,
+    fallbackTemp: 31.5,
+    fallbackHumidity: 42,
+  },
+  {
+    district: 'Dehradun',
+    lat: 30.3165,
+    lon: 78.0322,
+    x: 154,
+    y: 63,
+    fallbackTemp: 36.8,
+    fallbackHumidity: 50,
+  },
+  {
+    district: 'Guwahati',
+    lat: 26.1445,
+    lon: 91.7362,
+    x: 276,
+    y: 100,
+    fallbackTemp: 35.2,
+    fallbackHumidity: 72,
+  },
+  {
+    district: 'Kolkata',
+    lat: 22.5726,
+    lon: 88.3639,
+    x: 239,
+    y: 137,
+    fallbackTemp: 37.6,
+    fallbackHumidity: 68,
+  },
+  {
+    district: 'Mumbai',
+    lat: 19.076,
+    lon: 72.8777,
+    x: 112,
+    y: 171,
+    fallbackTemp: 35.4,
+    fallbackHumidity: 70,
+  },
+  {
+    district: 'Pune',
+    lat: 18.5204,
+    lon: 73.8567,
+    x: 122,
+    y: 178,
+    fallbackTemp: 36.7,
+    fallbackHumidity: 51,
+  },
+  {
+    district: 'Bengaluru',
+    lat: 12.9716,
+    lon: 77.5946,
+    x: 150,
+    y: 235,
+    fallbackTemp: 34.1,
+    fallbackHumidity: 48,
+  },
+  {
+    district: 'Chennai',
+    lat: 13.0827,
+    lon: 80.2707,
+    x: 176,
+    y: 232,
+    fallbackTemp: 38.2,
+    fallbackHumidity: 65,
+  },
+  {
+    district: 'Kochi',
+    lat: 9.9312,
+    lon: 76.2673,
+    x: 139,
+    y: 271,
+    fallbackTemp: 34.3,
+    fallbackHumidity: 76,
+  },
+  {
+    district: 'Visakhapatnam',
+    lat: 17.6868,
+    lon: 83.2185,
+    x: 201,
+    y: 182,
+    fallbackTemp: 36.5,
+    fallbackHumidity: 69,
+  },
 ];
 
 const actions: Record<Risk, string> = {
@@ -419,8 +509,25 @@ export async function fetchCurrentDistrict(config: DistrictConfig) {
   }
 }
 
+let currentDistrictCache:
+  | { expiresAt: number; data: Awaited<ReturnType<typeof fetchCurrentDistrict>>[] }
+  | undefined;
+let currentDistrictRequest:
+  | Promise<Awaited<ReturnType<typeof fetchCurrentDistrict>>[]>
+  | undefined;
+
 export async function fetchAllDistricts() {
-  return Promise.all(DISTRICTS.map(fetchCurrentDistrict));
+  if (currentDistrictCache && currentDistrictCache.expiresAt > Date.now())
+    return currentDistrictCache.data;
+  if (currentDistrictRequest) return currentDistrictRequest;
+  currentDistrictRequest = Promise.all(DISTRICTS.map(fetchCurrentDistrict));
+  try {
+    const data = await currentDistrictRequest;
+    currentDistrictCache = { expiresAt: Date.now() + 5 * 60_000, data };
+    return data;
+  } finally {
+    currentDistrictRequest = undefined;
+  }
 }
 
 export type ForecastLayerPoint = DistrictConfig & {

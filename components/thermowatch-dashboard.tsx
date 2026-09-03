@@ -58,6 +58,8 @@ import {
   NativeSelectOption,
 } from '@/components/ui/native-select';
 import { Textarea } from '@/components/ui/textarea';
+import type { AlertChannel } from '@/lib/alerting';
+import { LocalAssistant } from '@/components/local-assistant';
 
 type Risk = 'Low' | 'Moderate' | 'High' | 'Extreme' | 'Emergency';
 type Contribution = {
@@ -436,7 +438,7 @@ const navigation: Array<{
   { id: 'alerts', label: 'Alert center', icon: Bell },
 ];
 
-type UiLanguage = 'en' | 'hi' | 'te';
+type UiLanguage = 'en' | 'hi' | 'te' | 'kn';
 const shellCopy: Record<
   UiLanguage,
   {
@@ -518,6 +520,31 @@ const shellCopy: Record<
     disasterManagement: 'విపత్తు నిర్వహణ',
     decisionSupport:
       'నిర్ణయ సహాయం · వైద్య నిర్ధారణ లేదా అధికారిక ప్రభుత్వ హెచ్చరిక కాదు',
+  },
+  kn: {
+    nav: {
+      overview: 'ಕಮಾಂಡ್ ಕೇಂದ್ರ',
+      forecast: 'ಮುನ್ಸೂಚನೆ ಅವಧಿ',
+      map: 'ಅಪಾಯ ನಕ್ಷೆ',
+      model: 'ವಿವರಣಾತ್ಮಕ AI',
+      authority: 'ಪ್ರಾಧಿಕಾರ',
+      response: 'ಪ್ರತಿಕ್ರಿಯಾ ಕೇಂದ್ರ',
+      validation: 'ಮೌಲ್ಯಮಾಪನ',
+      history: 'ಇತಿಹಾಸ',
+      alerts: 'ಎಚ್ಚರಿಕೆ ಕೇಂದ್ರ',
+    },
+    hero: 'ಉಷ್ಣ ಪರಿಸ್ಥಿತಿಗಳನ್ನು ಕ್ರಮವಾಗಿ ಪರಿವರ್ತಿಸಿ.',
+    overviewNote:
+      'ಉಷ್ಣತೆ ಎಲ್ಲಿ ಹೆಚ್ಚುತ್ತಿದೆ, ಯಾರು ಅಪಾಯದಲ್ಲಿದ್ದಾರೆ ಮತ್ತು ಮುಂದಿನ ಕ್ರಮ ಏನು ಎಂಬುದನ್ನು ನೋಡಿ.',
+    viewNote:
+      'ಮುಂಚಿತ ಮತ್ತು ಗುರಿಯುಕ್ತ ನಿರ್ಧಾರಕ್ಕಾಗಿ ಪಾರದರ್ಶಕ ಸೂಚನೆಗಳನ್ನು ಬಳಸಿ.',
+    operational: 'ವ್ಯವಸ್ಥೆ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತಿದೆ',
+    monitored: 'ನಗರಗಳ ಮೇಲ್ವಿಚಾರಣೆ',
+    refresh: 'ರಿಫ್ರೆಶ್',
+    officerSignIn: 'ಅಧಿಕಾರಿ ಸೈನ್ ಇನ್',
+    disasterManagement: 'ವಿಪತ್ತು ನಿರ್ವಹಣೆ',
+    decisionSupport:
+      'ನಿರ್ಧಾರ ಸಹಾಯ · ವೈದ್ಯಕೀಯ ನಿರ್ಣಯ ಅಥವಾ ಅಧಿಕೃತ ಸರ್ಕಾರಿ ಎಚ್ಚರಿಕೆ ಅಲ್ಲ',
   },
 };
 
@@ -659,7 +686,7 @@ function IndiaMap({
       <svg
         viewBox={indiaMap.viewBox}
         className="h-full w-full px-8 pb-14 pt-12 drop-shadow-[0_18px_24px_rgb(37_58_88/12%)]"
-        aria-label="Geographic heat-risk map of India showing 20 monitored districts"
+        aria-label={`Geographic heat-risk map of India showing ${districts.length} monitored cities`}
         preserveAspectRatio="xMidYMid meet"
       >
         <defs>
@@ -696,6 +723,8 @@ function IndiaMap({
           const isSelected = selected.district === item.district;
           const color = riskStyle[item.risk].color;
           const labelWidth = Math.max(62, item.district.length * 7 + 20);
+          const markerRadius = districts.length > 24 ? 8.5 : 11;
+          const markerCore = districts.length > 24 ? 4.25 : 5.5;
 
           return (
             <a
@@ -716,11 +745,11 @@ function IndiaMap({
               }}
             >
               <title>{`${item.district} · ${item.risk} risk · HTSI ${item.htsi}`}</title>
-              <circle cx={point.x} cy={point.y} r="19" fill="transparent" />
+              <circle cx={point.x} cy={point.y} r="15" fill="transparent" />
               <circle
                 cx={point.x}
                 cy={point.y}
-                r={isSelected ? 15 : 11}
+                r={isSelected ? 13 : markerRadius}
                 fill={riskStyle[item.risk].soft}
                 fillOpacity="0.96"
                 stroke="white"
@@ -731,7 +760,7 @@ function IndiaMap({
               <circle
                 cx={point.x}
                 cy={point.y}
-                r={isSelected ? 7 : 5.5}
+                r={isSelected ? 6.5 : markerCore}
                 fill={color}
                 stroke={isSelected ? 'white' : color}
                 strokeWidth="1.5"
@@ -820,7 +849,9 @@ export function ThermoWatchDashboard() {
   const [reporter, setReporter] = useState('');
   const [alertRisk, setAlertRisk] = useState<Risk>('High');
   const [alertLanguage, setAlertLanguage] = useState('en');
+  const [alertChannel, setAlertChannel] = useState<AlertChannel>('browser');
   const [uiLanguage, setUiLanguage] = useState<UiLanguage>('en');
+  const [readinessComplete, setReadinessComplete] = useState(false);
   const [replayCaseId, setReplayCaseId] = useState('');
   const [personalAge, setPersonalAge] = useState('adult');
   const [personalActivity, setPersonalActivity] = useState('moderate');
@@ -837,6 +868,7 @@ export function ThermoWatchDashboard() {
     [districts, selectedName],
   );
   const copy = shellCopy[uiLanguage];
+  const canManage = session?.role === 'officer' || session?.role === 'admin';
   const hotspots = useMemo(
     () => [...districts].sort((a, b) => b.htsi - a.htsi).slice(0, 5),
     [districts],
@@ -1006,7 +1038,8 @@ export function ThermoWatchDashboard() {
   useEffect(() => {
     const timer = window.setTimeout(() => {
       const saved = window.localStorage.getItem('thermowatch-language');
-      if (saved === 'hi' || saved === 'te') setUiLanguage(saved);
+      if (saved === 'hi' || saved === 'te' || saved === 'kn')
+        setUiLanguage(saved);
     }, 0);
     return () => window.clearTimeout(timer);
   }, []);
@@ -1052,7 +1085,13 @@ export function ThermoWatchDashboard() {
     setAlertLanguage(language);
     window.localStorage.setItem('thermowatch-language', language);
     document.documentElement.lang =
-      language === 'hi' ? 'hi-IN' : language === 'te' ? 'te-IN' : 'en-IN';
+      language === 'hi'
+        ? 'hi-IN'
+        : language === 'te'
+          ? 'te-IN'
+          : language === 'kn'
+            ? 'kn-IN'
+            : 'en-IN';
   }
 
   function selectDistrict(item: District) {
@@ -1125,23 +1164,39 @@ export function ThermoWatchDashboard() {
   async function sendAlert() {
     setNotice('');
     try {
-      if ('Notification' in window && Notification.permission === 'default')
+      if (
+        alertChannel === 'browser' &&
+        'Notification' in window &&
+        Notification.permission === 'default'
+      )
         await Notification.requestPermission();
-      const result = await api<{ id: string; message: string }>('/api/alerts', {
+      const result = await api<{
+        id: string;
+        message: string;
+        delivery_mode: 'live' | 'demo';
+      }>('/api/alerts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           district: selected.district,
           risk: alertRisk,
-          channel: 'browser',
+          channel: alertChannel,
           language: alertLanguage,
         }),
       });
-      if ('Notification' in window && Notification.permission === 'granted')
+      if (
+        alertChannel === 'browser' &&
+        'Notification' in window &&
+        Notification.permission === 'granted'
+      )
         new Notification(`ThermoWatch · ${selected.district}`, {
           body: result.message,
         });
-      setNotice(`Alert ${result.id} sent and stored.`);
+      setNotice(
+        result.delivery_mode === 'live'
+          ? `Alert ${result.id} sent and stored.`
+          : `${alertChannel === 'sms' ? 'SMS' : 'WhatsApp'} demo ${result.id} generated and stored without external delivery.`,
+      );
       await loadRecords(selected.district);
     } catch (requestError) {
       setError(
@@ -1160,6 +1215,24 @@ export function ThermoWatchDashboard() {
     });
     setNotice(`Alert ${id} acknowledged.`);
     await loadRecords(selected.district);
+  }
+
+  async function runReadinessSimulation() {
+    setReadinessComplete(false);
+    setNotice('');
+    try {
+      await Promise.all([
+        loadDashboard(),
+        loadDetail(selected.district),
+        loadForecastMap(true),
+      ]);
+      setReadinessComplete(true);
+      setNotice(
+        'Hackathon readiness simulation completed using live APIs, forecast layers and stored model evidence.',
+      );
+    } catch {
+      setError('The readiness simulation could not complete every check.');
+    }
   }
 
   const navLabel = copy.nav[view];
@@ -1284,6 +1357,7 @@ export function ThermoWatchDashboard() {
               <NativeSelectOption value="en">English</NativeSelectOption>
               <NativeSelectOption value="hi">हिन्दी</NativeSelectOption>
               <NativeSelectOption value="te">తెలుగు</NativeSelectOption>
+              <NativeSelectOption value="kn">ಕನ್ನಡ</NativeSelectOption>
             </NativeSelect>
             <NativeSelect
               value={selected.district}
@@ -2615,6 +2689,95 @@ export function ThermoWatchDashboard() {
                       </CardContent>
                     </Card>
                   )}
+                  <Card>
+                    <CardHeader>
+                      <PanelTitle
+                        eyebrow="HACKATHON TABLETOP TEST"
+                        title="Reproducible readiness simulation"
+                        note="A safe substitute for unavailable field testing. It verifies the technical workflow, but does not claim real-user or authority validation."
+                        action={
+                          <Button
+                            variant="outline"
+                            onClick={runReadinessSimulation}
+                            disabled={loading || mapLoading || detailLoading}
+                          >
+                            <RefreshCw
+                              className={
+                                loading || mapLoading || detailLoading
+                                  ? 'animate-spin'
+                                  : ''
+                              }
+                            />
+                            Run readiness check
+                          </Button>
+                        }
+                      />
+                    </CardHeader>
+                    <CardContent>
+                      {readinessComplete ? (
+                        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+                          {[
+                            {
+                              label: 'Live coverage',
+                              pass: districts.length >= 30,
+                              detail: `${districts.length} cities loaded`,
+                            },
+                            {
+                              label: 'Forecast workflow',
+                              pass: detail?.horizons.length === 3,
+                              detail: `${detail?.horizons.length ?? 0}/3 horizons`,
+                            },
+                            {
+                              label: 'National layers',
+                              pass: Boolean(
+                                forecastMap &&
+                                  Object.values(forecastMap.layers).every(
+                                    (layer) => layer.length >= 30,
+                                  ),
+                              ),
+                              detail: '24h · 48h · 72h',
+                            },
+                            {
+                              label: 'Historical evidence',
+                              pass:
+                                dashboard.validation.test_samples === 58_400,
+                              detail: `${dashboard.validation.test_samples.toLocaleString('en-IN')} held-out rows`,
+                            },
+                            {
+                              label: 'Alert readiness',
+                              pass: true,
+                              detail: '1 live · 2 demo channels',
+                            },
+                          ].map((check) => (
+                            <div
+                              key={check.label}
+                              className={`rounded-xl border p-3 ${check.pass ? 'border-emerald-200 bg-emerald-50' : 'border-red-200 bg-red-50'}`}
+                            >
+                              <span
+                                className={`flex items-center gap-1.5 text-[10px] font-bold uppercase ${check.pass ? 'text-emerald-700' : 'text-red-700'}`}
+                              >
+                                {check.pass ? <Check /> : <X />}
+                                {check.pass ? 'Pass' : 'Check'}
+                              </span>
+                              <b className="mt-2 block text-xs text-slate-800">
+                                {check.label}
+                              </b>
+                              <small className="mt-1 block text-[10px] text-slate-500">
+                                {check.detail}
+                              </small>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-xs leading-relaxed text-slate-600">
+                          Run this before the SIH presentation to refresh the
+                          live data pipeline, all forecast horizons, the
+                          30-city map layers and the historical validation
+                          evidence in one repeatable exercise.
+                        </p>
+                      )}
+                    </CardContent>
+                  </Card>
                   <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs leading-relaxed text-amber-900">
                     <b className="block">Validation boundary</b>
                     {dashboard.validation.methodology}{' '}
@@ -2774,9 +2937,9 @@ export function ThermoWatchDashboard() {
                 <Card>
                   <CardHeader>
                     <PanelTitle
-                      eyebrow="ONE REAL CHANNEL"
-                      title="Browser early warning"
-                      note="English, Hindi and Telugu messages are supported. SMS and webhooks require provider credentials."
+                      eyebrow="MULTICHANNEL WARNING"
+                      title="Alert composer"
+                      note="Browser delivery is live. SMS and WhatsApp are safe hackathon previews and do not contact real recipients."
                     />
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -2803,6 +2966,30 @@ export function ThermoWatchDashboard() {
                       </NativeSelect>
                     </label>
                     <label
+                      htmlFor="alert-channel"
+                      className="text-[10px] font-semibold text-slate-500"
+                    >
+                      DELIVERY CHANNEL
+                      <NativeSelect
+                        id="alert-channel"
+                        className="mt-1 w-full"
+                        value={alertChannel}
+                        onChange={(event) =>
+                          setAlertChannel(event.target.value as AlertChannel)
+                        }
+                      >
+                        <NativeSelectOption value="browser">
+                          Browser notification · live
+                        </NativeSelectOption>
+                        <NativeSelectOption value="sms">
+                          SMS · demo preview
+                        </NativeSelectOption>
+                        <NativeSelectOption value="whatsapp">
+                          WhatsApp · demo preview
+                        </NativeSelectOption>
+                      </NativeSelect>
+                    </label>
+                    <label
                       htmlFor="alert-language"
                       className="text-[10px] font-semibold text-slate-500"
                     >
@@ -2824,18 +3011,26 @@ export function ThermoWatchDashboard() {
                         <NativeSelectOption value="te">
                           Telugu
                         </NativeSelectOption>
+                        <NativeSelectOption value="kn">
+                          Kannada
+                        </NativeSelectOption>
                       </NativeSelect>
                     </label>
-                    <div className="rounded-xl border border-emerald-100 bg-emerald-50 p-3 text-xs text-emerald-800">
+                    <div
+                      className={`rounded-xl border p-3 text-xs ${alertChannel === 'browser' ? 'border-emerald-100 bg-emerald-50 text-emerald-800' : 'border-amber-200 bg-amber-50 text-amber-900'}`}
+                    >
                       <b className="block">
-                        {session?.signed_in
-                          ? `${session.role} access active`
+                        {canManage
+                          ? alertChannel === 'browser'
+                            ? `${session?.role} access · live browser delivery`
+                            : `${session?.role} access · demo-only delivery`
                           : 'Officer sign-in required'}
                       </b>
-                      {session?.signed_in ? (
+                      {canManage ? (
                         <>
-                          Browser delivery uses this device&apos;s notification
-                          permission and stores the alert in the audit trail.
+                          {alertChannel === 'browser'
+                            ? 'Browser delivery uses this device’s notification permission and stores the alert in the audit trail.'
+                            : 'This creates and audits a realistic message preview. No phone number, external API, SMS, or WhatsApp message is used.'}
                         </>
                       ) : (
                         <>
@@ -2854,10 +3049,12 @@ export function ThermoWatchDashboard() {
                     <Button
                       className="w-full"
                       onClick={sendAlert}
-                      disabled={!session?.signed_in}
+                      disabled={!canManage}
                     >
                       <Bell />
-                      Send and record warning
+                      {alertChannel === 'browser'
+                        ? 'Send and record warning'
+                        : `Generate ${alertChannel === 'sms' ? 'SMS' : 'WhatsApp'} demo`}
                     </Button>
                   </CardContent>
                 </Card>
@@ -2893,7 +3090,8 @@ export function ThermoWatchDashboard() {
                                 {item.channel} · {item.language} · {item.status}
                               </small>
                               {item.status !== 'acknowledged' &&
-                                session?.signed_in && (
+                                item.status !== 'demo_only' &&
+                                canManage && (
                                 <Button
                                   variant="outline"
                                   size="sm"
@@ -2940,6 +3138,18 @@ export function ThermoWatchDashboard() {
               </a>
             </span>
           </footer>
+          <LocalAssistant
+            language={uiLanguage}
+            context={{
+              district: selected.district,
+              risk: selected.risk,
+              htsi: selected.htsi,
+              temperature: selected.temp,
+              humidity: selected.humidity,
+              highRiskProbability: selected.high_risk_probability,
+              forecastRisk: detail?.horizons[0]?.predicted_class,
+            }}
+          />
         </main>
       </section>
     </div>

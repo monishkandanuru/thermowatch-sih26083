@@ -107,7 +107,7 @@ Users can:
 - Switch between live, +24-hour, +48-hour and +72-hour ML forecast layers
 - Compare High+ probability across all monitored locations
 
-The current prototype monitors 20 important Indian cities/district locations.
+The live prototype monitors 30 important Indian city/district locations. The reproducible historical ML dataset remains a fixed 20-location cohort so the original held-out metrics are not silently changed when live map coverage expands.
 
 ### Explainable AI page
 
@@ -160,6 +160,8 @@ The validation page displays:
 
 The displayed validation currently uses real historical weather with HTSI-derived proxy labels. It is not official IMD outcome validation.
 
+Because field testing is not available during the hackathon, the page also includes a reproducible tabletop readiness simulation. It refreshes live city coverage, three forecast horizons, national layers, historical evidence and alert-channel readiness. This is technical workflow evidence, not a substitute for real officer or community usability validation.
+
 ### Persistent history
 
 ThermoWatch stores data in a Cloudflare D1 database.
@@ -187,13 +189,18 @@ Warnings are deduplicated by district, horizon, valid forecast hour and class. I
 The alert workflow:
 
 1. User selects the risk level.
-2. User selects English, Hindi, or Telugu.
-3. Browser asks for notification permission.
-4. ThermoWatch sends a notification on that device.
-5. The alert is saved in the database.
-6. The authority can acknowledge the alert.
+2. User selects English, Hindi, Telugu, or Kannada.
+3. User selects live browser delivery, SMS demo, or WhatsApp demo.
+4. Browser delivery asks for notification permission and sends on that device.
+5. SMS and WhatsApp produce clearly labelled previews without contacting anyone.
+6. The alert or demo preview is saved in the database and audit trail.
+7. The authority can acknowledge real browser alerts.
 
-SMS and webhook delivery are not active because they require an external provider and credentials.
+SMS and WhatsApp options are implemented as hackathon demonstrations only. Real external delivery is deliberately disabled because it requires a provider, credentials, approved sender identity, consent and delivery-status handling.
+
+### Local assistance chatbot
+
+The floating local assistant answers text questions about the selected city’s current risk, forecast, hydration and emergency action in English, Hindi, Telugu and Kannada. It uses the risk information already loaded in the browser and does not need a paid AI API. Optional speech input and read-aloud use the browser’s Web Speech features; language and voice availability depend on the browser and installed device voices. It is decision support, not an emergency service or medical diagnosis.
 
 ### Access and accountability
 
@@ -212,7 +219,7 @@ ThermoWatch includes a web-app manifest and service worker. It can be installed 
 
 - `/api/health` checks the database and active model version.
 - A public privacy and data-use page explains collection, purpose and limitations.
-- Security headers disable unnecessary camera, microphone and location permissions.
+- Security headers disable camera and location access; microphone access is limited to this site and requested only when the user chooses voice input.
 - Automated tests cover HTSI thresholds, model probability integrity, warning thresholds and API smoke checks.
 - Application-owned pages and controls pass the scoped static accessibility/lint check; manual VoiceOver/NVDA testing is still recommended before field deployment.
 
@@ -365,14 +372,16 @@ Call the current result a **reproducible live ML classifier evaluated on real we
 | Browser notification | Complete | Real browser notification and alert audit trail |
 | Automatic ML warnings | Complete | High+ forecasts generate deduplicated persistent warning events |
 | 24/48/72-hour map layers | Complete | National monitored-location layers use live model inference |
-| Hindi and Telugu alert text | Complete | Alert message templates are available |
+| Four-language alert text | Complete | English, Hindi, Telugu and Kannada templates are available |
 | Alert acknowledgement | Complete | Status is updated and stored |
 | Validation dashboard | Complete for engineering stage | Real chronological 2025 replay, metrics, matrix and selectable cases; labels remain proxy labels |
 | Reproducible trained ML artifact | Complete | Versioned JSON coefficients, scaler and calibration are loaded for live inference |
 | Live ML risk prediction | Complete | Current and forecast weather produce class, confidence, High+ probability and explanations |
 | Official IMD outcome labels | Not complete | Must be obtained and verified by the team |
-| SMS/WhatsApp alerts | Not complete | Requires a provider, credentials and sender approval |
-| Multilingual interface | Partial | Navigation and operational shell support English, Hindi and Telugu; specialist content needs human language review |
+| SMS/WhatsApp options | Complete for hackathon demo | Preview messages are generated and audited but deliberately not delivered externally |
+| Multilingual interface | Partial | Navigation and operational shell support English, Hindi, Telugu and Kannada; specialist content needs human language review |
+| Local assistance chatbot | Complete for prototype | Text works locally in four languages; browser-supported regional speech input and read-aloud are available |
+| Tabletop readiness simulation | Complete | Repeatable live pipeline, forecast, map, evidence and channel checks replace unavailable field testing without claiming usability validation |
 | Login and role permissions | Complete for hosted prototype | Platform identity gives public/officer/admin server-side roles |
 | Offline/PWA mode | Complete | Installable shell and privacy-safe cached public intelligence |
 | Automated test suite | Complete for core paths | Unit, ML integrity, runtime parity and API smoke tests are included; full browser E2E remains a production improvement |
@@ -611,7 +620,7 @@ Humidity, sunlight, wind and human vulnerability can greatly change heat stress 
 
 ### Are alerts real?
 
-Browser notifications are real and alerts are stored and acknowledged in the database. SMS and WhatsApp need provider credentials and sender approval.
+Browser notifications are real and alerts are stored and acknowledged in the database. SMS and WhatsApp are visible, auditable demo previews only; real delivery still needs provider credentials, consent and sender approval.
 
 ### Is history persistent?
 
@@ -638,12 +647,12 @@ These activities require team ownership, official access, credentials, or field 
 - Obtain verified IMD district/date heatwave outcomes.
 - Validate HTSI thresholds with public-health and disaster-management experts.
 - Replace proxy labels with verified IMD and, where appropriate, public-health outcomes, then retrain the versioned artifact.
-- Test the system with district officers and community users.
-- Collect evidence that the workflow improves response time or decision quality.
+- Run the included tabletop readiness simulation before judging and preserve screenshots of its evidence.
+- After the hackathon, test the system with district officers and community users and collect evidence that the workflow improves response time or decision quality.
 
 ### Notification readiness
 
-- Select an SMS or WhatsApp provider.
+- If moving beyond the demo, select an SMS or WhatsApp provider.
 - Obtain credentials and approved sender identity/templates.
 - Add consent, unsubscribe and delivery-status handling.
 - Define who is authorized to send public alerts.
@@ -666,7 +675,7 @@ These activities require team ownership, official access, credentials, or field 
 
 - Translate the full dashboard into required Indian languages.
 - Improve low-bandwidth and mobile support.
-- Have native Hindi and Telugu reviewers approve the translated operational shell and specialist wording.
+- Have native Hindi, Telugu and Kannada reviewers approve the translated operational shell, assistant prompts and specialist wording.
 - Add an official source and last-updated timestamp to every major data panel.
 - Add state/district filtering for nationwide expansion.
 
@@ -677,8 +686,8 @@ Do not tell judges or users that:
 - The system is officially approved by IMD, NDMA, or a health authority.
 - The HTSI score itself is produced by ML; HTSI remains a transparent formula while the displayed risk class and probability use the model.
 - The current validation proves medical accuracy.
-- SMS or WhatsApp alerts are already active.
-- The current 20-location prototype is complete nationwide district coverage.
+- SMS or WhatsApp messages are delivered to real recipients; these are demo previews only.
+- The current 30-city live prototype is complete nationwide district coverage.
 - ThermoWatch can replace official emergency alerts or medical advice.
 
 Correct wording builds trust and makes the project stronger.
@@ -711,4 +720,6 @@ Before the SIH demonstration:
 
 ## 21. Current release note
 
-The current source includes the trained ML model, historical replay, automatic warnings, national forecast layers, hardened authority permissions, multilingual operational shell, PWA support, health/privacy safeguards and automated core tests. A newly saved hosted version still requires explicit approval before it can replace the public release.
+The current source includes the trained ML model, historical replay, automatic warnings, 30-city forecast layers, hardened authority permissions, a four-language operational shell and local assistant, regional browser voice support, live browser alerts, SMS/WhatsApp demo previews, a tabletop readiness simulation, PWA support, health/privacy safeguards and automated core tests. It is ready to push to GitHub and publish through the existing Sites/Cloudflare runtime after validation.
+
+Important deployment note: the current persistent database and identity integration use Cloudflare D1 and Sites authentication. A direct Vercel deployment would need a separate database adapter (for example, a managed PostgreSQL service), matching environment variables and replacement authentication. Uploading the repository to Vercel without that migration would lose or break persistent history, roles, incidents and alerts. Keep the existing Sites deployment for the hackathon unless the team schedules that migration.

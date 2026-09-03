@@ -1,4 +1,4 @@
-const baseUrl = process.env.TEST_BASE_URL || 'http://127.0.0.1:3000';
+const baseUrl = process.env.TEST_BASE_URL || 'http://localhost:3000';
 
 async function check(path, validate) {
   const response = await fetch(`${baseUrl}${path}`);
@@ -13,7 +13,7 @@ await check('/api/health', (payload) => {
 });
 
 await check('/api/dashboard', (payload) => {
-  if (payload.districts?.length !== 20) throw new Error('district coverage mismatch');
+  if (payload.districts?.length !== 30) throw new Error('city coverage mismatch');
   if (payload.model?.model_version !== 'htsi-logit-4.0')
     throw new Error('live model mismatch');
   if (payload.validation?.test_samples !== 58400)
@@ -24,4 +24,11 @@ await check('/api/district?district=Delhi', (payload) => {
   if (payload.horizons?.length !== 3) throw new Error('forecast horizons missing');
   if (!payload.horizons.every((item) => item.explanation?.length === 6))
     throw new Error('forecast explanations missing');
+});
+
+await check('/api/alerts?district=Delhi', (payload) => {
+  if (!payload.channels?.browser?.ready)
+    throw new Error('browser delivery should be live');
+  if (!payload.channels?.sms?.demo || !payload.channels?.whatsapp?.demo)
+    throw new Error('demo channels are missing');
 });

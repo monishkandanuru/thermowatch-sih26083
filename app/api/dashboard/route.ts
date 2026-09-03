@@ -33,7 +33,7 @@ export async function GET() {
   const [alertCount, automaticWarningCount, incidentCount] = await Promise.all([
     db
       .prepare(
-        "SELECT COUNT(*) AS count FROM alerts WHERE status != 'acknowledged'",
+        "SELECT COUNT(*) AS count FROM alerts WHERE status = 'sent'",
       )
       .first<{ count: number }>(),
     db

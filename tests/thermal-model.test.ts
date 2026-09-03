@@ -4,6 +4,12 @@ import test from 'node:test';
 import { predictHeatRisk } from '../lib/ml-model';
 import { computeHtsi, riskFor } from '../lib/thermowatch';
 import { evaluateForecastWarnings } from '../lib/warnings';
+import {
+  alertDeliveryMode,
+  buildAlertMessage,
+  isAlertChannel,
+  isAlertLanguage,
+} from '../lib/alerting';
 
 void test('HTSI risk boundaries remain stable', () => {
   assert.equal(riskFor(0), 'Low');
@@ -86,4 +92,13 @@ void test('automatic warnings enforce probability and class thresholds', () => {
   assert.equal(warnings[0].district, 'Delhi');
   assert.equal(warnings[0].priority, 'watch');
   assert.match(warnings[0].dedupe_key, /^delhi:24:/);
+});
+
+void test('regional warning templates and demo delivery modes stay explicit', () => {
+  assert.equal(isAlertLanguage('kn'), true);
+  assert.equal(isAlertChannel('whatsapp'), true);
+  assert.match(buildAlertMessage('kn', 'Bengaluru', 'High'), /Bengaluru/);
+  assert.equal(alertDeliveryMode('browser'), 'live');
+  assert.equal(alertDeliveryMode('sms'), 'demo');
+  assert.equal(alertDeliveryMode('whatsapp'), 'demo');
 });
