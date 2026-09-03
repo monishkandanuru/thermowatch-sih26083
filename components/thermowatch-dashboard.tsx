@@ -60,6 +60,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import type { AlertChannel } from '@/lib/alerting';
 import { LocalAssistant } from '@/components/local-assistant';
+import { KannadaLocalizer } from '@/components/kannada-localizer';
 
 type Risk = 'Low' | 'Moderate' | 'High' | 'Extreme' | 'Emergency';
 type Contribution = {
@@ -835,9 +836,7 @@ export function ThermoWatchDashboard() {
   const [forecastMap, setForecastMap] = useState<ForecastMapData | null>(null);
   const [mapHorizon, setMapHorizon] = useState<0 | 24 | 48 | 72>(0);
   const [mapLoading, setMapLoading] = useState(false);
-  const [online, setOnline] = useState(
-    () => typeof navigator === 'undefined' || navigator.onLine,
-  );
+  const [online, setOnline] = useState(true);
   const [loading, setLoading] = useState(true);
   const [detailLoading, setDetailLoading] = useState(true);
   const [error, setError] = useState('');
@@ -868,6 +867,14 @@ export function ThermoWatchDashboard() {
     [districts, selectedName],
   );
   const copy = shellCopy[uiLanguage];
+  const dateLocale =
+    uiLanguage === 'hi'
+      ? 'hi-IN'
+      : uiLanguage === 'te'
+        ? 'te-IN'
+        : uiLanguage === 'kn'
+          ? 'kn-IN'
+          : 'en-IN';
   const canManage = session?.role === 'officer' || session?.role === 'admin';
   const hotspots = useMemo(
     () => [...districts].sort((a, b) => b.htsi - a.htsi).slice(0, 5),
@@ -1028,9 +1035,14 @@ export function ThermoWatchDashboard() {
   useEffect(() => {
     const handleOnline = () => setOnline(true);
     const handleOffline = () => setOnline(false);
+    const timer = window.setTimeout(
+      () => setOnline(window.navigator.onLine),
+      0,
+    );
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
     return () => {
+      window.clearTimeout(timer);
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
@@ -1038,8 +1050,10 @@ export function ThermoWatchDashboard() {
   useEffect(() => {
     const timer = window.setTimeout(() => {
       const saved = window.localStorage.getItem('thermowatch-language');
-      if (saved === 'hi' || saved === 'te' || saved === 'kn')
+      if (saved === 'hi' || saved === 'te' || saved === 'kn') {
         setUiLanguage(saved);
+        setAlertLanguage(saved);
+      }
     }, 0);
     return () => window.clearTimeout(timer);
   }, []);
@@ -1241,6 +1255,7 @@ export function ThermoWatchDashboard() {
     : 'Resilient demonstration data';
 
   return (
+    <KannadaLocalizer enabled={uiLanguage === 'kn'}>
     <div className="min-h-screen bg-[radial-gradient(circle_at_86%_0%,#dfe8f0_0%,transparent_27rem),linear-gradient(135deg,#f7f4ee_0%,#f2f0eb_48%,#eef2f4_100%)] text-[#17233a] lg:flex">
       <aside
         className={`fixed inset-y-0 left-0 z-50 w-[272px] overflow-hidden border-r border-white/10 bg-[linear-gradient(165deg,#112443_0%,#0c1a31_58%,#091426_100%)] px-4 py-6 text-white shadow-[18px_0_60px_rgb(4_13_28/12%)] transition-transform duration-300 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 ${mobileNav ? 'translate-x-0' : '-translate-x-full'}`}
@@ -1600,7 +1615,7 @@ export function ThermoWatchDashboard() {
                               <b>
                                 {detail?.peak
                                   ? new Date(detail.peak.time).toLocaleString(
-                                      'en-IN',
+                                      dateLocale,
                                       { weekday: 'short', hour: 'numeric' },
                                     )
                                   : 'tomorrow afternoon'}
@@ -2427,7 +2442,7 @@ export function ThermoWatchDashboard() {
                             <small className="mt-2 block text-[10px] text-slate-400">
                               {item.reporter} ·{' '}
                               {new Date(item.created_at).toLocaleString(
-                                'en-IN',
+                                dateLocale,
                               )}{' '}
                               · {item.status}
                             </small>
@@ -2453,7 +2468,7 @@ export function ThermoWatchDashboard() {
                     <Stat
                       label="Accuracy"
                       value={`${dashboard.validation.accuracy_pct}%`}
-                      detail={`${dashboard.validation.test_samples.toLocaleString('en-IN')} held-out 2025 rows`}
+                      detail={`${dashboard.validation.test_samples.toLocaleString(dateLocale)} held-out 2025 rows`}
                       tone="green"
                     />
                     <Stat
@@ -2595,7 +2610,7 @@ export function ThermoWatchDashboard() {
                                   value={item.id}
                                 >
                                   {new Date(item.timestamp).toLocaleString(
-                                    'en-IN',
+                                    dateLocale,
                                     {
                                       dateStyle: 'medium',
                                       timeStyle: 'short',
@@ -2741,7 +2756,7 @@ export function ThermoWatchDashboard() {
                               label: 'Historical evidence',
                               pass:
                                 dashboard.validation.test_samples === 58_400,
-                              detail: `${dashboard.validation.test_samples.toLocaleString('en-IN')} held-out rows`,
+                              detail: `${dashboard.validation.test_samples.toLocaleString(dateLocale)} held-out rows`,
                             },
                             {
                               label: 'Alert readiness',
@@ -2813,7 +2828,7 @@ export function ThermoWatchDashboard() {
                           <span>
                             <b className="block text-xs">
                               {new Date(String(row.observed_at)).toLocaleString(
-                                'en-IN',
+                                dateLocale,
                               )}
                             </b>
                             <small className="text-slate-400">
@@ -2854,7 +2869,7 @@ export function ThermoWatchDashboard() {
                             <b className="block text-xs">
                               {new Date(
                                 String(row.predicted_at),
-                              ).toLocaleString('en-IN')}
+                              ).toLocaleString(dateLocale)}
                             </b>
                             <small className="text-slate-400">
                               {String(row.horizon_hours)}h horizon ·{' '}
@@ -2920,7 +2935,7 @@ export function ThermoWatchDashboard() {
                           </strong>
                           <small className="mt-1 block text-orange-900/65">
                             HTSI {warning.htsi} · valid{' '}
-                            {new Date(warning.valid_at).toLocaleString('en-IN')}
+                            {new Date(warning.valid_at).toLocaleString(dateLocale)}
                           </small>
                         </div>
                       ))}
@@ -3078,7 +3093,7 @@ export function ThermoWatchDashboard() {
                               <b className="text-xs">{item.id}</b>
                               <span className="ml-auto text-[10px] text-slate-400">
                                 {new Date(item.created_at).toLocaleString(
-                                  'en-IN',
+                                  dateLocale,
                                 )}
                               </span>
                             </div>
@@ -3153,5 +3168,6 @@ export function ThermoWatchDashboard() {
         </main>
       </section>
     </div>
+    </KannadaLocalizer>
   );
 }

@@ -1,9 +1,11 @@
 import Link from 'next/link';
+import { StoredKannadaLocalizer } from '@/components/kannada-localizer';
 
 export default function PrivacyPage() {
   return (
-    <main className="min-h-screen bg-[#f5f2ec] px-5 py-12 text-[#17233a]">
-      <article className="mx-auto max-w-3xl rounded-[1.5rem] border border-[#ddd7cc] bg-white p-6 shadow-sm sm:p-10">
+    <StoredKannadaLocalizer>
+      <main className="min-h-screen bg-[#f5f2ec] px-5 py-12 text-[#17233a]">
+        <article className="mx-auto max-w-3xl rounded-[1.5rem] border border-[#ddd7cc] bg-white p-6 shadow-sm sm:p-10">
         <p className="font-mono text-[10px] font-semibold tracking-[0.18em] text-[#9a6d19]">
           THERMOWATCH · SIH26083
         </p>
@@ -93,7 +95,8 @@ export default function PrivacyPage() {
         >
           Return to ThermoWatch
         </Link>
-      </article>
-    </main>
+        </article>
+      </main>
+    </StoredKannadaLocalizer>
   );
 }

@@ -10,6 +10,7 @@ import {
   isAlertChannel,
   isAlertLanguage,
 } from '../lib/alerting';
+import { translateKannada } from '../components/kannada-localizer';
 
 void test('HTSI risk boundaries remain stable', () => {
   assert.equal(riskFor(0), 'Low');
@@ -101,4 +102,26 @@ void test('regional warning templates and demo delivery modes stay explicit', ()
   assert.equal(alertDeliveryMode('browser'), 'live');
   assert.equal(alertDeliveryMode('sms'), 'demo');
   assert.equal(alertDeliveryMode('whatsapp'), 'demo');
+});
+
+void test('Kannada localization covers operational content without corrupting words', () => {
+  const translated = translateKannada(
+    'Srinagar Moderate risk. What to do now: Increase public advisories and check vulnerable residents.',
+  );
+  assert.match(translated, /ಶ್ರೀನಗರ/);
+  assert.match(translated, /ಮಧ್ಯಮ/);
+  assert.match(translated, /ಈಗ ಏನು ಮಾಡಬೇಕು/);
+  assert.doesNotMatch(translated, /Increase public advisories/);
+  assert.equal(
+    translateKannada('12 stored rows for Delhi.'),
+    'ದೆಹಲಿಗಾಗಿ 12 ಸಾಲುಗಳನ್ನು ಉಳಿಸಲಾಗಿದೆ.',
+  );
+  assert.equal(translateKannada('24h horizon'), '24ಗಂ ಮುನ್ಸೂಚನೆ ಅವಧಿ');
+  assert.doesNotMatch(
+    translateKannada(
+      'Assistant answers are created in the browser from the heat-risk data already shown on screen. Chat messages and audio are not stored by ThermoWatch. Optional speech recognition and read-aloud use browser-provided voice services, whose processing and regional-language availability depend on the user\'s browser and device. Users can always use text without granting microphone access.',
+    ),
+    /Assistant answers/,
+  );
+  assert.equal(translateKannada('before classification'), 'before classification');
 });

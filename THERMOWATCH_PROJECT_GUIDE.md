@@ -379,7 +379,8 @@ Call the current result a **reproducible live ML classifier evaluated on real we
 | Live ML risk prediction | Complete | Current and forecast weather produce class, confidence, High+ probability and explanations |
 | Official IMD outcome labels | Not complete | Must be obtained and verified by the team |
 | SMS/WhatsApp options | Complete for hackathon demo | Preview messages are generated and audited but deliberately not delivered externally |
-| Multilingual interface | Partial | Navigation and operational shell support English, Hindi, Telugu and Kannada; specialist content needs human language review |
+| Full Kannada interface | Complete for prototype | Every application-owned dashboard view, map label, form, model explanation, validation screen, alert workflow, assistant control and privacy section switches to Kannada; technical acronyms, product names and user-entered content stay unchanged |
+| Hindi and Telugu interface | Partial | Navigation and the operational shell are translated; specialist screens still need full translation and native review |
 | Local assistance chatbot | Complete for prototype | Text works locally in four languages; browser-supported regional speech input and read-aloud are available |
 | Tabletop readiness simulation | Complete | Repeatable live pipeline, forecast, map, evidence and channel checks replace unavailable field testing without claiming usability validation |
 | Login and role permissions | Complete for hosted prototype | Platform identity gives public/officer/admin server-side roles |
@@ -673,9 +674,9 @@ These activities require team ownership, official access, credentials, or field 
 
 ### Product readiness
 
-- Translate the full dashboard into required Indian languages.
+- Translate the full dashboard into any additional Indian languages required by the deployment authority; Kannada is complete for this prototype.
 - Improve low-bandwidth and mobile support.
-- Have native Hindi, Telugu and Kannada reviewers approve the translated operational shell, assistant prompts and specialist wording.
+- Have native Hindi, Telugu and Kannada reviewers approve operational wording before field use; Kannada is implemented across the prototype but still needs native sign-off.
 - Add an official source and last-updated timestamp to every major data panel.
 - Add state/district filtering for nationwide expansion.
 
@@ -720,6 +721,6 @@ Before the SIH demonstration:
 
 ## 21. Current release note
 
-The current source includes the trained ML model, historical replay, automatic warnings, 30-city forecast layers, hardened authority permissions, a four-language operational shell and local assistant, regional browser voice support, live browser alerts, SMS/WhatsApp demo previews, a tabletop readiness simulation, PWA support, health/privacy safeguards and automated core tests. It is ready to push to GitHub and publish through the existing Sites/Cloudflare runtime after validation.
+The current source includes the trained ML model, historical replay, automatic warnings, 30-city forecast layers, hardened authority permissions, a fully localized Kannada experience, a four-language operational shell and local assistant, regional browser voice support, live browser alerts, SMS/WhatsApp demo previews, a tabletop readiness simulation, PWA support, health/privacy safeguards and automated core tests. It is ready to push to GitHub and publish through the existing Sites/Cloudflare runtime after validation.
 
 Important deployment note: the current persistent database and identity integration use Cloudflare D1 and Sites authentication. A direct Vercel deployment would need a separate database adapter (for example, a managed PostgreSQL service), matching environment variables and replacement authentication. Uploading the repository to Vercel without that migration would lose or break persistent history, roles, incidents and alerts. Keep the existing Sites deployment for the hackathon unless the team schedules that migration.
