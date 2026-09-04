@@ -36,8 +36,7 @@ const translations: Record<string, string> = {
   'Live conditions': 'ನೇರ ಪರಿಸ್ಥಿತಿಗಳು',
   districts: 'ನಗರಗಳು',
   'Boundary geometry · CC BY 4.0': 'ಗಡಿ ನಕ್ಷೆ · CC BY 4.0',
-  'Geographic heat-risk map of India showing':
-    'ಭಾರತದ ಭೌಗೋಳಿಕ ಉಷ್ಣ ಅಪಾಯ ನಕ್ಷೆ; ಇದರಲ್ಲಿ',
+  'Geographic heat-risk map of India showing': 'ಭಾರತದ ಭೌಗೋಳಿಕ ಉಷ್ಣ ಅಪಾಯ ನಕ್ಷೆ; ಇದರಲ್ಲಿ',
   'monitored cities': 'ಮೇಲ್ವಿಚಾರಣೆಯ ನಗರಗಳನ್ನು ತೋರಿಸಲಾಗಿದೆ',
   'percent High plus probability': 'ಶೇಕಡಾ ಹೆಚ್ಚಿನ ಅಪಾಯದ ಸಂಭವನೀಯತೆ',
   Low: 'ಕಡಿಮೆ',
@@ -63,6 +62,10 @@ const translations: Record<string, string> = {
   'EXPOSURE LENS': 'ಅಪಾಯಕ್ಕೆ ಒಡ್ಡಿಕೊಳ್ಳುವವರ ನೋಟ',
   'Who needs help first?': 'ಮೊದಲು ಯಾರಿಗೆ ನೆರವು ಬೇಕು?',
   'Human context changes the risk.': 'ವೈಯಕ್ತಿಕ ಪರಿಸ್ಥಿತಿ ಅಪಾಯವನ್ನು ಬದಲಿಸುತ್ತದೆ.',
+  'Highest risk and exposure appear first.':
+    'ಅತಿ ಹೆಚ್ಚು ಅಪಾಯ ಮತ್ತು ಒಡ್ಡಿಕೊಳ್ಳುವಿಕೆ ಮೊದಲು ಕಾಣಿಸುತ್ತದೆ.',
+  'Urgency order': 'ತುರ್ತು ಆದ್ಯತೆಯ ಕ್ರಮ',
+  Priority: 'ಆದ್ಯತೆ',
   'Healthy adult': 'ಆರೋಗ್ಯವಂತ ವಯಸ್ಕ',
   Child: 'ಮಗು',
   'Older adult': 'ಹಿರಿಯ ವಯಸ್ಕ',
@@ -101,8 +104,7 @@ const translations: Record<string, string> = {
   Temperature: 'ತಾಪಮಾನ',
   'Temperature °C': 'ತಾಪಮಾನ °C',
   'Heat profile': 'ಉಷ್ಣ ಸ್ಥಿತಿಯ ವಿವರ',
-  'Colour follows predicted risk class.':
-    'ಬಣ್ಣವು ಮುನ್ಸೂಚಿತ ಅಪಾಯದ ವರ್ಗವನ್ನು ಸೂಚಿಸುತ್ತದೆ.',
+  'Colour follows predicted risk class.': 'ಬಣ್ಣವು ಮುನ್ಸೂಚಿತ ಅಪಾಯದ ವರ್ಗವನ್ನು ಸೂಚಿಸುತ್ತದೆ.',
   'EXPLAINABLE PREDICTION': 'ವಿವರಿಸಬಹುದಾದ ಮುನ್ಸೂಚನೆ',
   'Why the risk moves': 'ಅಪಾಯ ಏಕೆ ಬದಲಾಗುತ್ತದೆ',
   'Temperature, humidity, WBGT, PET, solar load, UV, wind and time of day contribute to each class.':
@@ -213,8 +215,7 @@ const translations: Record<string, string> = {
   'No field incidents recorded for this district.':
     'ಈ ನಗರಕ್ಕೆ ಯಾವುದೇ ಕ್ಷೇತ್ರ ಘಟನೆಗಳು ದಾಖಲಾಗಿಲ್ಲ.',
   'HISTORICAL REPLAY': 'ಐತಿಹಾಸಿಕ ಮರುಪರಿಶೀಲನೆ',
-  'Observed stress vs High+ probability':
-    'ಗಮನಿಸಿದ ಒತ್ತಡ ಮತ್ತು ಹೆಚ್ಚಿನ ಅಪಾಯದ ಸಂಭವನೀಯತೆ',
+  'Observed stress vs High+ probability': 'ಗಮನಿಸಿದ ಒತ್ತಡ ಮತ್ತು ಹೆಚ್ಚಿನ ಅಪಾಯದ ಸಂಭವನೀಯತೆ',
   'Untouched chronological test period': 'ಬದಲಾಯಿಸದ ಕಾಲಕ್ರಮದ ಪರೀಕ್ಷಾ ಅವಧಿ',
   'Actual HTSI': 'ವಾಸ್ತವ HTSI',
   'Predicted probability': 'ಮುನ್ಸೂಚಿತ ಸಂಭವನೀಯತೆ',
@@ -469,7 +470,10 @@ export function translateKannada(value: string) {
     .replace(/(\d+) samples/g, '$1 ಮಾದರಿಗಳು')
     .replace(/(\d+)% confidence/g, '$1% ವಿಶ್ವಾಸ')
     .replace(/(\d+)% humidity/g, '$1% ಆರ್ದ್ರತೆ')
-    .replace(/(\d+) active forecast warnings? for (.+)/g, '$2ಗಾಗಿ $1 ಸಕ್ರಿಯ ಮುನ್ಸೂಚನೆ ಎಚ್ಚರಿಕೆಗಳು')
+    .replace(
+      /(\d+) active forecast warnings? for (.+)/g,
+      '$2ಗಾಗಿ $1 ಸಕ್ರಿಯ ಮುನ್ಸೂಚನೆ ಎಚ್ಚರಿಕೆಗಳು',
+    )
     .replace(/Forecast records/g, 'ಮುನ್ಸೂಚನೆ ದಾಖಲೆಗಳು')
     .replace(/Recent observations/g, 'ಇತ್ತೀಚಿನ ಗಮನಿಕೆಗಳು');
   for (const [english, kannada] of entries) {
