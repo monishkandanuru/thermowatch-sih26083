@@ -7,7 +7,6 @@ import {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 import Link from 'next/link';
@@ -400,16 +399,16 @@ const riskStyle: Record<
     bar: 'bg-emerald-600',
   },
   Moderate: {
-    badge: 'border-blue-200 bg-blue-50 text-blue-700',
-    color: '#2563eb',
-    soft: '#eff6ff',
-    bar: 'bg-blue-600',
+    badge: 'border-amber-200 bg-amber-50 text-amber-700',
+    color: '#a16207',
+    soft: '#fffbeb',
+    bar: 'bg-amber-600',
   },
   High: {
-    badge: 'border-yellow-300 bg-yellow-100 text-yellow-900',
-    color: '#ca8a04',
-    soft: '#fef9c3',
-    bar: 'bg-yellow-400',
+    badge: 'border-orange-200 bg-orange-50 text-orange-700',
+    color: '#c2410c',
+    soft: '#fff7ed',
+    bar: 'bg-orange-600',
   },
   Extreme: {
     badge: 'border-red-200 bg-red-50 text-red-700',
@@ -418,10 +417,10 @@ const riskStyle: Record<
     bar: 'bg-red-700',
   },
   Emergency: {
-    badge: 'border-violet-200 bg-violet-50 text-violet-700',
-    color: '#7c3aed',
-    soft: '#f5f3ff',
-    bar: 'bg-violet-600',
+    badge: 'border-purple-200 bg-purple-50 text-purple-700',
+    color: '#7e22ce',
+    soft: '#faf5ff',
+    bar: 'bg-purple-700',
   },
 };
 
@@ -546,21 +545,11 @@ const shellCopy: Record<
 };
 
 async function api<T>(path: string, options?: RequestInit): Promise<T> {
-  const controller = new AbortController();
-  const timeout = window.setTimeout(() => controller.abort(), 20000);
-  try {
-    const response = await fetch(path, { ...options, signal: controller.signal });
-    const payload = (await response.json()) as T & { error?: string };
-    if (!response.ok)
-      throw new Error(payload.error || `Request failed (${response.status})`);
-    return payload;
-  } catch (error) {
-    if (controller.signal.aborted)
-      throw new Error('The request took too long. Please try Refresh again.');
-    throw error;
-  } finally {
-    window.clearTimeout(timeout);
-  }
+  const response = await fetch(path, options);
+  const payload = (await response.json()) as T & { error?: string };
+  if (!response.ok)
+    throw new Error(payload.error || `Request failed (${response.status})`);
+  return payload;
 }
 
 function RiskBadge({ risk }: { risk: Risk }) {
@@ -656,7 +645,6 @@ function IndiaMap({
   expanded?: boolean;
   layerLabel?: string;
 }) {
-  const [hoveredName, setHoveredName] = useState<string | null>(null);
   const indiaLocations = indiaMap.locations as Array<{
     id: string;
     path: string;
@@ -726,7 +714,7 @@ function IndiaMap({
           ))}
         </g>
 
-        {[...districts].sort((a, b) => Number(a.district === hoveredName) - Number(b.district === hoveredName)).map((item) => {
+        {districts.map((item) => {
           const point = project(item.lat, item.lon);
           const isSelected = selected.district === item.district;
           const color = riskStyle[item.risk].color;
@@ -741,10 +729,6 @@ function IndiaMap({
               tabIndex={0}
               aria-label={`${item.district}: ${item.risk} risk, HTSI ${item.htsi}${item.high_risk_probability !== undefined ? `, ${Math.round(item.high_risk_probability)} percent High plus probability` : ''}`}
               className="group cursor-pointer focus:outline-none"
-              onMouseEnter={() => setHoveredName(item.district)}
-              onMouseLeave={() => setHoveredName(null)}
-              onFocus={() => setHoveredName(item.district)}
-              onBlur={() => setHoveredName(null)}
               onClick={(event) => {
                 event.preventDefault();
                 onSelect(item);
@@ -777,9 +761,8 @@ function IndiaMap({
                 stroke={isSelected ? 'white' : color}
                 strokeWidth="1.5"
               />
-              {(hoveredName === item.district || (!hoveredName && isSelected)) && (
+              {isSelected && (
                 <g
-                  pointerEvents="none"
                   transform={`translate(${point.x - labelWidth / 2} ${point.y - 42})`}
                 >
                   <rect
@@ -853,7 +836,6 @@ export function ThermoWatchDashboard() {
   const [online, setOnline] = useState(true);
   const [loading, setLoading] = useState(true);
   const [detailLoading, setDetailLoading] = useState(true);
-  const detailRequest = useRef(0);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const [mobileNav, setMobileNav] = useState(false);
@@ -898,10 +880,6 @@ export function ThermoWatchDashboard() {
   const priorityProfiles = useMemo(
     () => sortByUrgency(detail?.profiles ?? []),
     [detail?.profiles],
-  );
-  const alphabeticalDistricts = useMemo(
-    () => [...districts].sort((a, b) => a.district.localeCompare(b.district, 'en')),
-    [districts],
   );
   const highCount = districts.filter((item) =>
     ['High', 'Extreme', 'Emergency'].includes(item.risk),
@@ -985,23 +963,21 @@ export function ThermoWatchDashboard() {
 
   const loadDetail = useCallback(
     async (district: string, facilities = false) => {
-      const requestId = ++detailRequest.current;
       setDetailLoading(true);
-      setDetail(null);
       try {
-        const result = await api<DistrictDetail>(
+        setDetail(
+          await api<DistrictDetail>(
             `/api/district?district=${encodeURIComponent(district)}${facilities ? '&facilities=true' : ''}`,
-          );
-        if (requestId === detailRequest.current) setDetail(result);
+          ),
+        );
       } catch (requestError) {
-        if (requestId !== detailRequest.current) return;
         setError(
           requestError instanceof Error
             ? requestError.message
             : 'District detail unavailable',
         );
       } finally {
-        if (requestId === detailRequest.current) setDetailLoading(false);
+        setDetailLoading(false);
       }
     },
     [],
@@ -1133,6 +1109,7 @@ export function ThermoWatchDashboard() {
 
   function selectDistrict(item: District) {
     setSelectedName(item.district);
+    setView('overview');
     setMobileNav(false);
   }
   function changeView(next: View) {
@@ -1379,7 +1356,7 @@ export function ThermoWatchDashboard() {
                 </a>
               ) : (
                 <a
-                  href="/officer-signin"
+                  href="/signin-with-chatgpt?return_to=/"
                   target="_top"
                   className="hidden rounded-xl border border-[#d8d3ca] bg-white px-3 py-2 text-[10px] font-semibold text-slate-600 sm:block"
                 >
@@ -1404,7 +1381,7 @@ export function ThermoWatchDashboard() {
                 onChange={(event) => setSelectedName(event.target.value)}
                 aria-label="Select monitoring district"
               >
-                {alphabeticalDistricts.map((item) => (
+                {districts.map((item) => (
                   <NativeSelectOption key={item.district} value={item.district}>
                     {item.district}
                   </NativeSelectOption>
@@ -1624,7 +1601,7 @@ export function ThermoWatchDashboard() {
                                   <span className="font-mono text-[9px] text-slate-400">
                                     {item.horizon_hours}H
                                   </span>
-                                  <strong className="my-2 block text-xl" style={{ color: riskStyle[item.predicted_class].color }}>
+                                  <strong className="my-2 block text-xl text-orange-700">
                                     {item.probability}%
                                   </strong>
                                   <RiskBadge risk={item.predicted_class} />
@@ -1634,19 +1611,16 @@ export function ThermoWatchDashboard() {
                             <div className="mt-4 flex items-center gap-3 rounded-[1.05rem] border border-blue-100 bg-[#edf3f8] p-3 text-xs text-blue-950">
                               <CloudSun className="h-5 w-5" />
                               <span>
-                                Peak risk in the next five days:{' '}
+                                Peak risk:{' '}
                                 <b>
                                   {detail?.peak
                                     ? new Date(detail.peak.time).toLocaleString(
                                         dateLocale,
-                                        { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit', timeZone: 'Asia/Kolkata' },
+                                        { weekday: 'short', hour: 'numeric' },
                                       )
-                                    : 'Forecast unavailable'}
+                                    : 'tomorrow afternoon'}
                                 </b>
-                                {detail?.peak && ' IST'}
-                                {detail?.source === 'resilient-fallback' && (
-                                  <small className="mt-1 block">Demo estimate — live forecast unavailable.</small>
-                                )}
+                                .
                               </span>
                             </div>
                           </>
@@ -3054,19 +3028,6 @@ export function ThermoWatchDashboard() {
                       />
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="min-h-11 border-emerald-200 bg-emerald-50 text-emerald-800"
-                        onClick={() => setAlertChannel('whatsapp')}
-                        aria-pressed={alertChannel === 'whatsapp'}
-                      >
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true" className="h-5 w-5">
-                          <path d="M21 11.5a9 9 0 0 1-13.5 7.8L3 21l1.7-4.5A9 9 0 1 1 21 11.5Z" />
-                          <path d="m8 7 2 3-1 1c1 2 2 3 4 4l1-1 3 2c-1 3-4 2-7-1S6 8 8 7Z" />
-                        </svg>
-                        WhatsApp · demo preview
-                      </Button>
                       <label
                         htmlFor="alert-risk"
                         className="text-[10px] font-semibold text-slate-500"
@@ -3161,7 +3122,7 @@ export function ThermoWatchDashboard() {
                             Public visitors can view warnings, but only
                             signed-in officers can send or acknowledge them.{' '}
                             <a
-                              href="/officer-signin"
+                              href="/signin-with-chatgpt?return_to=/"
                               target="_top"
                               className="font-semibold underline"
                             >
