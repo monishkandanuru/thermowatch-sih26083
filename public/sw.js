@@ -1,4 +1,4 @@
-const CACHE_NAME = 'thermowatch-v8';
+const CACHE_NAME = 'thermowatch-v10';
 const SHELL = ['/', '/manifest.webmanifest', '/favicon.svg'];
 
 self.addEventListener('install', (event) => {
