@@ -645,6 +645,7 @@ function IndiaMap({
   expanded?: boolean;
   layerLabel?: string;
 }) {
+  const [hoveredName, setHoveredName] = useState<string | null>(null);
   const indiaLocations = indiaMap.locations as Array<{
     id: string;
     path: string;
@@ -714,7 +715,7 @@ function IndiaMap({
           ))}
         </g>
 
-        {districts.map((item) => {
+        {[...districts].sort((a, b) => Number(a.district === hoveredName) - Number(b.district === hoveredName)).map((item) => {
           const point = project(item.lat, item.lon);
           const isSelected = selected.district === item.district;
           const color = riskStyle[item.risk].color;
@@ -729,6 +730,10 @@ function IndiaMap({
               tabIndex={0}
               aria-label={`${item.district}: ${item.risk} risk, HTSI ${item.htsi}${item.high_risk_probability !== undefined ? `, ${Math.round(item.high_risk_probability)} percent High plus probability` : ''}`}
               className="group cursor-pointer focus:outline-none"
+              onMouseEnter={() => setHoveredName(item.district)}
+              onMouseLeave={() => setHoveredName(null)}
+              onFocus={() => setHoveredName(item.district)}
+              onBlur={() => setHoveredName(null)}
               onClick={(event) => {
                 event.preventDefault();
                 onSelect(item);
@@ -761,8 +766,9 @@ function IndiaMap({
                 stroke={isSelected ? 'white' : color}
                 strokeWidth="1.5"
               />
-              {isSelected && (
+              {(hoveredName === item.district || (!hoveredName && isSelected)) && (
                 <g
+                  pointerEvents="none"
                   transform={`translate(${point.x - labelWidth / 2} ${point.y - 42})`}
                 >
                   <rect
@@ -880,6 +886,10 @@ export function ThermoWatchDashboard() {
   const priorityProfiles = useMemo(
     () => sortByUrgency(detail?.profiles ?? []),
     [detail?.profiles],
+  );
+  const alphabeticalDistricts = useMemo(
+    () => [...districts].sort((a, b) => a.district.localeCompare(b.district, 'en')),
+    [districts],
   );
   const highCount = districts.filter((item) =>
     ['High', 'Extreme', 'Emergency'].includes(item.risk),
@@ -1109,7 +1119,6 @@ export function ThermoWatchDashboard() {
 
   function selectDistrict(item: District) {
     setSelectedName(item.district);
-    setView('overview');
     setMobileNav(false);
   }
   function changeView(next: View) {
@@ -1381,7 +1390,7 @@ export function ThermoWatchDashboard() {
                 onChange={(event) => setSelectedName(event.target.value)}
                 aria-label="Select monitoring district"
               >
-                {districts.map((item) => (
+                {alphabeticalDistricts.map((item) => (
                   <NativeSelectOption key={item.district} value={item.district}>
                     {item.district}
                   </NativeSelectOption>
@@ -1611,16 +1620,19 @@ export function ThermoWatchDashboard() {
                             <div className="mt-4 flex items-center gap-3 rounded-[1.05rem] border border-blue-100 bg-[#edf3f8] p-3 text-xs text-blue-950">
                               <CloudSun className="h-5 w-5" />
                               <span>
-                                Peak risk:{' '}
+                                Peak risk in the next five days:{' '}
                                 <b>
                                   {detail?.peak
                                     ? new Date(detail.peak.time).toLocaleString(
                                         dateLocale,
-                                        { weekday: 'short', hour: 'numeric' },
+                                        { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit', timeZone: 'Asia/Kolkata' },
                                       )
-                                    : 'tomorrow afternoon'}
+                                    : 'Forecast unavailable'}
                                 </b>
-                                .
+                                {detail?.peak && ' IST'}
+                                {detail?.source === 'resilient-fallback' && (
+                                  <small className="mt-1 block">Demo estimate — live forecast unavailable.</small>
+                                )}
                               </span>
                             </div>
                           </>
@@ -3028,6 +3040,19 @@ export function ThermoWatchDashboard() {
                       />
                     </CardHeader>
                     <CardContent className="space-y-4">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="min-h-11 border-emerald-200 bg-emerald-50 text-emerald-800"
+                        onClick={() => setAlertChannel('whatsapp')}
+                        aria-pressed={alertChannel === 'whatsapp'}
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true" className="h-5 w-5">
+                          <path d="M21 11.5a9 9 0 0 1-13.5 7.8L3 21l1.7-4.5A9 9 0 1 1 21 11.5Z" />
+                          <path d="m8 7 2 3-1 1c1 2 2 3 4 4l1-1 3 2c-1 3-4 2-7-1S6 8 8 7Z" />
+                        </svg>
+                        WhatsApp · demo preview
+                      </Button>
                       <label
                         htmlFor="alert-risk"
                         className="text-[10px] font-semibold text-slate-500"

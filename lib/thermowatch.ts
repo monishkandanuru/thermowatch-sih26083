@@ -5,6 +5,7 @@ import {
 } from '@/lib/ml-model';
 
 export { MODEL_INFO } from '@/lib/ml-model';
+import { indiaForecastTime, nearestForecast } from '@/lib/forecast-time';
 
 export type Risk = 'Low' | 'Moderate' | 'High' | 'Extreme' | 'Emergency';
 
@@ -713,8 +714,9 @@ export async function fetchDistrictForecast(name: string) {
           solar,
         });
         return {
-          time,
-          label: new Date(time).toLocaleString('en-IN', {
+          time: indiaForecastTime(time),
+          label: new Date(indiaForecastTime(time)).toLocaleString('en-IN', {
+            timeZone: 'Asia/Kolkata',
             weekday: 'short',
             hour: 'numeric',
           }),
@@ -727,10 +729,9 @@ export async function fetchDistrictForecast(name: string) {
           ...modelFields(config, { temp, humidity, wind, solar, timestamp: time }),
         };
       })
-      .filter((_, index) => index % 3 === 0);
+      .filter((point, index) => index % 3 === 0 && Date.parse(point.time) >= Date.now());
     const horizons = [24, 48, 72].map((hours) => {
-      const item =
-        forecast[Math.min(forecast.length - 1, Math.round(hours / 3))];
+      const item = nearestForecast(forecast, hours);
       return {
         horizon_hours: hours,
         predicted_class: item.risk,
@@ -753,7 +754,7 @@ export async function fetchDistrictForecast(name: string) {
   } catch {
     const forecast = Array.from({ length: 40 }, (_, index) => {
       const time = new Date(Date.now() + index * 3 * 3600000);
-      const hour = time.getHours();
+      const hour = new Date(time.getTime() + 5.5 * 3600000).getUTCHours();
       const temp =
         config.fallbackTemp -
         6 +
@@ -773,6 +774,7 @@ export async function fetchDistrictForecast(name: string) {
       return {
         time: time.toISOString(),
         label: time.toLocaleString('en-IN', {
+          timeZone: 'Asia/Kolkata',
           weekday: 'short',
           hour: 'numeric',
         }),
