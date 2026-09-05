@@ -5,6 +5,7 @@ import {
 } from '@/lib/ml-model';
 
 export { MODEL_INFO } from '@/lib/ml-model';
+import { indiaForecastTime, nearestForecast } from '@/lib/forecast-time';
 
 export type Risk = 'Low' | 'Moderate' | 'High' | 'Extreme' | 'Emergency';
 
@@ -313,6 +314,572 @@ export function heatIndex(tempC: number, humidity: number) {
   const t = (tempC * 9) / 5 + 32;
   const r = humidity;
   const hi =
+    -42.379 +
+    2.04901523 * t +
+    10.14333127 * r -
+    0.22475541 * t * r -
+    0.00683783 * t * t -
+    0.05481717 * r * r +
+    0.00122874 * t * t * r +
+    0.00085282 * t * r * r -
+    0.00000199 * t * t * r * r;
+  return Number((((hi - 32) * 5) / 9).toFixed(1));
+}
+
+function wetBulb(tempC: number, humidity: number) {
+  const value =
+    tempC * Math.atan(0.151977 * Math.sqrt(humidity + 8.313659)) +
+    Math.atan(tempC + humidity) -
+    Math.atan(humidity - 1.676331) +
+    0.00391838 * Math.pow(humidity, 1.5) * Math.atan(0.023101 * humidity) -
+    4.686035;
+  return value;
+}
+
+export function computeHtsi(input: {
+  temp: number;
+  humidity: number;
+  wind?: number;
+  uv?: number;
+  solar?: number;
+  aqi?: number;
+  multiplier?: number;
+}) {
+  const wind = input.wind ?? 1.6;
+  const uv = input.uv ?? 7;
+  const solar = input.solar ?? 650;
+  const aqi = input.aqi ?? 85;
+  const wbgt =
+    0.7 * wetBulb(input.temp, input.humidity) +
+    0.2 * (input.temp + solar / 180) +
+    0.1 * input.temp;
+  const hi = heatIndex(input.temp, input.humidity);
+  const pet = input.temp + input.humidity * 0.035 + solar / 240 - wind * 0.7;
+  const thermal = Math.max(0, Math.min(100, (wbgt - 18) * 5.25));
+  const humidityStress = Math.max(
+    0,
+    Math.min(18, (input.humidity - 35) * 0.34),
+  );
+  const radiantStress = Math.max(0, Math.min(14, solar / 75));
+  const uvStress = Math.max(0, Math.min(10, uv * 0.95));
+  const airStress = Math.max(0, Math.min(8, (aqi - 40) / 16));
+  const windRelief = Math.min(9, wind * 1.7);
+  const raw =
+    thermal * 0.66 +
+    humidityStress +
+    radiantStress +
+    uvStress +
+    airStress -
+    windRelief;
+  const score = Math.max(0, Math.min(100, raw * (input.multiplier ?? 1)));
+  const htsi = Number(score.toFixed(1));
+  const risk = riskFor(htsi);
+  return {
+    htsi,
+    risk,
+    wbgt: Number(wbgt.toFixed(1)),
+    heat_index: hi,
+    pet: Number(pet.toFixed(1)),
+    action: actions[risk],
+  };
+}
+
+function modelFields(
+  config: DistrictConfig,
+  input: {
+    temp: number;
+    humidity: number;
+    wind: number;
+    solar: number;
+    timestamp: string | Date;
+  },
+) {
+  const prediction = predictHeatRisk({
+    temperature_c: input.temp,
+    humidity_pct: input.humidity,
+    wind_speed_ms: input.wind,
+    shortwave_radiation_wm2: input.solar,
+    latitude: config.lat,
+    longitude: config.lon,
+    timestamp: input.timestamp,
+  });
+  return {
+    risk: prediction.predicted_class as Risk,
+    probability: Math.round(prediction.confidence_pct),
+    model_confidence: prediction.confidence_pct,
+    high_risk_probability: prediction.high_risk_probability_pct,
+    probabilities: prediction.probabilities,
+    explanation: prediction.explanation as ModelContribution[],
+    model_version: MODEL_INFO.model_version,
+    action: actions[prediction.predicted_class as Risk],
+  };
+}
+
+function fallbackDistrict(config: DistrictConfig) {
+  const timestamp = new Date();
+  const hour = Number(
+    new Intl.DateTimeFormat('en-IN', {
+      timeZone: 'Asia/Kolkata',
+      hour: '2-digit',
+      hourCycle: 'h23',
+    }).format(timestamp),
+  );
+  const solar = hour >= 7 && hour <= 18 ? 650 : 10;
+  const result = computeHtsi({
+    temp: config.fallbackTemp,
+    humidity: config.fallbackHumidity,
+    wind: 1.7,
+    solar,
+  });
+  return {
+    ...config,
+    temp: config.fallbackTemp,
+    humidity: config.fallbackHumidity,
+    wind: 1.7,
+    uv: 7.4,
+    solar,
+    aqi: 85,
+    source: 'resilient-fallback',
+    ...result,
+    ...modelFields(config, {
+      temp: config.fallbackTemp,
+      humidity: config.fallbackHumidity,
+      wind: 1.7,
+      solar,
+      timestamp,
+    }),
+  };
+}
+
+export async function fetchCurrentDistrict(config: DistrictConfig) {
+  try {
+    const params = new URLSearchParams({
+      latitude: String(config.lat),
+      longitude: String(config.lon),
+      current:
+        'temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,uv_index,shortwave_radiation',
+      timezone: 'Asia/Kolkata',
+    });
+    const response = await fetch(
+      `https://api.open-meteo.com/v1/forecast?${params}`,
+      { headers: { 'User-Agent': 'ThermoWatch-SIH26083/3.0' } },
+    );
+    if (!response.ok) throw new Error('weather unavailable');
+    const payload = (await response.json()) as {
+      current?: Record<string, number>;
+    };
+    const current = payload.current ?? {};
+    const temp = Number(current.temperature_2m ?? config.fallbackTemp);
+    const humidity = Number(
+      current.relative_humidity_2m ?? config.fallbackHumidity,
+    );
+    const wind = Number(current.wind_speed_10m ?? 6) / 3.6;
+    const uv = Number(current.uv_index ?? 6.5);
+    const timestamp = new Date();
+    const hour = Number(
+      new Intl.DateTimeFormat('en-IN', {
+        timeZone: 'Asia/Kolkata',
+        hour: '2-digit',
+        hourCycle: 'h23',
+      }).format(timestamp),
+    );
+    const solar = Number(
+      current.shortwave_radiation ?? (hour >= 7 && hour <= 18 ? 680 : 10),
+    );
+    const result = computeHtsi({ temp, humidity, wind, uv, solar });
+    return {
+      ...config,
+      temp: Number(temp.toFixed(1)),
+      humidity: Math.round(humidity),
+      wind: Number(wind.toFixed(1)),
+      uv: Number(uv.toFixed(1)),
+      solar: Number(solar.toFixed(1)),
+      aqi: 85,
+      source: 'open-meteo',
+      ...result,
+      ...modelFields(config, {
+        temp,
+        humidity,
+        wind,
+        solar,
+        timestamp,
+      }),
+    };
+  } catch {
+    return fallbackDistrict(config);
+  }
+}
+
+let currentDistrictCache:
+  | { expiresAt: number; data: Awaited<ReturnType<typeof fetchCurrentDistrict>>[] }
+  | undefined;
+let currentDistrictRequest:
+  | Promise<Awaited<ReturnType<typeof fetchCurrentDistrict>>[]>
+  | undefined;
+
+export async function fetchAllDistricts() {
+  if (currentDistrictCache && currentDistrictCache.expiresAt > Date.now())
+    return currentDistrictCache.data;
+  if (currentDistrictRequest) return currentDistrictRequest;
+  currentDistrictRequest = Promise.all(DISTRICTS.map(fetchCurrentDistrict));
+  try {
+    const data = await currentDistrictRequest;
+    currentDistrictCache = { expiresAt: Date.now() + 5 * 60_000, data };
+    return data;
+  } finally {
+    currentDistrictRequest = undefined;
+  }
+}
+
+export type ForecastLayerPoint = DistrictConfig & {
+  horizon_hours: 24 | 48 | 72;
+  valid_at: string;
+  temp: number;
+  humidity: number;
+  wind: number;
+  uv: number;
+  solar: number;
+  htsi: number;
+  risk: Risk;
+  probability: number;
+  model_confidence: number;
+  high_risk_probability: number;
+  source: string;
+  model_version: string;
+};
+
+async function fetchDistrictForecastLayers(config: DistrictConfig) {
+  const horizons = [24, 48, 72] as const;
+  try {
+    const params = new URLSearchParams({
+      latitude: String(config.lat),
+      longitude: String(config.lon),
+      hourly:
+        'temperature_2m,relative_humidity_2m,wind_speed_10m,uv_index,shortwave_radiation',
+      timezone: 'Asia/Kolkata',
+      forecast_days: '5',
+    });
+    const response = await fetch(
+      `https://api.open-meteo.com/v1/forecast?${params}`,
+      { headers: { 'User-Agent': 'ThermoWatch-SIH26083/4.0' } },
+    );
+    if (!response.ok) throw new Error('forecast layer unavailable');
+    const payload = (await response.json()) as {
+      hourly: {
+        time: string[];
+        temperature_2m: number[];
+        relative_humidity_2m: number[];
+        wind_speed_10m: number[];
+        uv_index: number[];
+        shortwave_radiation: number[];
+      };
+    };
+    const targetNow = Date.now();
+    return horizons.map((horizon) => {
+      const target = targetNow + horizon * 3_600_000;
+      let index = 0;
+      let distance = Number.POSITIVE_INFINITY;
+      payload.hourly.time.forEach((time, position) => {
+        const timestamp = new Date(`${time}+05:30`).getTime();
+        const candidate = Math.abs(timestamp - target);
+        if (candidate < distance) {
+          index = position;
+          distance = candidate;
+        }
+      });
+      const time = payload.hourly.time[index];
+      const temp = payload.hourly.temperature_2m[index];
+      const humidity = payload.hourly.relative_humidity_2m[index];
+      const wind = payload.hourly.wind_speed_10m[index] / 3.6;
+      const solar = payload.hourly.shortwave_radiation[index] ?? 0;
+      const uv = payload.hourly.uv_index[index] ?? solar / 95;
+      const thermal = computeHtsi({ temp, humidity, wind, solar, uv });
+      const prediction = modelFields(config, {
+        temp,
+        humidity,
+        wind,
+        solar,
+        timestamp: time,
+      });
+      return {
+        ...config,
+        horizon_hours: horizon,
+        valid_at: time,
+        temp: Number(temp.toFixed(1)),
+        humidity: Math.round(humidity),
+        wind: Number(wind.toFixed(1)),
+        uv: Number(uv.toFixed(1)),
+        solar: Number(solar.toFixed(1)),
+        source: 'open-meteo',
+        ...thermal,
+        ...prediction,
+      } as ForecastLayerPoint;
+    });
+  } catch {
+    return horizons.map((horizon) => {
+      const timestamp = new Date(Date.now() + horizon * 3_600_000);
+      const hour = Number(
+        new Intl.DateTimeFormat('en-IN', {
+          timeZone: 'Asia/Kolkata',
+          hour: '2-digit',
+          hourCycle: 'h23',
+        }).format(timestamp),
+      );
+      const solar = hour >= 7 && hour <= 18 ? 620 : 10;
+      const temp = config.fallbackTemp - (hour < 9 || hour > 19 ? 6 : 0);
+      const humidity = config.fallbackHumidity + (hour < 8 ? 10 : 0);
+      const wind = 1.7;
+      const thermal = computeHtsi({ temp, humidity, wind, solar });
+      const prediction = modelFields(config, {
+        temp,
+        humidity,
+        wind,
+        solar,
+        timestamp,
+      });
+      return {
+        ...config,
+        horizon_hours: horizon,
+        valid_at: timestamp.toISOString(),
+        temp: Number(temp.toFixed(1)),
+        humidity: Math.round(humidity),
+        wind,
+        uv: Number((solar / 95).toFixed(1)),
+        solar,
+        source: 'resilient-fallback',
+        ...thermal,
+        ...prediction,
+      } as ForecastLayerPoint;
+    });
+  }
+}
+
+export async function fetchAllForecastLayers() {
+  const districtLayers = await Promise.all(
+    DISTRICTS.map(fetchDistrictForecastLayers),
+  );
+  return {
+    24: districtLayers.map((layers) => layers[0]),
+    48: districtLayers.map((layers) => layers[1]),
+    72: districtLayers.map((layers) => layers[2]),
+  };
+}
+
+export async function fetchDistrictForecast(name: string) {
+  const config =
+    DISTRICTS.find(
+      (item) => item.district.toLowerCase() === name.toLowerCase(),
+    ) ?? DISTRICTS[0];
+  const current = await fetchCurrentDistrict(config);
+  try {
+    const params = new URLSearchParams({
+      latitude: String(config.lat),
+      longitude: String(config.lon),
+      hourly:
+        'temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,uv_index,shortwave_radiation',
+      timezone: 'Asia/Kolkata',
+      forecast_days: '5',
+    });
+    const response = await fetch(
+      `https://api.open-meteo.com/v1/forecast?${params}`,
+      { headers: { 'User-Agent': 'ThermoWatch-SIH26083/3.0' } },
+    );
+    if (!response.ok) throw new Error('forecast unavailable');
+    const payload = (await response.json()) as {
+      hourly: {
+        time: string[];
+        temperature_2m: number[];
+        relative_humidity_2m: number[];
+        wind_speed_10m: number[];
+        uv_index: number[];
+        shortwave_radiation: number[];
+      };
+    };
+    const forecast = payload.hourly.time
+      .map((time, index) => {
+        const hour = Number(time.slice(11, 13));
+        const temp = payload.hourly.temperature_2m[index];
+        const humidity = payload.hourly.relative_humidity_2m[index];
+        const wind = payload.hourly.wind_speed_10m[index] / 3.6;
+        const solar =
+          payload.hourly.shortwave_radiation[index] ??
+          (hour >= 7 && hour <= 18
+            ? Math.max(120, 760 - Math.abs(13 - hour) * 90)
+            : 10);
+        const result = computeHtsi({
+          temp,
+          humidity,
+          wind,
+          uv: payload.hourly.uv_index[index] ?? 0,
+          solar,
+        });
+        return {
+          time: indiaForecastTime(time),
+          label: new Date(indiaForecastTime(time)).toLocaleString('en-IN', {
+            timeZone: 'Asia/Kolkata',
+            weekday: 'short',
+            hour: 'numeric',
+          }),
+          temp: Number(temp.toFixed(1)),
+          humidity,
+          wind: Number(wind.toFixed(1)),
+          uv: Number((payload.hourly.uv_index[index] ?? solar / 95).toFixed(1)),
+          solar: Number(solar.toFixed(1)),
+          ...result,
+          ...modelFields(config, { temp, humidity, wind, solar, timestamp: time }),
+        };
+      })
+      .filter((point, index) => index % 3 === 0 && Date.parse(point.time) >= Date.now());
+    const horizons = [24, 48, 72].map((hours) => {
+      const item = nearestForecast(forecast, hours);
+      return {
+        horizon_hours: hours,
+        predicted_class: item.risk,
+        probability: item.model_confidence,
+        high_risk_probability: item.high_risk_probability,
+        htsi: item.htsi,
+        explanation: item.explanation,
+      };
+    });
+    const peak = [...forecast].sort((a, b) => b.htsi - a.htsi)[0];
+    return {
+      district: config.district,
+      current,
+      forecast,
+      horizons,
+      peak,
+      profiles: vulnerabilityProfiles(current),
+      source: 'open-meteo',
+    };
+  } catch {
+    const forecast = Array.from({ length: 40 }, (_, index) => {
+      const time = new Date(Date.now() + index * 3 * 3600000);
+      const hour = new Date(time.getTime() + 5.5 * 3600000).getUTCHours();
+      const temp =
+        config.fallbackTemp -
+        6 +
+        Math.max(0, 1 - Math.abs(14 - hour) / 9) * 7 +
+        Math.sin(index / 4);
+      const humidity = Math.max(
+        24,
+        config.fallbackHumidity + (hour < 8 ? 12 : 0),
+      );
+      const result = computeHtsi({
+        temp,
+        humidity,
+        wind: 1.6,
+        solar: hour >= 7 && hour <= 18 ? 640 : 10,
+      });
+      const solar = hour >= 7 && hour <= 18 ? 640 : 10;
+      return {
+        time: time.toISOString(),
+        label: time.toLocaleString('en-IN', {
+          timeZone: 'Asia/Kolkata',
+          weekday: 'short',
+          hour: 'numeric',
+        }),
+        temp: Number(temp.toFixed(1)),
+        humidity: Math.round(humidity),
+        wind: 1.6,
+        uv: Number((solar / 95).toFixed(1)),
+        solar,
+        ...result,
+        ...modelFields(config, {
+          temp,
+          humidity,
+          wind: 1.6,
+          solar,
+          timestamp: time,
+        }),
+      };
+    });
+    const horizons = [24, 48, 72].map((hours) => {
+      const item = forecast[Math.round(hours / 3)];
+      return {
+        horizon_hours: hours,
+        predicted_class: item.risk,
+        probability: item.model_confidence,
+        high_risk_probability: item.high_risk_probability,
+        htsi: item.htsi,
+        explanation: item.explanation,
+      };
+    });
+    return {
+      district: config.district,
+      current,
+      forecast,
+      horizons,
+      peak: [...forecast].sort((a, b) => b.htsi - a.htsi)[0],
+      profiles: vulnerabilityProfiles(current),
+      source: 'resilient-fallback',
+    };
+  }
+}
+
+export function vulnerabilityProfiles(weather: {
+  temp: number;
+  humidity: number;
+  wind?: number;
+  uv?: number;
+}) {
+  const profiles = [
+    ['Healthy adult', 0.9],
+    ['Child', 1.08],
+    ['Older adult', 1.18],
+    ['Outdoor worker', 1.24],
+    ['Pregnant person', 1.15],
+    ['Cardiac or respiratory condition', 1.3],
+  ] as const;
+  return profiles.map(([profile, multiplier]) => ({
+    profile,
+    multiplier,
+    ...computeHtsi({
+      temp: weather.temp,
+      humidity: weather.humidity,
+      wind: weather.wind,
+      uv: weather.uv,
+      multiplier,
+    }),
+  }));
+}
+
+export async function fetchNearbyFacilities(name: string) {
+  const config =
+    DISTRICTS.find(
+      (item) => item.district.toLowerCase() === name.toLowerCase(),
+    ) ?? DISTRICTS[0];
+  const query = `[out:json][timeout:20];(nwr(around:12000,${config.lat},${config.lon})[amenity~"hospital|clinic|community_centre|drinking_water"];);out center 25;`;
+  try {
+    const response = await fetch(
+      `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`,
+      { headers: { 'User-Agent': 'ThermoWatch-SIH26083/3.0' } },
+    );
+    if (!response.ok) throw new Error('facilities unavailable');
+    const payload = (await response.json()) as {
+      elements: Array<{
+        id: number;
+        lat?: number;
+        lon?: number;
+        center?: { lat: number; lon: number };
+        tags?: Record<string, string>;
+      }>;
+    };
+    return payload.elements.slice(0, 15).map((item) => {
+      const lat = item.lat ?? item.center?.lat ?? config.lat;
+      const lon = item.lon ?? item.center?.lon ?? config.lon;
+      const type = item.tags?.amenity ?? 'facility';
+      return {
+        id: String(item.id),
+        name: item.tags?.name ?? type.replaceAll('_', ' '),
+        type: type.replaceAll('_', ' '),
+        emergency: item.tags?.emergency === 'yes' || type === 'hospital',
+        map_url: `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=17/${lat}/${lon}`,
+      };
+    });
+  } catch {
+    return [];
+  }
+}
     -42.379 +
     2.04901523 * t +
     10.14333127 * r -
