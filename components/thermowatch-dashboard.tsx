@@ -399,16 +399,16 @@ const riskStyle: Record<
     bar: 'bg-emerald-600',
   },
   Moderate: {
-    badge: 'border-amber-200 bg-amber-50 text-amber-700',
-    color: '#a16207',
-    soft: '#fffbeb',
-    bar: 'bg-amber-600',
+    badge: 'border-blue-200 bg-blue-50 text-blue-700',
+    color: '#2563eb',
+    soft: '#eff6ff',
+    bar: 'bg-blue-600',
   },
   High: {
-    badge: 'border-orange-200 bg-orange-50 text-orange-700',
-    color: '#c2410c',
-    soft: '#fff7ed',
-    bar: 'bg-orange-600',
+    badge: 'border-yellow-300 bg-yellow-100 text-yellow-900',
+    color: '#ca8a04',
+    soft: '#fef9c3',
+    bar: 'bg-yellow-400',
   },
   Extreme: {
     badge: 'border-red-200 bg-red-50 text-red-700',
@@ -417,10 +417,10 @@ const riskStyle: Record<
     bar: 'bg-red-700',
   },
   Emergency: {
-    badge: 'border-purple-200 bg-purple-50 text-purple-700',
-    color: '#7e22ce',
-    soft: '#faf5ff',
-    bar: 'bg-purple-700',
+    badge: 'border-violet-200 bg-violet-50 text-violet-700',
+    color: '#7c3aed',
+    soft: '#f5f3ff',
+    bar: 'bg-violet-600',
   },
 };
 
@@ -1610,7 +1610,7 @@ export function ThermoWatchDashboard() {
                                   <span className="font-mono text-[9px] text-slate-400">
                                     {item.horizon_hours}H
                                   </span>
-                                  <strong className="my-2 block text-xl text-orange-700">
+                                  <strong className="my-2 block text-xl" style={{ color: riskStyle[item.predicted_class].color }}>
                                     {item.probability}%
                                   </strong>
                                   <RiskBadge risk={item.predicted_class} />
