@@ -15,6 +15,7 @@ const firaCode = Fira_Code({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://thermowatch-sih26083.vercel.app'),
   title: 'ThermoWatch — Heatwave Early Warning',
   description:
     'District heat-risk intelligence, early warning and response support for India.',

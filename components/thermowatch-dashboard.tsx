@@ -7,6 +7,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import Link from 'next/link';
@@ -545,11 +546,21 @@ const shellCopy: Record<
 };
 
 async function api<T>(path: string, options?: RequestInit): Promise<T> {
-  const response = await fetch(path, options);
-  const payload = (await response.json()) as T & { error?: string };
-  if (!response.ok)
-    throw new Error(payload.error || `Request failed (${response.status})`);
-  return payload;
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), 20000);
+  try {
+    const response = await fetch(path, { ...options, signal: controller.signal });
+    const payload = (await response.json()) as T & { error?: string };
+    if (!response.ok)
+      throw new Error(payload.error || `Request failed (${response.status})`);
+    return payload;
+  } catch (error) {
+    if (controller.signal.aborted)
+      throw new Error('The request took too long. Please try Refresh again.');
+    throw error;
+  } finally {
+    window.clearTimeout(timeout);
+  }
 }
 
 function RiskBadge({ risk }: { risk: Risk }) {
@@ -842,6 +853,7 @@ export function ThermoWatchDashboard() {
   const [online, setOnline] = useState(true);
   const [loading, setLoading] = useState(true);
   const [detailLoading, setDetailLoading] = useState(true);
+  const detailRequest = useRef(0);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const [mobileNav, setMobileNav] = useState(false);
@@ -973,21 +985,23 @@ export function ThermoWatchDashboard() {
 
   const loadDetail = useCallback(
     async (district: string, facilities = false) => {
+      const requestId = ++detailRequest.current;
       setDetailLoading(true);
+      setDetail(null);
       try {
-        setDetail(
-          await api<DistrictDetail>(
+        const result = await api<DistrictDetail>(
             `/api/district?district=${encodeURIComponent(district)}${facilities ? '&facilities=true' : ''}`,
-          ),
-        );
+          );
+        if (requestId === detailRequest.current) setDetail(result);
       } catch (requestError) {
+        if (requestId !== detailRequest.current) return;
         setError(
           requestError instanceof Error
             ? requestError.message
             : 'District detail unavailable',
         );
       } finally {
-        setDetailLoading(false);
+        if (requestId === detailRequest.current) setDetailLoading(false);
       }
     },
     [],
@@ -1365,7 +1379,7 @@ export function ThermoWatchDashboard() {
                 </a>
               ) : (
                 <a
-                  href="/signin-with-chatgpt?return_to=/"
+                  href="/officer-signin"
                   target="_top"
                   className="hidden rounded-xl border border-[#d8d3ca] bg-white px-3 py-2 text-[10px] font-semibold text-slate-600 sm:block"
                 >
@@ -3147,7 +3161,7 @@ export function ThermoWatchDashboard() {
                             Public visitors can view warnings, but only
                             signed-in officers can send or acknowledge them.{' '}
                             <a
-                              href="/signin-with-chatgpt?return_to=/"
+                              href="/officer-signin"
                               target="_top"
                               className="font-semibold underline"
                             >
