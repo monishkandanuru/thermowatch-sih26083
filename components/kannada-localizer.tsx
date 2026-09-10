@@ -302,16 +302,11 @@ const translations: Record<string, string> = {
   Hindi: 'ಹಿಂದಿ',
   Telugu: 'ತೆಲುಗು',
   Kannada: 'ಕನ್ನಡ',
-  'access · live browser delivery': 'ಪ್ರವೇಶ · ನೇರ ಬ್ರೌಸರ್ ವಿತರಣೆ',
-  'access · demo-only delivery': 'ಪ್ರವೇಶ · ಪ್ರದರ್ಶನ ವಿತರಣೆ ಮಾತ್ರ',
-  'Officer sign-in required': 'ಅಧಿಕಾರಿ ಸೈನ್ ಇನ್ ಅಗತ್ಯ',
+  'Hackathon demo preview': 'ಹ್ಯಾಕಥಾನ್ ಪ್ರದರ್ಶನ ಪೂರ್ವವೀಕ್ಷಣೆ',
   'Browser delivery uses this device’s notification permission and stores the alert in the audit trail.':
     'ಬ್ರೌಸರ್ ವಿತರಣೆಯು ಈ ಸಾಧನದ ಸೂಚನೆ ಅನುಮತಿಯನ್ನು ಬಳಸುತ್ತದೆ ಮತ್ತು ಎಚ್ಚರಿಕೆಯನ್ನು ಪರಿಶೀಲನಾ ದಾಖಲೆಯಲ್ಲಿ ಉಳಿಸುತ್ತದೆ.',
   'This creates and audits a realistic message preview. No phone number, external API, SMS, or WhatsApp message is used.':
     'ಇದು ನೈಜತೆಯ ಸಂದೇಶ ಪೂರ್ವವೀಕ್ಷಣೆಯನ್ನು ರಚಿಸಿ ದಾಖಲಿಸುತ್ತದೆ. ಯಾವುದೇ ಫೋನ್ ಸಂಖ್ಯೆ, ಬಾಹ್ಯ API, SMS ಅಥವಾ WhatsApp ಸಂದೇಶವನ್ನು ಬಳಸುವುದಿಲ್ಲ.',
-  'Public visitors can view warnings, but only signed-in officers can send or acknowledge them.':
-    'ಸಾರ್ವಜನಿಕರು ಎಚ್ಚರಿಕೆಗಳನ್ನು ನೋಡಬಹುದು; ಸೈನ್ ಇನ್ ಮಾಡಿದ ಅಧಿಕಾರಿಗಳು ಮಾತ್ರ ಅವನ್ನು ಕಳುಹಿಸಲು ಅಥವಾ ಸ್ವೀಕರಿಸಲು ಸಾಧ್ಯ.',
-  'Sign in with ChatGPT': 'ChatGPT ಮೂಲಕ ಸೈನ್ ಇನ್ ಮಾಡಿ',
   'Send and record warning': 'ಎಚ್ಚರಿಕೆಯನ್ನು ಕಳುಹಿಸಿ ಮತ್ತು ದಾಖಲಿಸಿ',
   Generate: 'ರಚಿಸಿ',
   demo: 'ಪ್ರದರ್ಶನ',

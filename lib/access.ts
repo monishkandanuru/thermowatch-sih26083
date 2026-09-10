@@ -74,8 +74,8 @@ export function forbiddenResponse(actor: RequestActor) {
     {
       error: actor.signed_in
         ? 'Your account does not have officer permission.'
-        : 'Sign in with ChatGPT to perform this authority action.',
-      sign_in_required: !actor.signed_in,
+        : 'Officer permission is required for this action.',
+      permission_required: true,
     },
     { status: actor.signed_in ? 403 : 401 },
   );

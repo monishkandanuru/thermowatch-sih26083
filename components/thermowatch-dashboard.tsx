@@ -7,6 +7,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import Link from 'next/link';
@@ -451,7 +452,6 @@ const shellCopy: Record<
     operational: string;
     monitored: string;
     refresh: string;
-    officerSignIn: string;
     disasterManagement: string;
     decisionSupport: string;
   }
@@ -468,7 +468,6 @@ const shellCopy: Record<
     operational: 'System operational',
     monitored: 'districts monitored',
     refresh: 'Refresh',
-    officerSignIn: 'OFFICER SIGN IN',
     disasterManagement: 'DISASTER MANAGEMENT',
     decisionSupport:
       'Decision support · not a medical diagnosis or official government warning',
@@ -492,7 +491,6 @@ const shellCopy: Record<
     operational: 'सिस्टम चालू है',
     monitored: 'जिलों की निगरानी',
     refresh: 'रीफ़्रेश',
-    officerSignIn: 'अधिकारी साइन इन',
     disasterManagement: 'आपदा प्रबंधन',
     decisionSupport:
       'निर्णय सहायता · चिकित्सा निदान या आधिकारिक सरकारी चेतावनी नहीं',
@@ -515,7 +513,6 @@ const shellCopy: Record<
     operational: 'వ్యవస్థ పనిచేస్తోంది',
     monitored: 'జిల్లాల పర్యవేక్షణ',
     refresh: 'రిఫ్రెష్',
-    officerSignIn: 'అధికారి సైన్ ఇన్',
     disasterManagement: 'విపత్తు నిర్వహణ',
     decisionSupport: 'నిర్ణయ సహాయం · వైద్య నిర్ధారణ లేదా అధికారిక ప్రభుత్వ హెచ్చరిక కాదు',
   },
@@ -538,18 +535,27 @@ const shellCopy: Record<
     operational: 'ವ್ಯವಸ್ಥೆ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತಿದೆ',
     monitored: 'ನಗರಗಳ ಮೇಲ್ವಿಚಾರಣೆ',
     refresh: 'ರಿಫ್ರೆಶ್',
-    officerSignIn: 'ಅಧಿಕಾರಿ ಸೈನ್ ಇನ್',
     disasterManagement: 'ವಿಪತ್ತು ನಿರ್ವಹಣೆ',
     decisionSupport: 'ನಿರ್ಧಾರ ಸಹಾಯ · ವೈದ್ಯಕೀಯ ನಿರ್ಣಯ ಅಥವಾ ಅಧಿಕೃತ ಸರ್ಕಾರಿ ಎಚ್ಚರಿಕೆ ಅಲ್ಲ',
   },
 };
 
 async function api<T>(path: string, options?: RequestInit): Promise<T> {
-  const response = await fetch(path, options);
-  const payload = (await response.json()) as T & { error?: string };
-  if (!response.ok)
-    throw new Error(payload.error || `Request failed (${response.status})`);
-  return payload;
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), 20000);
+  try {
+    const response = await fetch(path, { ...options, signal: controller.signal });
+    const payload = (await response.json()) as T & { error?: string };
+    if (!response.ok)
+      throw new Error(payload.error || `Request failed (${response.status})`);
+    return payload;
+  } catch (error) {
+    if (controller.signal.aborted)
+      throw new Error('The request took too long. Please try Refresh again.');
+    throw error;
+  } finally {
+    window.clearTimeout(timeout);
+  }
 }
 
 function RiskBadge({ risk }: { risk: Risk }) {
@@ -842,6 +848,7 @@ export function ThermoWatchDashboard() {
   const [online, setOnline] = useState(true);
   const [loading, setLoading] = useState(true);
   const [detailLoading, setDetailLoading] = useState(true);
+  const detailRequest = useRef(0);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const [mobileNav, setMobileNav] = useState(false);
@@ -973,21 +980,23 @@ export function ThermoWatchDashboard() {
 
   const loadDetail = useCallback(
     async (district: string, facilities = false) => {
+      const requestId = ++detailRequest.current;
       setDetailLoading(true);
+      setDetail(null);
       try {
-        setDetail(
-          await api<DistrictDetail>(
+        const result = await api<DistrictDetail>(
             `/api/district?district=${encodeURIComponent(district)}${facilities ? '&facilities=true' : ''}`,
-          ),
-        );
+          );
+        if (requestId === detailRequest.current) setDetail(result);
       } catch (requestError) {
+        if (requestId !== detailRequest.current) return;
         setError(
           requestError instanceof Error
             ? requestError.message
             : 'District detail unavailable',
         );
       } finally {
-        setDetailLoading(false);
+        if (requestId === detailRequest.current) setDetailLoading(false);
       }
     },
     [],
@@ -1192,6 +1201,21 @@ export function ThermoWatchDashboard() {
         Notification.permission === 'default'
       )
         await Notification.requestPermission();
+      if (!canManage) {
+        const preview = `${alertRisk} heat-risk warning for ${selected.district}. Avoid peak-hour exposure, stay hydrated and check vulnerable people.`;
+        if (
+          alertChannel === 'browser' &&
+          'Notification' in window &&
+          Notification.permission === 'granted'
+        )
+          new Notification(`ThermoWatch demo · ${selected.district}`, {
+            body: preview,
+          });
+        setNotice(
+          `${alertChannel === 'browser' ? 'Browser' : alertChannel === 'sms' ? 'SMS' : 'WhatsApp'} demo preview generated locally. Nothing was sent or stored.`,
+        );
+        return;
+      }
       const result = await api<{
         id: string;
         message: string;
@@ -1354,24 +1378,6 @@ export function ThermoWatchDashboard() {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              {session?.signed_in ? (
-                <a
-                  href="/signout-with-chatgpt?return_to=/"
-                  target="_top"
-                  className="hidden rounded-xl border border-[#d8d3ca] bg-white px-3 py-2 text-[10px] font-semibold text-slate-600 sm:block"
-                  title="Sign out"
-                >
-                  {session.role.toUpperCase()}
-                </a>
-              ) : (
-                <a
-                  href="/signin-with-chatgpt?return_to=/"
-                  target="_top"
-                  className="hidden rounded-xl border border-[#d8d3ca] bg-white px-3 py-2 text-[10px] font-semibold text-slate-600 sm:block"
-                >
-                  {copy.officerSignIn}
-                </a>
-              )}
               <NativeSelect
                 value={uiLanguage}
                 onChange={(event) =>
@@ -3130,36 +3136,17 @@ export function ThermoWatchDashboard() {
                         className={`rounded-xl border p-3 text-xs ${alertChannel === 'browser' ? 'border-emerald-100 bg-emerald-50 text-emerald-800' : 'border-amber-200 bg-amber-50 text-amber-900'}`}
                       >
                         <b className="block">
-                          {canManage
-                            ? alertChannel === 'browser'
-                              ? `${session?.role} access · live browser delivery`
-                              : `${session?.role} access · demo-only delivery`
-                            : 'Officer sign-in required'}
+                          {canManage && alertChannel === 'browser'
+                            ? 'Browser notification · live'
+                            : 'Hackathon demo preview'}
                         </b>
-                        {canManage ? (
-                          <>
-                            {alertChannel === 'browser'
-                              ? 'Browser delivery uses this device’s notification permission and stores the alert in the audit trail.'
-                              : 'This creates and audits a realistic message preview. No phone number, external API, SMS, or WhatsApp message is used.'}
-                          </>
-                        ) : (
-                          <>
-                            Public visitors can view warnings, but only
-                            signed-in officers can send or acknowledge them.{' '}
-                            <a
-                              href="/signin-with-chatgpt?return_to=/"
-                              target="_top"
-                              className="font-semibold underline"
-                            >
-                              Sign in with ChatGPT
-                            </a>
-                          </>
-                        )}
+                        {canManage && alertChannel === 'browser'
+                          ? 'Browser delivery uses this device’s notification permission and stores the alert in the audit trail.'
+                          : 'This creates a realistic preview on this device. No recipient is contacted and no operational record is changed.'}
                       </div>
                       <Button
                         className="w-full"
                         onClick={sendAlert}
-                        disabled={!canManage}
                       >
                         <Bell />
                         {alertChannel === 'browser'
