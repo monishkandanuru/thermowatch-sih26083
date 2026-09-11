@@ -60,7 +60,8 @@ const translations: Record<string, string> = {
   'Peak risk:': 'ಗರಿಷ್ಠ ಅಪಾಯ:',
   'Peak risk in the next five days:': 'ಮುಂದಿನ ಐದು ದಿನಗಳಲ್ಲಿ ಗರಿಷ್ಠ ಅಪಾಯ:',
   'Forecast unavailable': 'ಮುನ್ಸೂಚನೆ ಲಭ್ಯವಿಲ್ಲ',
-  'Demo estimate — live forecast unavailable.': 'ಪ್ರಾತ್ಯಕ್ಷಿಕೆಯ ಅಂದಾಜು — ನೇರ ಮುನ್ಸೂಚನೆ ಲಭ್ಯವಿಲ್ಲ.',
+  'Demo estimate — live forecast unavailable.':
+    'ಪ್ರಾತ್ಯಕ್ಷಿಕೆಯ ಅಂದಾಜು — ನೇರ ಮುನ್ಸೂಚನೆ ಲಭ್ಯವಿಲ್ಲ.',
   'tomorrow afternoon': 'ನಾಳೆ ಮಧ್ಯಾಹ್ನ',
   'EXPOSURE LENS': 'ಅಪಾಯಕ್ಕೆ ಒಡ್ಡಿಕೊಳ್ಳುವವರ ನೋಟ',
   'Who needs help first?': 'ಮೊದಲು ಯಾರಿಗೆ ನೆರವು ಬೇಕು?',
@@ -320,7 +321,8 @@ const translations: Record<string, string> = {
     'ಈ ನಗರಕ್ಕೆ ಯಾವುದೇ ಎಚ್ಚರಿಕೆ ಕಳುಹಿಸಲಾಗಿಲ್ಲ.',
   'Privacy and data use': 'ಗೌಪ್ಯತೆ ಮತ್ತು ದತ್ತಾಂಶ ಬಳಕೆ',
   'System status': 'ವ್ಯವಸ್ಥೆಯ ಸ್ಥಿತಿ',
-  'Weather data by Open-Meteo': 'Open-Meteo ಹವಾಮಾನ ದತ್ತಾಂಶ',
+  'Open-Meteo': 'Open-Meteo',
+  'MET Norway': 'MET Norway',
   'ThermoWatch is an early-warning and decision-support prototype. It is not a medical service or an official government warning system.':
     'ThermoWatch ಮುಂಚಿತ ಎಚ್ಚರಿಕೆ ಮತ್ತು ನಿರ್ಧಾರ ಸಹಾಯದ ಮಾದರಿ ವ್ಯವಸ್ಥೆ. ಇದು ವೈದ್ಯಕೀಯ ಸೇವೆ ಅಥವಾ ಅಧಿಕೃತ ಸರ್ಕಾರಿ ಎಚ್ಚರಿಕೆ ವ್ಯವಸ್ಥೆಯಲ್ಲ.',
   'Information stored': 'ಉಳಿಸಲಾಗುವ ಮಾಹಿತಿ',
@@ -330,8 +332,8 @@ const translations: Record<string, string> = {
   'Public visitors can view operational information. Authority actions use the signed-in ChatGPT user identifier supplied by the hosting platform. Audit records store the actor identifier and role, not passwords or authentication tokens.':
     'ಸಾರ್ವಜನಿಕರು ಕಾರ್ಯಾಚರಣೆಯ ಮಾಹಿತಿಯನ್ನು ನೋಡಬಹುದು. ಪ್ರಾಧಿಕಾರದ ಕ್ರಮಗಳು ಹೋಸ್ಟಿಂಗ್ ವೇದಿಕೆಯು ನೀಡುವ ಸೈನ್ ಇನ್ ಮಾಡಿದ ChatGPT ಬಳಕೆದಾರ ಗುರುತನ್ನು ಬಳಸುತ್ತವೆ. ಪರಿಶೀಲನಾ ದಾಖಲೆಗಳಲ್ಲಿ ಬಳಕೆದಾರ ಗುರುತು ಮತ್ತು ಪಾತ್ರ ಮಾತ್ರ ಉಳಿಯುತ್ತದೆ; ಪಾಸ್‌ವರ್ಡ್ ಅಥವಾ ದೃಢೀಕರಣ ಟೋಕನ್ ಉಳಿಯುವುದಿಲ್ಲ.',
   'Purpose and sharing': 'ಉದ್ದೇಶ ಮತ್ತು ಹಂಚಿಕೆ',
-  'Data is used to demonstrate heat-risk monitoring, response coordination, validation and accountability. ThermoWatch does not sell personal information. Weather requests are sent to Open-Meteo, and facility searches are sent to OpenStreetMap services without incident descriptions or reporter names.':
-    'ಉಷ್ಣ ಅಪಾಯ ಮೇಲ್ವಿಚಾರಣೆ, ಪ್ರತಿಕ್ರಿಯಾ ಸಮನ್ವಯ, ಮೌಲ್ಯಮಾಪನ ಮತ್ತು ಹೊಣೆಗಾರಿಕೆಯನ್ನು ಪ್ರದರ್ಶಿಸಲು ದತ್ತಾಂಶವನ್ನು ಬಳಸಲಾಗುತ್ತದೆ. ThermoWatch ವೈಯಕ್ತಿಕ ಮಾಹಿತಿಯನ್ನು ಮಾರುವುದಿಲ್ಲ. ಹವಾಮಾನ ವಿನಂತಿಗಳನ್ನು Open-Meteoಗೆ ಮತ್ತು ಸೌಲಭ್ಯ ಹುಡುಕಾಟವನ್ನು ಘಟನೆ ವಿವರ ಅಥವಾ ವರದಿದಾರರ ಹೆಸರಿಲ್ಲದೆ OpenStreetMapಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ.',
+  'Data is used to demonstrate heat-risk monitoring, response coordination, validation and accountability. ThermoWatch does not sell personal information. Weather requests are sent to Open-Meteo and MET Norway, and facility searches are sent to OpenStreetMap services without incident descriptions or reporter names.':
+    'ಉಷ್ಣ ಅಪಾಯ ಮೇಲ್ವಿಚಾರಣೆ, ಪ್ರತಿಕ್ರಿಯಾ ಸಮನ್ವಯ, ಮೌಲ್ಯಮಾಪನ ಮತ್ತು ಹೊಣೆಗಾರಿಕೆಯನ್ನು ಪ್ರದರ್ಶಿಸಲು ದತ್ತಾಂಶವನ್ನು ಬಳಸಲಾಗುತ್ತದೆ. ThermoWatch ವೈಯಕ್ತಿಕ ಮಾಹಿತಿಯನ್ನು ಮಾರುವುದಿಲ್ಲ. ಹವಾಮಾನ ವಿನಂತಿಗಳನ್ನು Open-Meteo ಮತ್ತು MET Norway ಗೆ, ಹಾಗೂ ಸೌಲಭ್ಯ ಹುಡುಕಾಟವನ್ನು ಘಟನೆ ವಿವರ ಅಥವಾ ವರದಿದಾರರ ಹೆಸರಿಲ್ಲದೆ OpenStreetMap ಸೇವೆಗಳಿಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ.',
   'Local assistant and voice': 'ಸ್ಥಳೀಯ ಸಹಾಯಕ ಮತ್ತು ಧ್ವನಿ',
   "Assistant answers are created in the browser from the heat-risk data already shown on screen. Chat messages and audio are not stored by ThermoWatch. Optional speech recognition and read-aloud use browser-provided voice services, whose processing and regional-language availability depend on the user's browser and device. Users can always use text without granting microphone access.":
     'ಪರದೆಯಲ್ಲಿ ಈಗಾಗಲೇ ತೋರಿಸಿರುವ ಉಷ್ಣ ಅಪಾಯದ ದತ್ತಾಂಶದಿಂದ ಸಹಾಯಕ ಉತ್ತರಗಳನ್ನು ಬ್ರೌಸರ್‌ನಲ್ಲೇ ರಚಿಸಲಾಗುತ್ತದೆ. ಚಾಟ್ ಸಂದೇಶಗಳು ಮತ್ತು ಧ್ವನಿಯನ್ನು ThermoWatch ಉಳಿಸುವುದಿಲ್ಲ. ಐಚ್ಛಿಕ ಮಾತು ಗುರುತಿಸುವಿಕೆ ಮತ್ತು ಓದಿ ಹೇಳುವಿಕೆ ಬ್ರೌಸರ್‌ನ ಧ್ವನಿ ಸೇವೆಗಳನ್ನು ಬಳಸುತ್ತವೆ; ಅವುಗಳ ಕಾರ್ಯವಿಧಾನ ಮತ್ತು ಪ್ರಾದೇಶಿಕ ಭಾಷೆಯ ಲಭ್ಯತೆ ಬಳಕೆದಾರರ ಬ್ರೌಸರ್ ಹಾಗೂ ಸಾಧನವನ್ನು ಅವಲಂಬಿಸುತ್ತದೆ. ಮೈಕ್ರೊಫೋನ್ ಅನುಮತಿಯಿಲ್ಲದೇ ಪಠ್ಯವನ್ನು ಸದಾ ಬಳಸಬಹುದು.',
@@ -345,6 +347,11 @@ const translations: Record<string, string> = {
   'Offline mode: cached public weather and forecast views remain available. Record submission and authority actions require a connection.':
     'ಆಫ್‌ಲೈನ್ ಸ್ಥಿತಿ: ಉಳಿಸಿದ ಸಾರ್ವಜನಿಕ ಹವಾಮಾನ ಮತ್ತು ಮುನ್ಸೂಚನೆ ನೋಟಗಳು ಲಭ್ಯವಿವೆ. ದಾಖಲೆ ಸಲ್ಲಿಕೆ ಮತ್ತು ಪ್ರಾಧಿಕಾರದ ಕ್ರಮಗಳಿಗೆ ಸಂಪರ್ಕ ಅಗತ್ಯ.',
   'Live Open-Meteo connected': 'ನೇರ Open-Meteo ಸಂಪರ್ಕಿತವಾಗಿದೆ',
+  'Live ensemble connected': 'ನೇರ ಎನ್‌ಸೆಂಬಲ್ ಸಂಪರ್ಕಿತವಾಗಿದೆ',
+  'Live MET Norway connected': 'ನೇರ MET Norway ಸಂಪರ್ಕಿತವಾಗಿದೆ',
+  'Officer sign in': 'ಅಧಿಕಾರಿ ಸೈನ್ ಇನ್',
+  'Officer sign-in required': 'ಅಧಿಕಾರಿ ಸೈನ್ ಇನ್ ಅಗತ್ಯ',
+  'class confidence': 'ವರ್ಗದ ವಿಶ್ವಾಸ',
   'Resilient demonstration data': 'ಸ್ಥಿರ ಪ್ರದರ್ಶನ ದತ್ತಾಂಶ',
   'LIVE OVERVIEW': 'ನೇರ ಅವಲೋಕನ',
   FORECAST: 'ಮುನ್ಸೂಚನೆ',

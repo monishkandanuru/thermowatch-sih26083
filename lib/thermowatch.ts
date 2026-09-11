@@ -510,7 +510,49 @@ export async function fetchCurrentDistrict(config: DistrictConfig) {
       }),
     };
   } catch {
-    return fallbackDistrict(config);
+    try {
+      const points = await fetchMetNorwayForecast({
+        latitude: config.lat,
+        longitude: config.lon,
+      });
+      const point = nearestForecast(points, 0);
+      const timestamp = new Date(point.time);
+      const hour = Number(
+        new Intl.DateTimeFormat('en-IN', {
+          timeZone: 'Asia/Kolkata',
+          hour: '2-digit',
+          hourCycle: 'h23',
+        }).format(timestamp),
+      );
+      const solar =
+        point.shortwave_radiation_wm2 || (hour >= 7 && hour <= 18 ? 650 : 10);
+      const thermal = computeHtsi({
+        temp: point.temperature_c,
+        humidity: point.humidity_pct,
+        wind: point.wind_speed_ms,
+        solar,
+      });
+      return {
+        ...config,
+        temp: Number(point.temperature_c.toFixed(1)),
+        humidity: Math.round(point.humidity_pct),
+        wind: Number(point.wind_speed_ms.toFixed(1)),
+        uv: Number((solar / 95).toFixed(1)),
+        solar: Number(solar.toFixed(1)),
+        aqi: 85,
+        source: 'met-norway-live-forecast',
+        ...thermal,
+        ...modelFields(config, {
+          temp: point.temperature_c,
+          humidity: point.humidity_pct,
+          wind: point.wind_speed_ms,
+          solar,
+          timestamp,
+        }),
+      };
+    } catch {
+      return fallbackDistrict(config);
+    }
   }
 }
 
@@ -623,41 +665,80 @@ async function fetchDistrictForecastLayers(config: DistrictConfig) {
       } as ForecastLayerPoint;
     });
   } catch {
-    return horizons.map((horizon) => {
-      const timestamp = new Date(Date.now() + horizon * 3_600_000);
-      const hour = Number(
-        new Intl.DateTimeFormat('en-IN', {
-          timeZone: 'Asia/Kolkata',
-          hour: '2-digit',
-          hourCycle: 'h23',
-        }).format(timestamp),
-      );
-      const solar = hour >= 7 && hour <= 18 ? 620 : 10;
-      const temp = config.fallbackTemp - (hour < 9 || hour > 19 ? 6 : 0);
-      const humidity = config.fallbackHumidity + (hour < 8 ? 10 : 0);
-      const wind = 1.7;
-      const thermal = computeHtsi({ temp, humidity, wind, solar });
-      const prediction = modelFields(config, {
-        temp,
-        humidity,
-        wind,
-        solar,
-        timestamp,
+    try {
+      const points = await fetchMetNorwayForecast({
+        latitude: config.lat,
+        longitude: config.lon,
       });
-      return {
-        ...config,
-        horizon_hours: horizon,
-        valid_at: timestamp.toISOString(),
-        temp: Number(temp.toFixed(1)),
-        humidity: Math.round(humidity),
-        wind,
-        uv: Number((solar / 95).toFixed(1)),
-        solar,
-        source: 'resilient-fallback',
-        ...thermal,
-        ...prediction,
-      } as ForecastLayerPoint;
-    });
+      return horizons.map((horizon) => {
+        const point = nearestForecast(points, horizon);
+        const solar = point.shortwave_radiation_wm2;
+        const uv = solar / 95;
+        const thermal = computeHtsi({
+          temp: point.temperature_c,
+          humidity: point.humidity_pct,
+          wind: point.wind_speed_ms,
+          solar,
+          uv,
+        });
+        const prediction = modelFields(config, {
+          temp: point.temperature_c,
+          humidity: point.humidity_pct,
+          wind: point.wind_speed_ms,
+          solar,
+          timestamp: point.time,
+        });
+        return {
+          ...config,
+          horizon_hours: horizon,
+          valid_at: point.time,
+          temp: Number(point.temperature_c.toFixed(1)),
+          humidity: Math.round(point.humidity_pct),
+          wind: Number(point.wind_speed_ms.toFixed(1)),
+          uv: Number(uv.toFixed(1)),
+          solar: Number(solar.toFixed(1)),
+          source: 'met-norway-live-forecast',
+          ...thermal,
+          ...prediction,
+        } as ForecastLayerPoint;
+      });
+    } catch {
+      return horizons.map((horizon) => {
+        const timestamp = new Date(Date.now() + horizon * 3_600_000);
+        const hour = Number(
+          new Intl.DateTimeFormat('en-IN', {
+            timeZone: 'Asia/Kolkata',
+            hour: '2-digit',
+            hourCycle: 'h23',
+          }).format(timestamp),
+        );
+        const solar = hour >= 7 && hour <= 18 ? 620 : 10;
+        const temp = config.fallbackTemp - (hour < 9 || hour > 19 ? 6 : 0);
+        const humidity = config.fallbackHumidity + (hour < 8 ? 10 : 0);
+        const wind = 1.7;
+        const thermal = computeHtsi({ temp, humidity, wind, solar });
+        const prediction = modelFields(config, {
+          temp,
+          humidity,
+          wind,
+          solar,
+          timestamp,
+        });
+        return {
+          ...config,
+          horizon_hours: horizon,
+          valid_at: timestamp.toISOString(),
+          temp: Number(temp.toFixed(1)),
+          humidity: Math.round(humidity),
+          wind,
+          uv: Number((solar / 95).toFixed(1)),
+          solar,
+          source: 'resilient-fallback',
+          ...thermal,
+          ...prediction,
+        } as ForecastLayerPoint;
+      });
+    }
   }
 }
 

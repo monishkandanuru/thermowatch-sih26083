@@ -2410,7 +2410,7 @@ export function ThermoWatchDashboard() {
                                   {item.htsi}
                                 </strong>
                                 <small className="text-right text-slate-400">
-                                  {item.probability}% High+
+                                  {item.probability}% class confidence
                                 </small>
                               </div>
                             ),
@@ -3344,7 +3344,15 @@ export function ThermoWatchDashboard() {
                   rel="noreferrer"
                   className="text-blue-700"
                 >
-                  Weather data by Open-Meteo
+                  Open-Meteo
+                </a>
+                <a
+                  href="https://api.met.no/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-blue-700"
+                >
+                  MET Norway
                 </a>
               </span>
             </footer>
