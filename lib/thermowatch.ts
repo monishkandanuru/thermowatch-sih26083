@@ -455,8 +455,12 @@ function fallbackDistrict(config: DistrictConfig) {
   };
 }
 
-export async function fetchCurrentDistrict(config: DistrictConfig) {
+export async function fetchCurrentDistrict(
+  config: DistrictConfig,
+  metNorwayOnly = false,
+) {
   try {
+    if (metNorwayOnly) throw new Error('use MET Norway bulk path');
     const params = new URLSearchParams({
       latitude: String(config.lat),
       longitude: String(config.lon),
@@ -594,8 +598,8 @@ export async function fetchAllDistricts() {
   // 30-request burst and trigger upstream rate limiting.
   currentDistrictRequest = mapWithConcurrency(
     DISTRICTS,
-    1,
-    fetchCurrentDistrict,
+    10,
+    (config) => fetchCurrentDistrict(config, true),
   );
   try {
     const data = await currentDistrictRequest;
@@ -623,9 +627,13 @@ export type ForecastLayerPoint = DistrictConfig & {
   model_version: string;
 };
 
-async function fetchDistrictForecastLayers(config: DistrictConfig) {
+async function fetchDistrictForecastLayers(
+  config: DistrictConfig,
+  metNorwayOnly = false,
+) {
   const horizons = [24, 48, 72] as const;
   try {
+    if (metNorwayOnly) throw new Error('use MET Norway bulk path');
     const params = new URLSearchParams({
       latitude: String(config.lat),
       longitude: String(config.lon),
@@ -771,8 +779,8 @@ async function fetchDistrictForecastLayers(config: DistrictConfig) {
 export async function fetchAllForecastLayers() {
   const districtLayers = await mapWithConcurrency(
     DISTRICTS,
-    1,
-    fetchDistrictForecastLayers,
+    10,
+    (config) => fetchDistrictForecastLayers(config, true),
   );
   return {
     24: districtLayers.map((layers) => layers[0]),
