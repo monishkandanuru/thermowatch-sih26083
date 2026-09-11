@@ -680,48 +680,60 @@ export async function fetchDistrictForecast(name: string) {
       latitude: config.lat,
       longitude: config.lon,
     });
-    const forecast = ensemblePoints
-      .map((point) => {
-        const temp = point.temperature_c;
-        const humidity = point.humidity_pct;
-        const wind = point.wind_speed_ms;
-        const solar = point.shortwave_radiation_wm2;
-        const uv = solar / 95;
-        const result = computeHtsi({ temp, humidity, wind, uv, solar });
-        return {
-          time: indiaForecastTime(point.time),
-          label: new Date(indiaForecastTime(point.time)).toLocaleString(
-            'en-IN',
-            {
-              timeZone: 'Asia/Kolkata',
-              weekday: 'short',
-              hour: 'numeric',
-            },
-          ),
-          temp: Number(temp.toFixed(1)),
-          humidity: Math.round(humidity),
-          wind: Number(wind.toFixed(1)),
-          uv: Number(uv.toFixed(1)),
-          solar: Number(solar.toFixed(1)),
-          model_count: point.model_count,
-          requested_model_count: point.requested_model_count,
-          temperature_spread_c: Number(point.temperature_spread_c.toFixed(2)),
-          ...result,
-          ...modelFields(config, {
-            temp,
-            humidity,
-            wind,
-            solar,
-            timestamp: point.time,
-          }),
-        };
-      })
-      .filter(
-        (point, index) =>
-          index % 3 === 0 && Date.parse(point.time) >= Date.now(),
-      );
+    const ensembleForecast = ensemblePoints.map((point) => {
+      const temp = point.temperature_c;
+      const humidity = point.humidity_pct;
+      const wind = point.wind_speed_ms;
+      const solar = point.shortwave_radiation_wm2;
+      const uv = solar / 95;
+      const result = computeHtsi({ temp, humidity, wind, uv, solar });
+      return {
+        time: indiaForecastTime(point.time),
+        label: new Date(indiaForecastTime(point.time)).toLocaleString('en-IN', {
+          timeZone: 'Asia/Kolkata',
+          weekday: 'short',
+          hour: 'numeric',
+        }),
+        temp: Number(temp.toFixed(1)),
+        humidity: Math.round(humidity),
+        wind: Number(wind.toFixed(1)),
+        uv: Number(uv.toFixed(1)),
+        solar: Number(solar.toFixed(1)),
+        model_count: point.model_count,
+        requested_model_count: point.requested_model_count,
+        temperature_spread_c: Number(point.temperature_spread_c.toFixed(2)),
+        ...result,
+        ...modelFields(config, {
+          temp,
+          humidity,
+          wind,
+          solar,
+          timestamp: point.time,
+        }),
+      };
+    });
+    const forecast = ensembleForecast.filter(
+      (point, index) => index % 3 === 0 && Date.parse(point.time) >= Date.now(),
+    );
     if (!forecast.length)
       throw new Error('ensemble forecast has no future points');
+    const nearestCurrent = [...ensembleForecast].sort(
+      (a, b) =>
+        Math.abs(Date.parse(a.time) - Date.now()) -
+        Math.abs(Date.parse(b.time) - Date.now()),
+    )[0];
+    const ensembleCurrent = {
+      ...current,
+      ...nearestCurrent,
+      district: config.district,
+      lat: config.lat,
+      lon: config.lon,
+      x: config.x,
+      y: config.y,
+      fallbackTemp: config.fallbackTemp,
+      fallbackHumidity: config.fallbackHumidity,
+      source: 'open-meteo-live-ensemble',
+    };
     const horizons = [24, 48, 72].map((hours) => {
       const item = nearestForecast(forecast, hours);
       return {
@@ -738,16 +750,17 @@ export async function fetchDistrictForecast(name: string) {
     const peak = [...forecast].sort((a, b) => b.htsi - a.htsi)[0];
     return {
       district: config.district,
-      current,
+      current: ensembleCurrent,
       forecast,
       horizons,
       peak,
-      profiles: vulnerabilityProfiles(current),
-      source: 'open-meteo-10-model-mean',
+      profiles: vulnerabilityProfiles(ensembleCurrent),
+      source: 'open-meteo-live-ensemble',
       ensemble: {
-        requested_models: 10,
-        available_models: peak.model_count,
-        method: 'arithmetic mean of valid time-aligned model values',
+        systems: ['ECMWF IFS', 'DWD ICON'],
+        requested_forecasts: 10,
+        available_forecasts: peak.model_count,
+        method: 'arithmetic mean of valid time-aligned ensemble forecasts',
       },
     };
   } catch {

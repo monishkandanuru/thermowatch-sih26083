@@ -1,15 +1,6 @@
-export const FORECAST_MODELS = [
-  'ecmwf_ifs025',
-  'ecmwf_aifs025_single',
-  'ncep_gfs_global',
-  'ncep_aigfs025',
-  'icon_global',
-  'cmc_gem_gdps',
-  'jma_gsm',
-  'kma_gdps',
-  'bom_access_global',
-  'cma_grapes_global',
-] as const;
+export const ENSEMBLE_SYSTEMS = ['ecmwf_ifs025', 'icon_global'] as const;
+
+export const FORECAST_SAMPLE_SIZE = 10;
 
 const VARIABLES = [
   'temperature_2m',
@@ -32,19 +23,38 @@ export type EnsembleForecastPoint = {
   temperature_spread_c: number;
 };
 
-function finiteValues(
+function commonForecastSeries(hourly: HourlyPayload) {
+  const suffixSets = VARIABLES.map(
+    (variable) =>
+      new Set(
+        Object.entries(hourly)
+          .filter(
+            ([key, value]) =>
+              key.startsWith(`${variable}_`) && Array.isArray(value),
+          )
+          .map(([key]) => key.slice(variable.length + 1)),
+      ),
+  );
+  return [...suffixSets[0]]
+    .filter((suffix) => suffixSets.every((set) => set.has(suffix)))
+    .sort((a, b) => Number(a.includes('member')) - Number(b.includes('member')))
+    .slice(0, FORECAST_SAMPLE_SIZE);
+}
+
+function completeSeriesValues(
   hourly: HourlyPayload,
-  variable: Variable,
+  suffixes: string[],
   index: number,
 ) {
-  return Object.entries(hourly)
-    .filter(
-      ([key, value]) =>
-        (key === variable || key.startsWith(`${variable}_`)) &&
-        Array.isArray(value),
-    )
-    .map(([, value]) => Number((value as unknown[])[index]))
-    .filter(Number.isFinite);
+  return suffixes.flatMap((suffix) => {
+    const values = VARIABLES.map((variable) => {
+      const series = hourly[`${variable}_${suffix}`];
+      const raw = Array.isArray(series) ? series[index] : undefined;
+      if (raw === null || raw === undefined || raw === '') return Number.NaN;
+      return Number(raw);
+    });
+    return values.every(Number.isFinite) ? [values] : [];
+  });
 }
 
 function mean(values: number[]) {
@@ -67,20 +77,17 @@ export function aggregateModelForecast(
   const hourly = payload.hourly;
   const times = hourly?.time;
   if (!hourly || !Array.isArray(times)) return [];
+  const suffixes = commonForecastSeries(hourly);
 
   return times.flatMap((time, index) => {
     if (typeof time !== 'string') return [];
-    const temperature = finiteValues(hourly, 'temperature_2m', index);
-    const humidity = finiteValues(hourly, 'relative_humidity_2m', index);
-    const wind = finiteValues(hourly, 'wind_speed_10m', index);
-    const solar = finiteValues(hourly, 'shortwave_radiation', index);
-    const modelCount = Math.min(
-      temperature.length,
-      humidity.length,
-      wind.length,
-      solar.length,
-    );
+    const complete = completeSeriesValues(hourly, suffixes, index);
+    const modelCount = complete.length;
     if (modelCount < minimumModels) return [];
+    const temperature = complete.map((values) => values[0]);
+    const humidity = complete.map((values) => values[1]);
+    const wind = complete.map((values) => values[2]);
+    const solar = complete.map((values) => values[3]);
 
     return [
       {
@@ -90,7 +97,7 @@ export function aggregateModelForecast(
         wind_speed_ms: mean(wind),
         shortwave_radiation_wm2: Math.max(0, mean(solar)),
         model_count: modelCount,
-        requested_model_count: FORECAST_MODELS.length,
+        requested_model_count: FORECAST_SAMPLE_SIZE,
         temperature_spread_c: standardDeviation(temperature),
       },
     ];
@@ -114,13 +121,13 @@ export async function fetchModelMeanForecast(input: {
     latitude: String(input.latitude),
     longitude: String(input.longitude),
     hourly: VARIABLES.join(','),
-    models: FORECAST_MODELS.join(','),
+    models: ENSEMBLE_SYSTEMS.join(','),
     timezone: 'Asia/Kolkata',
     wind_speed_unit: 'ms',
     forecast_days: '5',
   });
   const response = await fetch(
-    `https://api.open-meteo.com/v1/forecast?${params}`,
+    `https://ensemble-api.open-meteo.com/v1/ensemble?${params}`,
     {
       headers: { 'User-Agent': 'ThermoWatch-SIH26083/5.0' },
       signal: AbortSignal.timeout(12_000),
@@ -132,7 +139,7 @@ export async function fetchModelMeanForecast(input: {
     (await response.json()) as { hourly?: HourlyPayload },
   );
   if (!points.length)
-    throw new Error('ensemble weather contained too few models');
+    throw new Error('ensemble weather contained too few complete forecasts');
   cache.set(key, { expiresAt: Date.now() + 15 * 60_000, points });
   return points;
 }
