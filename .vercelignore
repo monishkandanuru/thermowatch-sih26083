@@ -1,0 +1,16 @@
+.git
+.next
+.vinext
+.wrangler
+.codex-finalizer
+dist
+node_modules
+output
+outputs
+tmp
+work
+ml/data-cache
+.env*
+*.db
+*.tsbuildinfo
+.DS_Store
