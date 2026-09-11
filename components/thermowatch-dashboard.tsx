@@ -23,6 +23,7 @@ import {
   FileText,
   History,
   LayoutDashboard,
+  LockKeyhole,
   Map,
   Menu,
   RefreshCw,
@@ -1378,6 +1379,13 @@ export function ThermoWatchDashboard() {
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <Link
+                href="/login"
+                className="hidden min-h-9 items-center gap-1.5 rounded-xl border border-[#d8d3ca] bg-white px-3 text-sm font-semibold text-[#293a54] shadow-sm transition-colors hover:bg-[#eef2f7] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#234b8b]/30 sm:inline-flex"
+              >
+                <LockKeyhole className="h-4 w-4" />
+                Security demo
+              </Link>
               <NativeSelect
                 value={uiLanguage}
                 onChange={(event) =>
