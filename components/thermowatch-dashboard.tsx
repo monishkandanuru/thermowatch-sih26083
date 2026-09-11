@@ -552,7 +552,10 @@ async function api<T>(path: string, options?: RequestInit): Promise<T> {
   const controller = new AbortController();
   const timeout = window.setTimeout(() => controller.abort(), 20000);
   try {
-    const response = await fetch(path, { ...options, signal: controller.signal });
+    const response = await fetch(path, {
+      ...options,
+      signal: controller.signal,
+    });
     const payload = (await response.json()) as T & { error?: string };
     if (!response.ok)
       throw new Error(payload.error || `Request failed (${response.status})`);
@@ -729,85 +732,92 @@ function IndiaMap({
           ))}
         </g>
 
-        {[...districts].sort((a, b) => Number(a.district === hoveredName) - Number(b.district === hoveredName)).map((item) => {
-          const point = project(item.lat, item.lon);
-          const isSelected = selected.district === item.district;
-          const color = riskStyle[item.risk].color;
-          const labelWidth = Math.max(62, item.district.length * 7 + 20);
-          const markerRadius = districts.length > 24 ? 8.5 : 11;
-          const markerCore = districts.length > 24 ? 4.25 : 5.5;
+        {[...districts]
+          .sort(
+            (a, b) =>
+              Number(a.district === hoveredName) -
+              Number(b.district === hoveredName),
+          )
+          .map((item) => {
+            const point = project(item.lat, item.lon);
+            const isSelected = selected.district === item.district;
+            const color = riskStyle[item.risk].color;
+            const labelWidth = Math.max(62, item.district.length * 7 + 20);
+            const markerRadius = districts.length > 24 ? 8.5 : 11;
+            const markerCore = districts.length > 24 ? 4.25 : 5.5;
 
-          return (
-            <a
-              key={item.district}
-              href={`#district-${item.district.toLowerCase().replaceAll(' ', '-')}`}
-              tabIndex={0}
-              aria-label={`${item.district}: ${item.risk} risk, HTSI ${item.htsi}${item.high_risk_probability !== undefined ? `, ${Math.round(item.high_risk_probability)} percent High plus probability` : ''}`}
-              className="group cursor-pointer focus:outline-none"
-              onMouseEnter={() => setHoveredName(item.district)}
-              onMouseLeave={() => setHoveredName(null)}
-              onFocus={() => setHoveredName(item.district)}
-              onBlur={() => setHoveredName(null)}
-              onClick={(event) => {
-                event.preventDefault();
-                onSelect(item);
-              }}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter' || event.key === ' ') {
+            return (
+              <a
+                key={item.district}
+                href={`#district-${item.district.toLowerCase().replaceAll(' ', '-')}`}
+                tabIndex={0}
+                aria-label={`${item.district}: ${item.risk} risk, HTSI ${item.htsi}${item.high_risk_probability !== undefined ? `, ${Math.round(item.high_risk_probability)} percent High plus probability` : ''}`}
+                className="group cursor-pointer focus:outline-none"
+                onMouseEnter={() => setHoveredName(item.district)}
+                onMouseLeave={() => setHoveredName(null)}
+                onFocus={() => setHoveredName(item.district)}
+                onBlur={() => setHoveredName(null)}
+                onClick={(event) => {
                   event.preventDefault();
                   onSelect(item);
-                }
-              }}
-            >
-              <title>{`${item.district} · ${item.risk} risk · HTSI ${item.htsi}`}</title>
-              <circle cx={point.x} cy={point.y} r="15" fill="transparent" />
-              <circle
-                cx={point.x}
-                cy={point.y}
-                r={isSelected ? 13 : markerRadius}
-                fill={riskStyle[item.risk].soft}
-                fillOpacity="0.96"
-                stroke="white"
-                strokeWidth="4"
-                filter={isSelected ? 'url(#marker-glow)' : undefined}
-                className="transition-all duration-200 group-hover:r-[14px] group-focus:stroke-blue-700"
-              />
-              <circle
-                cx={point.x}
-                cy={point.y}
-                r={isSelected ? 6.5 : markerCore}
-                fill={color}
-                stroke={isSelected ? 'white' : color}
-                strokeWidth="1.5"
-              />
-              {(hoveredName === item.district || (!hoveredName && isSelected)) && (
-                <g
-                  pointerEvents="none"
-                  transform={`translate(${point.x - labelWidth / 2} ${point.y - 42})`}
-                >
-                  <rect
-                    width={labelWidth}
-                    height="25"
-                    rx="12.5"
-                    fill="#10213f"
-                    stroke="white"
-                    strokeWidth="2"
-                  />
-                  <text
-                    x={labelWidth / 2}
-                    y="16.5"
-                    textAnchor="middle"
-                    fontSize="10.5"
-                    fontWeight="700"
-                    fill="white"
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    onSelect(item);
+                  }
+                }}
+              >
+                <title>{`${item.district} · ${item.risk} risk · HTSI ${item.htsi}`}</title>
+                <circle cx={point.x} cy={point.y} r="15" fill="transparent" />
+                <circle
+                  cx={point.x}
+                  cy={point.y}
+                  r={isSelected ? 13 : markerRadius}
+                  fill={riskStyle[item.risk].soft}
+                  fillOpacity="0.96"
+                  stroke="white"
+                  strokeWidth="4"
+                  filter={isSelected ? 'url(#marker-glow)' : undefined}
+                  className="transition-all duration-200 group-hover:r-[14px] group-focus:stroke-blue-700"
+                />
+                <circle
+                  cx={point.x}
+                  cy={point.y}
+                  r={isSelected ? 6.5 : markerCore}
+                  fill={color}
+                  stroke={isSelected ? 'white' : color}
+                  strokeWidth="1.5"
+                />
+                {(hoveredName === item.district ||
+                  (!hoveredName && isSelected)) && (
+                  <g
+                    pointerEvents="none"
+                    transform={`translate(${point.x - labelWidth / 2} ${point.y - 42})`}
                   >
-                    {item.district}
-                  </text>
-                </g>
-              )}
-            </a>
-          );
-        })}
+                    <rect
+                      width={labelWidth}
+                      height="25"
+                      rx="12.5"
+                      fill="#10213f"
+                      stroke="white"
+                      strokeWidth="2"
+                    />
+                    <text
+                      x={labelWidth / 2}
+                      y="16.5"
+                      textAnchor="middle"
+                      fontSize="10.5"
+                      fontWeight="700"
+                      fill="white"
+                    >
+                      {item.district}
+                    </text>
+                  </g>
+                )}
+              </a>
+            );
+          })}
       </svg>
       <div className="absolute inset-x-3 bottom-3 flex flex-wrap justify-center gap-x-3 gap-y-1.5 rounded-2xl border border-white/90 bg-white/92 px-3 py-2.5 text-[10px] text-slate-600 shadow-[0_8px_24px_rgb(37_58_88/10%)] backdrop-blur">
         {(['Low', 'Moderate', 'High', 'Extreme', 'Emergency'] as Risk[]).map(
@@ -879,11 +889,13 @@ export function ThermoWatchDashboard() {
     recommended_action: string;
   } | null>(null);
 
-  const selected = useMemo(
-    () =>
-      districts.find((item) => item.district === selectedName) ?? districts[0],
-    [districts, selectedName],
-  );
+  const selected = useMemo(() => {
+    const district =
+      districts.find((item) => item.district === selectedName) ?? districts[0];
+    return detail?.district === selectedName
+      ? { ...district, ...detail.current }
+      : district;
+  }, [detail, districts, selectedName]);
   const copy = shellCopy[uiLanguage];
   const dateLocale =
     uiLanguage === 'hi'
@@ -903,7 +915,8 @@ export function ThermoWatchDashboard() {
     [detail?.profiles],
   );
   const alphabeticalDistricts = useMemo(
-    () => [...districts].sort((a, b) => a.district.localeCompare(b.district, 'en')),
+    () =>
+      [...districts].sort((a, b) => a.district.localeCompare(b.district, 'en')),
     [districts],
   );
   const highCount = districts.filter((item) =>
@@ -993,8 +1006,8 @@ export function ThermoWatchDashboard() {
       setDetail(null);
       try {
         const result = await api<DistrictDetail>(
-            `/api/district?district=${encodeURIComponent(district)}${facilities ? '&facilities=true' : ''}`,
-          );
+          `/api/district?district=${encodeURIComponent(district)}${facilities ? '&facilities=true' : ''}`,
+        );
         if (requestId === detailRequest.current) setDetail(result);
       } catch (requestError) {
         if (requestId !== detailRequest.current) return;
@@ -1149,7 +1162,9 @@ export function ThermoWatchDashboard() {
   }
 
   async function signOutOfficer() {
-    await fetch('/api/security-demo', { method: 'DELETE' }).catch(() => undefined);
+    await fetch('/api/security-demo', { method: 'DELETE' }).catch(
+      () => undefined,
+    );
     setSession({
       id: null,
       email: null,
@@ -1310,9 +1325,16 @@ export function ThermoWatchDashboard() {
   }
 
   const navLabel = copy.nav[view];
-  const sourceLabel = districts.some((item) => item.source === 'open-meteo')
-    ? 'Live Open-Meteo connected'
-    : 'Resilient demonstration data';
+  const liveSource = detail?.source ?? selected.source;
+  const sourceLabel =
+    liveSource === 'open-meteo-live-ensemble'
+      ? 'Live ensemble connected'
+      : liveSource === 'met-norway-live-forecast'
+        ? 'Live MET Norway connected'
+        : liveSource === 'open-meteo'
+          ? 'Live Open-Meteo connected'
+          : 'Resilient demonstration data';
+  const hasLiveWeather = liveSource !== 'resilient-fallback';
 
   return (
     <KannadaLocalizer enabled={uiLanguage === 'kn'}>
@@ -1357,7 +1379,11 @@ export function ThermoWatchDashboard() {
                   key={id}
                   onClick={() => changeView(id)}
                   className={`group flex min-h-11 w-full items-center gap-3 rounded-xl px-3 text-left text-[13px] font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f2c96c] ${view === id ? 'bg-white text-[#10213f] shadow-[0_8px_22px_rgb(0_0_0/18%)]' : 'text-blue-100/65 hover:bg-white/8 hover:text-white'}`}
-                  aria-label={locked ? `${copy.nav[id]} — officer sign-in required` : copy.nav[id]}
+                  aria-label={
+                    locked
+                      ? `${copy.nav[id]} — officer sign-in required`
+                      : copy.nav[id]
+                  }
                   title={locked ? 'Officer sign-in required' : undefined}
                 >
                   <span
@@ -1379,7 +1405,7 @@ export function ThermoWatchDashboard() {
           </nav>
           <div className="absolute bottom-6 left-4 right-4 rounded-[1.15rem] border border-white/10 bg-white/[0.06] p-3.5 font-mono text-[10px] text-blue-100/65 backdrop-blur">
             <span
-              className={`mr-2 inline-block h-2 w-2 rounded-full ${districts.some((item) => item.source === 'open-meteo') ? 'bg-emerald-500' : 'bg-amber-500'}`}
+              className={`mr-2 inline-block h-2 w-2 rounded-full ${hasLiveWeather ? 'bg-emerald-500' : 'bg-amber-500'}`}
             />
             {sourceLabel}
             <span className="mt-2 block border-t border-white/8 pt-2 text-[9px] text-blue-200/40">
@@ -1536,7 +1562,7 @@ export function ThermoWatchDashboard() {
                           </h2>
                           <p className="mt-1 text-xs text-blue-100/55">
                             {selected.temp}°C · {selected.humidity}% humidity ·{' '}
-                            {selected.source === 'open-meteo'
+                            {selected.source !== 'resilient-fallback'
                               ? 'live weather'
                               : 'safe fallback'}
                           </p>
@@ -1670,7 +1696,13 @@ export function ThermoWatchDashboard() {
                                   <span className="font-mono text-[9px] text-slate-400">
                                     {item.horizon_hours}H
                                   </span>
-                                  <strong className="my-2 block text-xl" style={{ color: riskStyle[item.predicted_class].color }}>
+                                  <strong
+                                    className="my-2 block text-xl"
+                                    style={{
+                                      color:
+                                        riskStyle[item.predicted_class].color,
+                                    }}
+                                  >
                                     {item.probability}%
                                   </strong>
                                   <RiskBadge risk={item.predicted_class} />
@@ -1685,13 +1717,22 @@ export function ThermoWatchDashboard() {
                                   {detail?.peak
                                     ? new Date(detail.peak.time).toLocaleString(
                                         dateLocale,
-                                        { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit', timeZone: 'Asia/Kolkata' },
+                                        {
+                                          weekday: 'short',
+                                          day: 'numeric',
+                                          month: 'short',
+                                          hour: 'numeric',
+                                          minute: '2-digit',
+                                          timeZone: 'Asia/Kolkata',
+                                        },
                                       )
                                     : 'Forecast unavailable'}
                                 </b>
                                 {detail?.peak && ' IST'}
                                 {detail?.source === 'resilient-fallback' && (
-                                  <small className="mt-1 block">Demo estimate — live forecast unavailable.</small>
+                                  <small className="mt-1 block">
+                                    Demo estimate — live forecast unavailable.
+                                  </small>
                                 )}
                               </span>
                             </div>
@@ -3107,7 +3148,14 @@ export function ThermoWatchDashboard() {
                         onClick={() => setAlertChannel('whatsapp')}
                         aria-pressed={alertChannel === 'whatsapp'}
                       >
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true" className="h-5 w-5">
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.8"
+                          aria-hidden="true"
+                          className="h-5 w-5"
+                        >
                           <path d="M21 11.5a9 9 0 0 1-13.5 7.8L3 21l1.7-4.5A9 9 0 1 1 21 11.5Z" />
                           <path d="m8 7 2 3-1 1c1 2 2 3 4 4l1-1 3 2c-1 3-4 2-7-1S6 8 8 7Z" />
                         </svg>
@@ -3198,10 +3246,7 @@ export function ThermoWatchDashboard() {
                           ? 'Browser delivery uses this device’s notification permission and stores the alert in the audit trail.'
                           : 'This creates a realistic preview on this device. No recipient is contacted and no operational record is changed.'}
                       </div>
-                      <Button
-                        className="w-full"
-                        onClick={sendAlert}
-                      >
+                      <Button className="w-full" onClick={sendAlert}>
                         <Bell />
                         {alertChannel === 'browser'
                           ? 'Send and record warning'
