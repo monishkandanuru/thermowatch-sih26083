@@ -5,6 +5,10 @@
   "buildCommand": null,
   "rewrites": [
     {
+      "source": "/",
+      "destination": "https://thermowatch-sih26083.monishkandanuru.chatgpt.site/"
+    },
+    {
       "source": "/:path*",
       "destination": "https://thermowatch-sih26083.monishkandanuru.chatgpt.site/:path*"
     }
