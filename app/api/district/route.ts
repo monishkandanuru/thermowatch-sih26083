@@ -13,8 +13,22 @@ export async function GET(request: Request) {
   const detail = await fetchDistrictForecast(district);
   const db = await ensureDatabase();
   const predictedAt = new Date().toISOString();
-  await db.batch(
-    detail.horizons.map((item) =>
+  await db.batch([
+    db
+      .prepare(
+        'INSERT INTO observations (id, district, temperature, humidity, htsi, risk, source, observed_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      )
+      .bind(
+        makeId('OBS'),
+        detail.district,
+        detail.current.temp,
+        detail.current.humidity,
+        detail.current.htsi,
+        detail.current.risk,
+        detail.current.source,
+        predictedAt,
+      ),
+    ...detail.horizons.map((item) =>
       db
         .prepare(
           'INSERT INTO predictions (id, district, horizon_hours, probability, predicted_class, source, predicted_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
@@ -29,7 +43,7 @@ export async function GET(request: Request) {
           predictedAt,
         ),
     ),
-  );
+  ]);
   const facilities = includeFacilities
     ? await fetchNearbyFacilities(detail.district)
     : undefined;

@@ -449,6 +449,21 @@ const officerViews = new Set<View>([
   'alerts',
 ]);
 
+function weatherSourceLabel(source: unknown) {
+  switch (String(source)) {
+    case 'open-meteo-live-ensemble':
+      return 'Live ensemble';
+    case 'met-norway-live-forecast':
+      return 'MET Norway live';
+    case 'open-meteo':
+      return 'Open-Meteo live';
+    case 'resilient-fallback':
+      return 'Demonstration fallback (historical)';
+    default:
+      return String(source);
+  }
+}
+
 type UiLanguage = 'en' | 'hi' | 'te' | 'kn';
 const shellCopy: Record<
   UiLanguage,
@@ -3012,7 +3027,7 @@ export function ThermoWatchDashboard() {
                               <small className="text-slate-400">
                                 {String(row.temperature)}°C ·{' '}
                                 {String(row.humidity)}% RH ·{' '}
-                                {String(row.source)}
+                                {weatherSourceLabel(row.source)}
                               </small>
                             </span>
                             <strong>{String(row.htsi)}</strong>
@@ -3052,7 +3067,7 @@ export function ThermoWatchDashboard() {
                               </b>
                               <small className="text-slate-400">
                                 {String(row.horizon_hours)}h horizon ·{' '}
-                                {String(row.source)}
+                                {weatherSourceLabel(row.source)}
                               </small>
                             </span>
                             <strong>{String(row.probability)}%</strong>
