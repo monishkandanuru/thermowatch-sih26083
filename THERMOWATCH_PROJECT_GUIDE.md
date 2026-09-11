@@ -204,12 +204,16 @@ The floating local assistant answers text questions about the selected city’s 
 
 ### Access and accountability
 
-- Public visitors can read the dashboard, maps and warnings.
-- A ChatGPT-authenticated visitor remains public unless the account is in the server-side officer allowlist or has an approved `user_roles` entry.
-- Only officer/admin roles can send or acknowledge authority alerts or change incident status.
+- Public visitors can use the command centre, forecasts, risk map, Explainable AI, validation evidence, public warnings and local assistant.
+- Authority, Response hub, History and Alert center are visibly locked until an officer session is verified.
+- The officer login creates an HMAC-SHA256 signed, HttpOnly, SameSite=Strict session cookie that expires after four hours.
+- The API independently verifies the session before returning protected history, alerts, incidents, audit data or CSV exports, and before accepting operational changes.
+- Login attempts are rate limited and successful access is audited.
+- Only officer/admin roles can create or acknowledge authority alerts, submit/change incident records and access operational history.
+- Platform-authenticated users can additionally receive server-side roles from the officer allowlist or `user_roles` table.
 - Alert and incident mutations are written to an audit log.
 - Rate limits protect incident and alert endpoints from repeated abuse.
-- Initial administrators are configured through the server-only `THERMOWATCH_OFFICER_IDS` allowlist; individual roles can then be represented in the `user_roles` table.
+- Prototype credentials can be replaced through the server-only `THERMOWATCH_DEMO_USER`, `THERMOWATCH_DEMO_PASSWORD` and `THERMOWATCH_DEMO_SESSION_SECRET` settings.
 
 ### Offline and installable app support
 
@@ -383,7 +387,7 @@ Call the current result a **reproducible live ML classifier evaluated on real we
 | Hindi and Telugu interface | Partial | Navigation and the operational shell are translated; specialist screens still need full translation and native review |
 | Local assistance chatbot | Complete for prototype | Text works locally in four languages; browser-supported regional speech input and read-aloud are available |
 | Tabletop readiness simulation | Complete | Repeatable live pipeline, forecast, map, evidence and channel checks replace unavailable field testing without claiming usability validation |
-| Login and role permissions | Complete for hosted prototype | Platform identity gives public/officer/admin server-side roles |
+| Login and role permissions | Complete for SIH prototype | Public/officer separation, protected APIs, signed session, rate limiting and audit are implemented; individual registration, recovery and MFA remain production work |
 | Offline/PWA mode | Complete | Installable shell and privacy-safe cached public intelligence |
 | Automated test suite | Complete for core paths | Unit, ML integrity, runtime parity and API smoke tests are included; full browser E2E remains a production improvement |
 | Production monitoring | Partial | Health endpoint and audit logs are active; external uptime paging needs a monitoring provider |

@@ -33,10 +33,11 @@ export default function PrivacyPage() {
               Identity and permissions
             </h2>
             <p>
-              Public visitors can view operational information. Authority
-              actions use the signed-in ChatGPT user identifier supplied by the
-              hosting platform. Audit records store the actor identifier and
-              role, not passwords or authentication tokens.
+              Public visitors can view public heat-risk information. Authority
+              records and operational actions require a server-verified officer
+              session and are checked again by protected API routes. Audit
+              records store the actor identifier and role, not passwords or
+              authentication tokens.
             </p>
           </section>
           <section>

@@ -1,3 +1,4 @@
+import { canOperate, getRequestActor } from '@/lib/access';
 import { ensureDatabase, makeId } from '@/lib/database';
 import {
   MODEL_INFO,
@@ -8,9 +9,10 @@ import { fetchAllDistricts } from '@/lib/thermowatch';
 
 export const runtime = 'edge';
 
-export async function GET() {
+export async function GET(request: Request) {
   const districts = await fetchAllDistricts();
   const db = await ensureDatabase();
+  const actor = await getRequestActor(request, db);
   const now = new Date().toISOString();
   await db.batch(
     districts.map((item) =>
@@ -49,23 +51,25 @@ export async function GET() {
   return Response.json({
     districts,
     model: MODEL_INFO,
-    authority: {
-      coverage: districts.length,
-      high_risk_count: districts.filter((item) =>
-        ['High', 'Extreme', 'Emergency'].includes(item.risk),
-      ).length,
-      active_alerts:
-        (alertCount?.count ?? 0) + (automaticWarningCount?.count ?? 0),
-      automatic_warnings: automaticWarningCount?.count ?? 0,
-      open_incidents: incidentCount?.count ?? 0,
-      highest_risk_locations: highest.slice(0, 7),
-      recommended_interventions: [
-        'Open and clearly signpost cooling centres before peak heat.',
-        'Move outdoor labour and school activity away from 12–4 PM.',
-        'Prioritise older adults, children, outdoor workers and people with chronic illness.',
-        'Pre-position water, ORS and emergency medical teams in High+ districts.',
-      ],
-    },
+    authority: canOperate(actor)
+      ? {
+          coverage: districts.length,
+          high_risk_count: districts.filter((item) =>
+            ['High', 'Extreme', 'Emergency'].includes(item.risk),
+          ).length,
+          active_alerts:
+            (alertCount?.count ?? 0) + (automaticWarningCount?.count ?? 0),
+          automatic_warnings: automaticWarningCount?.count ?? 0,
+          open_incidents: incidentCount?.count ?? 0,
+          highest_risk_locations: highest.slice(0, 7),
+          recommended_interventions: [
+            'Open and clearly signpost cooling centres before peak heat.',
+            'Move outdoor labour and school activity away from 12–4 PM.',
+            'Prioritise older adults, children, outdoor workers and people with chronic illness.',
+            'Pre-position water, ORS and emergency medical teams in High+ districts.',
+          ],
+        }
+      : null,
     validation: {
       ...VALIDATION_REPORT,
       replay_cases: REPLAY_CASES,

@@ -8,6 +8,8 @@ export const runtime = 'edge';
 export async function GET(request: Request) {
   const district = new URL(request.url).searchParams.get('district') || 'Delhi';
   const db = await ensureDatabase();
+  const actor = await getRequestActor(request, db);
+  if (!canOperate(actor)) return forbiddenResponse(actor);
   const result = await db
     .prepare(
       'SELECT * FROM incidents WHERE district = ? ORDER BY created_at DESC LIMIT 30',
@@ -55,6 +57,7 @@ export async function POST(request: Request) {
   }
   const db = await ensureDatabase();
   const actor = await getRequestActor(request, db);
+  if (!canOperate(actor)) return forbiddenResponse(actor);
   const limited = await enforceRateLimit({
     db,
     request,

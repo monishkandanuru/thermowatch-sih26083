@@ -14,6 +14,8 @@ export const runtime = 'edge';
 export async function GET(request: Request) {
   const district = new URL(request.url).searchParams.get('district');
   const db = await ensureDatabase();
+  const actor = await getRequestActor(request, db);
+  if (!canOperate(actor)) return forbiddenResponse(actor);
   const query = district
     ? db
         .prepare(

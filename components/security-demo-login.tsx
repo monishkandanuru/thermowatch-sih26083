@@ -32,6 +32,13 @@ export function SecurityDemoLogin() {
   const [error, setError] = useState('');
   const [session, setSession] = useState<DemoSession>({ authenticated: false });
 
+  function returnPath() {
+    const requested = new URLSearchParams(window.location.search).get('next');
+    return requested?.startsWith('/') && !requested.startsWith('//')
+      ? requested
+      : '/';
+  }
+
   useEffect(() => {
     const controller = new AbortController();
     fetch('/api/security-demo', { signal: controller.signal })
@@ -58,6 +65,7 @@ export function SecurityDemoLogin() {
       if (!response.ok) throw new Error(result.error || 'Unable to verify access.');
       setSession(result);
       setPasscode('');
+      window.location.assign(returnPath());
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : 'Unable to verify access.');
     } finally {
@@ -95,18 +103,18 @@ export function SecurityDemoLogin() {
           </Link>
 
           <div className="relative max-w-lg">
-            <p className="mb-4 font-mono text-xs font-semibold tracking-[0.2em] text-[#f2c96c]">OFFICER SECURITY DEMO</p>
+            <p className="mb-4 font-mono text-xs font-semibold tracking-[0.2em] text-[#f2c96c]">SECURE OFFICER WORKSPACE</p>
             <h1 className="text-4xl font-bold leading-tight tracking-[-0.04em] xl:text-5xl">
               Trusted access for critical heat-response work.
             </h1>
             <p className="mt-5 max-w-md text-base leading-7 text-blue-100/70">
-              A focused authentication prototype showing server verification, session integrity and traceable access.
+              Public heat information stays open. Operational records, response tools and warning controls require verified officer access.
             </p>
             <div className="mt-9 grid gap-4">
               {[
-                'Credentials are checked on the server',
+                'Officer credentials are checked on the server',
                 'Session cookie is signed and inaccessible to JavaScript',
-                'Repeated attempts are rate limited and successful access is audited',
+                'Operational APIs verify the officer role on every request',
               ].map((item) => (
                 <div key={item} className="flex items-center gap-3 text-sm text-blue-50/85">
                   <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-emerald-400/15 text-emerald-300">
@@ -119,7 +127,7 @@ export function SecurityDemoLogin() {
           </div>
 
           <p className="relative text-xs leading-5 text-blue-100/45">
-            Demonstration authentication layer. The public dashboard remains open for SIH evaluation.
+            Public risk data remains open. Authority operations are protected and auditable.
           </p>
         </section>
 
@@ -136,7 +144,7 @@ export function SecurityDemoLogin() {
               <p className="font-mono text-[11px] font-semibold tracking-[0.18em] text-[#9a6d19]">SECURE OFFICER ACCESS</p>
               <h2 className="mt-2 text-3xl font-bold tracking-[-0.035em]">Verify your identity</h2>
               <p className="mt-3 text-base leading-7 text-slate-600">
-                Use the demonstration officer credentials provided to Team INNOVATRIX.
+                Use the officer credentials provided to Team INNOVATRIX.
               </p>
             </div>
 
@@ -152,14 +160,14 @@ export function SecurityDemoLogin() {
                 </span>
                 <h3 className="mt-5 text-2xl font-bold">Officer identity verified</h3>
                 <p className="mt-2 text-base leading-7 text-slate-600">
-                  Signed in as <b className="text-[#12203a]">{session.officer_id}</b>. The demonstration session is valid for four hours.
+                  Signed in as <b className="text-[#12203a]">{session.officer_id}</b>. Your officer session is valid for four hours.
                 </p>
                 <div className="mt-6 grid gap-3 sm:grid-cols-2">
                   <Link href="/" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#234b8b] px-4 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#193b73] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#234b8b]/30">
-                    Command center <ArrowRight className="h-4 w-4" />
+                    Open full workspace <ArrowRight className="h-4 w-4" />
                   </Link>
                   <Button variant="outline" className="min-h-11" onClick={signOut} disabled={loading}>
-                    End demo session
+                    Sign out
                   </Button>
                 </div>
               </div>
@@ -216,22 +224,26 @@ export function SecurityDemoLogin() {
 
                 <Button type="submit" size="lg" className="mt-6 min-h-11 w-full bg-[#234b8b] hover:bg-[#193b73]" disabled={loading}>
                   {loading ? <Loader2 className="animate-spin" /> : <ShieldCheck />}
-                  {loading ? 'Verifying…' : 'Verify officer access'}
+                  {loading ? 'Verifying…' : 'Sign in as officer'}
                 </Button>
 
                 <div className="mt-6 border-t border-slate-200 pt-5 text-center">
-                  <Link href="/" className="text-sm font-semibold text-[#234b8b] hover:underline">
-                    Continue to public dashboard
+                  <Link
+                    href="/"
+                    className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border-2 border-[#29589a] bg-white px-5 text-sm font-semibold text-[#234b8b] shadow-sm transition-all hover:bg-[#eef3fa] hover:shadow-md focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#234b8b]/25"
+                  >
+                    Continue with public access
+                    <ArrowRight className="h-4 w-4" />
                   </Link>
                   <p className="mt-2 text-xs leading-5 text-slate-500">
-                    This SIH demonstration does not restrict public access to heat information.
+                    View current risk, forecasts, the map, explanations and public safety guidance without signing in.
                   </p>
                 </div>
               </form>
             )}
 
             <p className="mt-7 text-center text-xs leading-5 text-slate-500">
-              Security demonstration · signed session · rate-limited attempts · auditable access
+              Server-verified access · signed session · rate-limited attempts · auditable actions
             </p>
           </div>
         </section>

@@ -1,6 +1,12 @@
 import type { D1Database } from '@cloudflare/workers-types';
 import { env } from 'cloudflare:workers';
 
+import {
+  readCookie,
+  SECURITY_DEMO_COOKIE,
+  verifySecurityDemoSession,
+} from '@/lib/security-demo-auth';
+
 export type AccessRole = 'public' | 'officer' | 'admin';
 
 export type RequestActor = {
@@ -28,6 +34,26 @@ export async function getRequestActor(
   request: Request,
   db?: D1Database,
 ): Promise<RequestActor> {
+  const configuredSessionSecret = (env as unknown as Record<string, unknown>)
+    .THERMOWATCH_DEMO_SESSION_SECRET;
+  const sessionSecret =
+    typeof configuredSessionSecret === 'string'
+      ? configuredSessionSecret
+      : 'thermowatch-sih26083-security-demonstration-key';
+  const officerSession = await verifySecurityDemoSession(
+    readCookie(request, SECURITY_DEMO_COOKIE),
+    sessionSecret,
+  );
+  if (officerSession) {
+    return {
+      id: `officer:${officerSession.subject}`,
+      email: null,
+      name: officerSession.subject,
+      role: 'officer',
+      signed_in: true,
+    };
+  }
+
   const id = request.headers.get('oai-authenticated-user-id');
   const email = request.headers.get('oai-authenticated-user-email');
   if (!id) {

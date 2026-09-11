@@ -1,3 +1,4 @@
+import { canOperate, forbiddenResponse, getRequestActor } from '@/lib/access';
 import { ensureDatabase } from '@/lib/database';
 
 export const runtime = 'edge';
@@ -5,6 +6,8 @@ export const runtime = 'edge';
 export async function GET(request: Request) {
   const district = new URL(request.url).searchParams.get('district') || 'Delhi';
   const db = await ensureDatabase();
+  const actor = await getRequestActor(request, db);
+  if (!canOperate(actor)) return forbiddenResponse(actor);
   const [observations, predictions] = await Promise.all([
     db
       .prepare(

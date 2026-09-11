@@ -18,6 +18,13 @@ ThermoWatch is a heatwave early-warning and decision-support platform built for 
 - Local assistance chatbot with regional-language text and voice support
 - SMS and WhatsApp notification demonstrations for hackathon evaluation
 
+## Access levels
+
+- **Public:** command centre, forecasts, India risk map, Explainable AI, validation evidence, public warnings and the local assistant.
+- **Officer:** authority overview, response operations, persistent history, alert workflows, audit-controlled actions and CSV export.
+
+Open `/login` to enter the protected officer workspace. The prototype credentials are documented in `START_HERE.md`. For deployment, set `THERMOWATCH_DEMO_USER`, `THERMOWATCH_DEMO_PASSWORD` and a strong `THERMOWATCH_DEMO_SESSION_SECRET` as server-side secrets instead of using the local fallback values.
+
 ## Run locally
 
 ```bash

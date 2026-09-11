@@ -231,7 +231,7 @@ type DashboardData = {
     open_incidents: number;
     highest_risk_locations: District[];
     recommended_interventions: string[];
-  };
+  } | null;
   validation: {
     accuracy_pct: number;
     macro_f1_pct: number;
@@ -441,6 +441,13 @@ const navigation: Array<{
   { id: 'history', label: 'History', icon: History },
   { id: 'alerts', label: 'Alert center', icon: Bell },
 ];
+
+const officerViews = new Set<View>([
+  'authority',
+  'response',
+  'history',
+  'alerts',
+]);
 
 type UiLanguage = 'en' | 'hi' | 'te' | 'kn';
 const shellCopy: Record<
@@ -1040,7 +1047,7 @@ export function ThermoWatchDashboard() {
     }
   }, [view, forecastMap, loadForecastMap]);
   useEffect(() => {
-    if (['history', 'alerts', 'response'].includes(view)) {
+    if (canManage && ['history', 'alerts', 'response'].includes(view)) {
       const timer = window.setTimeout(
         () =>
           void loadRecords(selectedName).catch(() =>
@@ -1050,7 +1057,7 @@ export function ThermoWatchDashboard() {
       );
       return () => window.clearTimeout(timer);
     }
-  }, [view, selectedName, loadRecords]);
+  }, [view, selectedName, loadRecords, canManage]);
   useEffect(() => {
     const handleOnline = () => setOnline(true);
     const handleOffline = () => setOnline(false);
@@ -1132,9 +1139,29 @@ export function ThermoWatchDashboard() {
     setMobileNav(false);
   }
   function changeView(next: View) {
+    if (officerViews.has(next) && !canManage) {
+      window.location.assign('/login?next=/');
+      return;
+    }
     setView(next);
     setMobileNav(false);
     setNotice('');
+  }
+
+  async function signOutOfficer() {
+    await fetch('/api/security-demo', { method: 'DELETE' }).catch(() => undefined);
+    setSession({
+      id: null,
+      email: null,
+      name: null,
+      role: 'public',
+      signed_in: false,
+    });
+    setHistoryData(null);
+    setAlerts([]);
+    setIncidents([]);
+    setView('overview');
+    setNotice('Officer session ended. Public information remains available.');
   }
 
   async function calculatePersonal() {
@@ -1323,25 +1350,32 @@ export function ThermoWatchDashboard() {
             <p className="px-3 pb-2 font-mono text-[9px] tracking-[0.18em] text-blue-200/45">
               OPERATIONS
             </p>
-            {navigation.map(({ id, icon: Icon }) => (
-              <button
-                key={id}
-                onClick={() => changeView(id)}
-                className={`group flex min-h-11 w-full items-center gap-3 rounded-xl px-3 text-left text-[13px] font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f2c96c] ${view === id ? 'bg-white text-[#10213f] shadow-[0_8px_22px_rgb(0_0_0/18%)]' : 'text-blue-100/65 hover:bg-white/8 hover:text-white'}`}
-              >
-                <span
-                  className={`grid h-7 w-7 place-items-center rounded-lg transition-colors ${view === id ? 'bg-[#e9eef6] text-[#234b8b]' : 'bg-white/5 text-blue-100/70 group-hover:bg-white/10 group-hover:text-[#f2c96c]'}`}
+            {navigation.map(({ id, icon: Icon }) => {
+              const locked = officerViews.has(id) && !canManage;
+              return (
+                <button
+                  key={id}
+                  onClick={() => changeView(id)}
+                  className={`group flex min-h-11 w-full items-center gap-3 rounded-xl px-3 text-left text-[13px] font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f2c96c] ${view === id ? 'bg-white text-[#10213f] shadow-[0_8px_22px_rgb(0_0_0/18%)]' : 'text-blue-100/65 hover:bg-white/8 hover:text-white'}`}
+                  aria-label={locked ? `${copy.nav[id]} — officer sign-in required` : copy.nav[id]}
+                  title={locked ? 'Officer sign-in required' : undefined}
                 >
-                  <Icon className="h-4 w-4" />
-                </span>
-                {copy.nav[id]}
-                {id === 'alerts' && (
-                  <span className="ml-auto rounded-full bg-[#f2c96c] px-2 py-0.5 text-[10px] text-[#352506]">
-                    {highCount}
+                  <span
+                    className={`grid h-7 w-7 place-items-center rounded-lg transition-colors ${view === id ? 'bg-[#e9eef6] text-[#234b8b]' : 'bg-white/5 text-blue-100/70 group-hover:bg-white/10 group-hover:text-[#f2c96c]'}`}
+                  >
+                    <Icon className="h-4 w-4" />
                   </span>
-                )}
-              </button>
-            ))}
+                  {copy.nav[id]}
+                  {locked ? (
+                    <LockKeyhole className="ml-auto h-3.5 w-3.5 text-blue-100/40" />
+                  ) : id === 'alerts' ? (
+                    <span className="ml-auto rounded-full bg-[#f2c96c] px-2 py-0.5 text-[10px] text-[#352506]">
+                      {highCount}
+                    </span>
+                  ) : null}
+                </button>
+              );
+            })}
           </nav>
           <div className="absolute bottom-6 left-4 right-4 rounded-[1.15rem] border border-white/10 bg-white/[0.06] p-3.5 font-mono text-[10px] text-blue-100/65 backdrop-blur">
             <span
@@ -1379,13 +1413,25 @@ export function ThermoWatchDashboard() {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Link
-                href="/login"
-                className="hidden min-h-9 items-center gap-1.5 rounded-xl border border-[#d8d3ca] bg-white px-3 text-sm font-semibold text-[#293a54] shadow-sm transition-colors hover:bg-[#eef2f7] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#234b8b]/30 sm:inline-flex"
-              >
-                <LockKeyhole className="h-4 w-4" />
-                Security demo
-              </Link>
+              {canManage ? (
+                <button
+                  type="button"
+                  onClick={signOutOfficer}
+                  className="hidden min-h-9 items-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-3 text-sm font-semibold text-emerald-800 shadow-sm transition-colors hover:bg-emerald-100 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-emerald-600/25 sm:inline-flex"
+                  title={`Signed in as ${session?.name ?? 'officer'}. Click to sign out.`}
+                >
+                  <ShieldCheck className="h-4 w-4" />
+                  Officer access · Sign out
+                </button>
+              ) : (
+                <Link
+                  href="/login?next=/"
+                  className="hidden min-h-9 items-center gap-1.5 rounded-xl border border-[#d8d3ca] bg-white px-3 text-sm font-semibold text-[#293a54] shadow-sm transition-colors hover:bg-[#eef2f7] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#234b8b]/30 sm:inline-flex"
+                >
+                  <LockKeyhole className="h-4 w-4" />
+                  Officer sign in
+                </Link>
+              )}
               <NativeSelect
                 value={uiLanguage}
                 onChange={(event) =>
@@ -2245,9 +2291,9 @@ export function ThermoWatchDashboard() {
               </div>
             )}
 
-            {view === 'authority' && (
+            {view === 'authority' && canManage && (
               <div className="space-y-5">
-                {dashboard ? (
+                {dashboard?.authority ? (
                   <>
                     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                       <Stat
@@ -2353,7 +2399,7 @@ export function ThermoWatchDashboard() {
               </div>
             )}
 
-            {view === 'response' && (
+            {view === 'response' && canManage && (
               <div className="space-y-5">
                 <div className="grid gap-5 lg:grid-cols-2">
                   <Card>
@@ -2898,7 +2944,7 @@ export function ThermoWatchDashboard() {
               </div>
             )}
 
-            {view === 'history' && (
+            {view === 'history' && canManage && (
               <div className="grid gap-5 lg:grid-cols-2">
                 <Card>
                   <CardHeader>
@@ -2986,7 +3032,7 @@ export function ThermoWatchDashboard() {
               </div>
             )}
 
-            {view === 'alerts' && (
+            {view === 'alerts' && canManage && (
               <div className="space-y-5">
                 <Card>
                   <CardHeader>
