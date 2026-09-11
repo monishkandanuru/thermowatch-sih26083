@@ -6,6 +6,7 @@ import {
 
 export { MODEL_INFO } from '@/lib/ml-model';
 import { indiaForecastTime, nearestForecast } from '@/lib/forecast-time';
+import { fetchModelMeanForecast } from '@/lib/weather-ensemble';
 
 export type Risk = 'Low' | 'Moderate' | 'High' | 'Extreme' | 'Emergency';
 
@@ -511,7 +512,10 @@ export async function fetchCurrentDistrict(config: DistrictConfig) {
 }
 
 let currentDistrictCache:
-  | { expiresAt: number; data: Awaited<ReturnType<typeof fetchCurrentDistrict>>[] }
+  | {
+      expiresAt: number;
+      data: Awaited<ReturnType<typeof fetchCurrentDistrict>>[];
+    }
   | undefined;
 let currentDistrictRequest:
   | Promise<Awaited<ReturnType<typeof fetchCurrentDistrict>>[]>
@@ -672,6 +676,84 @@ export async function fetchDistrictForecast(name: string) {
     ) ?? DISTRICTS[0];
   const current = await fetchCurrentDistrict(config);
   try {
+    const ensemblePoints = await fetchModelMeanForecast({
+      latitude: config.lat,
+      longitude: config.lon,
+    });
+    const forecast = ensemblePoints
+      .map((point) => {
+        const temp = point.temperature_c;
+        const humidity = point.humidity_pct;
+        const wind = point.wind_speed_ms;
+        const solar = point.shortwave_radiation_wm2;
+        const uv = solar / 95;
+        const result = computeHtsi({ temp, humidity, wind, uv, solar });
+        return {
+          time: indiaForecastTime(point.time),
+          label: new Date(indiaForecastTime(point.time)).toLocaleString(
+            'en-IN',
+            {
+              timeZone: 'Asia/Kolkata',
+              weekday: 'short',
+              hour: 'numeric',
+            },
+          ),
+          temp: Number(temp.toFixed(1)),
+          humidity: Math.round(humidity),
+          wind: Number(wind.toFixed(1)),
+          uv: Number(uv.toFixed(1)),
+          solar: Number(solar.toFixed(1)),
+          model_count: point.model_count,
+          requested_model_count: point.requested_model_count,
+          temperature_spread_c: Number(point.temperature_spread_c.toFixed(2)),
+          ...result,
+          ...modelFields(config, {
+            temp,
+            humidity,
+            wind,
+            solar,
+            timestamp: point.time,
+          }),
+        };
+      })
+      .filter(
+        (point, index) =>
+          index % 3 === 0 && Date.parse(point.time) >= Date.now(),
+      );
+    if (!forecast.length)
+      throw new Error('ensemble forecast has no future points');
+    const horizons = [24, 48, 72].map((hours) => {
+      const item = nearestForecast(forecast, hours);
+      return {
+        horizon_hours: hours,
+        predicted_class: item.risk,
+        probability: item.model_confidence,
+        high_risk_probability: item.high_risk_probability,
+        htsi: item.htsi,
+        explanation: item.explanation,
+        model_count: item.model_count,
+        temperature_spread_c: item.temperature_spread_c,
+      };
+    });
+    const peak = [...forecast].sort((a, b) => b.htsi - a.htsi)[0];
+    return {
+      district: config.district,
+      current,
+      forecast,
+      horizons,
+      peak,
+      profiles: vulnerabilityProfiles(current),
+      source: 'open-meteo-10-model-mean',
+      ensemble: {
+        requested_models: 10,
+        available_models: peak.model_count,
+        method: 'arithmetic mean of valid time-aligned model values',
+      },
+    };
+  } catch {
+    // Continue to the single best-match provider and resilient fallback below.
+  }
+  try {
     const params = new URLSearchParams({
       latitude: String(config.lat),
       longitude: String(config.lon),
@@ -726,10 +808,19 @@ export async function fetchDistrictForecast(name: string) {
           uv: Number((payload.hourly.uv_index[index] ?? solar / 95).toFixed(1)),
           solar: Number(solar.toFixed(1)),
           ...result,
-          ...modelFields(config, { temp, humidity, wind, solar, timestamp: time }),
+          ...modelFields(config, {
+            temp,
+            humidity,
+            wind,
+            solar,
+            timestamp: time,
+          }),
         };
       })
-      .filter((point, index) => index % 3 === 0 && Date.parse(point.time) >= Date.now());
+      .filter(
+        (point, index) =>
+          index % 3 === 0 && Date.parse(point.time) >= Date.now(),
+      );
     const horizons = [24, 48, 72].map((hours) => {
       const item = nearestForecast(forecast, hours);
       return {
