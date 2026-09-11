@@ -594,7 +594,7 @@ export async function fetchAllDistricts() {
   // 30-request burst and trigger upstream rate limiting.
   currentDistrictRequest = mapWithConcurrency(
     DISTRICTS,
-    5,
+    1,
     fetchCurrentDistrict,
   );
   try {
@@ -771,7 +771,7 @@ async function fetchDistrictForecastLayers(config: DistrictConfig) {
 export async function fetchAllForecastLayers() {
   const districtLayers = await mapWithConcurrency(
     DISTRICTS,
-    5,
+    1,
     fetchDistrictForecastLayers,
   );
   return {
