@@ -566,11 +566,37 @@ let currentDistrictRequest:
   | Promise<Awaited<ReturnType<typeof fetchCurrentDistrict>>[]>
   | undefined;
 
+async function mapWithConcurrency<T, R>(
+  items: T[],
+  concurrency: number,
+  mapper: (item: T) => Promise<R>,
+) {
+  const results = new Array<R>(items.length);
+  let nextIndex = 0;
+  const workers = Array.from(
+    { length: Math.min(concurrency, items.length) },
+    async () => {
+      while (nextIndex < items.length) {
+        const index = nextIndex++;
+        results[index] = await mapper(items[index]);
+      }
+    },
+  );
+  await Promise.all(workers);
+  return results;
+}
+
 export async function fetchAllDistricts() {
   if (currentDistrictCache && currentDistrictCache.expiresAt > Date.now())
     return currentDistrictCache.data;
   if (currentDistrictRequest) return currentDistrictRequest;
-  currentDistrictRequest = Promise.all(DISTRICTS.map(fetchCurrentDistrict));
+  // Limit provider concurrency so one dashboard request does not look like a
+  // 30-request burst and trigger upstream rate limiting.
+  currentDistrictRequest = mapWithConcurrency(
+    DISTRICTS,
+    5,
+    fetchCurrentDistrict,
+  );
   try {
     const data = await currentDistrictRequest;
     currentDistrictCache = { expiresAt: Date.now() + 5 * 60_000, data };
@@ -743,8 +769,10 @@ async function fetchDistrictForecastLayers(config: DistrictConfig) {
 }
 
 export async function fetchAllForecastLayers() {
-  const districtLayers = await Promise.all(
-    DISTRICTS.map(fetchDistrictForecastLayers),
+  const districtLayers = await mapWithConcurrency(
+    DISTRICTS,
+    5,
+    fetchDistrictForecastLayers,
   );
   return {
     24: districtLayers.map((layers) => layers[0]),

@@ -168,7 +168,7 @@ export async function fetchMetNorwayForecast(input: {
       lon: String(input.longitude),
     });
     const response = await fetch(
-      `https://api.met.no/weatherapi/locationforecast/2.0/complete?${params}`,
+      `https://api.met.no/weatherapi/locationforecast/2.0/compact?${params}`,
       {
         headers: {
           'User-Agent':
