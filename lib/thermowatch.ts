@@ -6,7 +6,10 @@ import {
 
 export { MODEL_INFO } from '@/lib/ml-model';
 import { indiaForecastTime, nearestForecast } from '@/lib/forecast-time';
-import { fetchModelMeanForecast } from '@/lib/weather-ensemble';
+import {
+  fetchMetNorwayForecast,
+  fetchModelMeanForecast,
+} from '@/lib/weather-ensemble';
 
 export type Risk = 'Low' | 'Moderate' | 'High' | 'Extreme' | 'Emergency';
 
@@ -676,10 +679,34 @@ export async function fetchDistrictForecast(name: string) {
     ) ?? DISTRICTS[0];
   const current = await fetchCurrentDistrict(config);
   try {
-    const ensemblePoints = await fetchModelMeanForecast({
-      latitude: config.lat,
-      longitude: config.lon,
-    });
+    let liveSource = 'open-meteo-live-ensemble';
+    let ensembleMetadata:
+      | {
+          systems: string[];
+          requested_forecasts: number;
+          available_forecasts: number;
+          method: string;
+        }
+      | undefined;
+    let ensemblePoints: Awaited<ReturnType<typeof fetchModelMeanForecast>>;
+    try {
+      ensemblePoints = await fetchModelMeanForecast({
+        latitude: config.lat,
+        longitude: config.lon,
+      });
+      ensembleMetadata = {
+        systems: ['ECMWF IFS', 'DWD ICON'],
+        requested_forecasts: 10,
+        available_forecasts: ensemblePoints[0]?.model_count ?? 0,
+        method: 'arithmetic mean of valid time-aligned ensemble forecasts',
+      };
+    } catch {
+      ensemblePoints = await fetchMetNorwayForecast({
+        latitude: config.lat,
+        longitude: config.lon,
+      });
+      liveSource = 'met-norway-live-forecast';
+    }
     const ensembleForecast = ensemblePoints.map((point) => {
       const temp = point.temperature_c;
       const humidity = point.humidity_pct;
@@ -732,7 +759,7 @@ export async function fetchDistrictForecast(name: string) {
       y: config.y,
       fallbackTemp: config.fallbackTemp,
       fallbackHumidity: config.fallbackHumidity,
-      source: 'open-meteo-live-ensemble',
+      source: liveSource,
     };
     const horizons = [24, 48, 72].map((hours) => {
       const item = nearestForecast(forecast, hours);
@@ -755,13 +782,8 @@ export async function fetchDistrictForecast(name: string) {
       horizons,
       peak,
       profiles: vulnerabilityProfiles(ensembleCurrent),
-      source: 'open-meteo-live-ensemble',
-      ensemble: {
-        systems: ['ECMWF IFS', 'DWD ICON'],
-        requested_forecasts: 10,
-        available_forecasts: peak.model_count,
-        method: 'arithmetic mean of valid time-aligned ensemble forecasts',
-      },
+      source: liveSource,
+      ensemble: ensembleMetadata,
     };
   } catch {
     // Continue to the single best-match provider and resilient fallback below.

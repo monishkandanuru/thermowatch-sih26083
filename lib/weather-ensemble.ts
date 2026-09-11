@@ -109,6 +109,11 @@ const cache = new Map<
   { expiresAt: number; points: EnsembleForecastPoint[] }
 >();
 
+const metNorwayCache = new Map<
+  string,
+  { expiresAt: number; points: EnsembleForecastPoint[] }
+>();
+
 export async function fetchModelMeanForecast(input: {
   latitude: number;
   longitude: number;
@@ -141,5 +146,68 @@ export async function fetchModelMeanForecast(input: {
   if (!points.length)
     throw new Error('ensemble weather contained too few complete forecasts');
   cache.set(key, { expiresAt: Date.now() + 15 * 60_000, points });
+  return points;
+}
+
+export async function fetchMetNorwayForecast(input: {
+  latitude: number;
+  longitude: number;
+}) {
+  const key = `${input.latitude.toFixed(4)},${input.longitude.toFixed(4)}`;
+  const cached = metNorwayCache.get(key);
+  if (cached && cached.expiresAt > Date.now()) return cached.points;
+
+  const params = new URLSearchParams({
+    lat: String(input.latitude),
+    lon: String(input.longitude),
+  });
+  const response = await fetch(
+    `https://api.met.no/weatherapi/locationforecast/2.0/complete?${params}`,
+    {
+      headers: {
+        'User-Agent':
+          'ThermoWatch-SIH26083/1.0 github.com/monishkandanuru/thermowatch-sih26083',
+      },
+      signal: AbortSignal.timeout(12_000),
+    },
+  );
+  if (!response.ok)
+    throw new Error(`MET Norway weather unavailable (${response.status})`);
+  const payload = (await response.json()) as {
+    properties?: {
+      timeseries?: Array<{
+        time?: unknown;
+        data?: { instant?: { details?: Record<string, unknown> } };
+      }>;
+    };
+  };
+  const points = (payload.properties?.timeseries ?? []).flatMap((entry) => {
+    const details = entry.data?.instant?.details;
+    const time = entry.time;
+    if (!details || typeof time !== 'string') return [];
+    const temperature = Number(details.air_temperature);
+    const humidity = Number(details.relative_humidity);
+    const wind = Number(details.wind_speed);
+    const uv = Number(details.ultraviolet_index_clear_sky);
+    if (![temperature, humidity, wind].every(Number.isFinite)) return [];
+    return [
+      {
+        time,
+        temperature_c: temperature,
+        humidity_pct: humidity,
+        wind_speed_ms: wind,
+        shortwave_radiation_wm2: Number.isFinite(uv) ? Math.max(0, uv * 95) : 0,
+        model_count: 1,
+        requested_model_count: 1,
+        temperature_spread_c: 0,
+      },
+    ];
+  });
+  if (!points.length)
+    throw new Error('MET Norway weather contained no complete forecasts');
+  metNorwayCache.set(key, {
+    expiresAt: Date.now() + 20 * 60_000,
+    points,
+  });
   return points;
 }
